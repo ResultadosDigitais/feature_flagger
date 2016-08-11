@@ -11,8 +11,7 @@ RSpec.describe Rollout do
       end
     end
 
-    it { expect(Rollout.configuration[:redis]).to eq redis }
-    it { expect(Rollout.configuration[:resource_method]).to eq :current_account }
-    it { expect(Rollout.configuration[:redis_namespace]).to eq 'rollout' }
+    it { expect(Rollout.config[:redis]).to eq redis }
+    it { expect(Rollout.config[:redis_namespace]).to eq 'rollout' }
   end
 end

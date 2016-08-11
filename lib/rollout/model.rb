@@ -9,24 +9,27 @@ module Rollout
   # #=> true
   module Model
     def rollout?(feature_key)
-      feature_key = Array(feature_key)
-      feature_key << self.class.name.parameterize('_')
-
-      Control.rollout?(feature_key, id)
+      Control.rollout?(feature_key, id, rollout_resource_name)
     end
 
     def release!(feature_key)
-      feature_key = Array(feature_key)
-      feature_key << self.class.name.parameterize('_')
-
-      Control.release!(feature_key, id)
+      Control.release!(feature_key, id, rollout_resource_name)
     end
 
     def unrelease!(feature_key)
-      feature_key = Array(feature_key)
-      feature_key << self.class.name.parameterize('_')
+      Control.unrelease!(feature_key, id, rollout_resource_name)
+    end
 
-      Control.unrelease!(feature_key, id)
+    private
+
+    def rollout_resource_name
+      klass_name = self.class.name
+      klass_name.gsub!(/::/, '_')
+      klass_name.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
+      klass_name.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+      klass_name.tr!("-", "_")
+      klass_name.downcase!
+      klass_name
     end
   end
 end
