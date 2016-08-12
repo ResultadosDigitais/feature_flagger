@@ -11,6 +11,12 @@ module Rollout
     subject   { DummyClass.new }
     let(:key) { [:email_marketing, :whitelabel] }
 
+    before do
+      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      info = YAML.load_file(filepath)
+      allow(Rollout).to receive(:config).and_return(info: info)
+    end
+
     describe '#release!' do
       it 'calls Control#release! with appropriated methods' do
         expect(Control).to receive(:release!).with(key, subject.id, 'rollout_dummy_class')

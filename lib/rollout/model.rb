@@ -9,14 +9,17 @@ module Rollout
   # #=> true
   module Model
     def rollout?(feature_key)
+      Feature.new(feature_key, rollout_resource_name).fetch!
       Control.rollout?(feature_key, id, rollout_resource_name)
     end
 
     def release!(feature_key)
+      Feature.new(feature_key, rollout_resource_name).fetch!
       Control.release!(feature_key, id, rollout_resource_name)
     end
 
     def unrelease!(feature_key)
+      Feature.new(feature_key, rollout_resource_name).fetch!
       Control.unrelease!(feature_key, id, rollout_resource_name)
     end
 

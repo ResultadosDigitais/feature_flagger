@@ -1,7 +1,10 @@
+require 'yaml'
+
 require 'rollout/version'
 require 'rollout/control'
 require 'redis-namespace'
 require 'rollout/model'
+require 'rollout/feature'
 
 module Rollout
   DEFAULT_CONFIG = { redis_namespace: 'rollout-control' }

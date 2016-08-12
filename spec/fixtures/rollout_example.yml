@@ -1,0 +1,8 @@
+rollout_dummy_class:
+  email_marketing:
+    behavior_score:
+      description: "Enable behavior score experiment"
+    whitelabel:
+      description: "Enables whitelabel"
+
+
