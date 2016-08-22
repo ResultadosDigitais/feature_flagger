@@ -25,17 +25,17 @@ Or install it yourself as:
 1. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
 account: # model name
-    email_marketing: # namespace (optional)
-        new_email_flow: # feature key
-            description: 
-                @dispatch team uses this rollout to introduce a new email flow for certains users. Read more at [link]
+  email_marketing: # namespace (optional)
+    new_email_flow: # feature key
+      description: 
+        @dispatch team uses this rollout to introduce a new email flow for certains users. Read more at [link]
 ```
 
 2. Adds rollout funcionality to your model:
 ```ruby
 class Account < ActiveRecord::Base
-    include Rollout::Model
-    # ....
+  include Rollout::Model
+  # ....
 end
 ```
 
@@ -43,13 +43,13 @@ end
 3. Check;
 ```ruby
 class DashboardController < ApplicationController
-    def index
-        if current_user.account.rollout?([:email_marketing, :new_email_flow])
-            # render something
-        else
-            # render something else
-        end            
-    end
+  def index
+    if current_user.account.rollout?([:email_marketing, :new_email_flow])
+      # render something
+    else
+      # render something else
+    end            
+  end
 end
 ```
 
