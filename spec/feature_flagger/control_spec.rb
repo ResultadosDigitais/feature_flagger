@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-module Rollout
+module FeatureFlagger
   RSpec.describe Control do
     include Control
 
     before do
-      Rollout.redis = Redis.new(url: ENV['REDIS_URL'])
-      Rollout.redis.flushdb
+      FeatureFlagger.redis = Redis.new(url: ENV['REDIS_URL'])
+      FeatureFlagger.redis.flushdb
     end
 
     describe '.rollout?' do

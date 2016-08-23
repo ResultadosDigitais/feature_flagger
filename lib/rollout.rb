@@ -6,7 +6,7 @@ require 'redis-namespace'
 require 'rollout/model'
 require 'rollout/feature'
 
-module Rollout
+module FeatureFlagger
   DEFAULT_CONFIG = { redis_namespace: 'rollout-control' }
 
   class << self

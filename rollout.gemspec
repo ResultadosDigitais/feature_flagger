@@ -5,7 +5,7 @@ require 'rollout/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "rollout"
-  spec.version       = Rollout::VERSION
+  spec.version       = FeatureFlagger::VERSION
   spec.authors       = ["Nando Sousa"]
   spec.email         = ["nandosousafr@gmail.com"]
 

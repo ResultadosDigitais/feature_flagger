@@ -1,25 +1,25 @@
-module Rollout
+module FeatureFlagger
   module Control
     extend self
 
     def rollout?(feature_key, resource_id, resource_name = nil)
       feature_key = rsolv_key(feature_key, resource_name)
-      Rollout.redis.sismember(feature_key, resource_id)
+      FeatureFlagger.redis.sismember(feature_key, resource_id)
     end
 
     def release!(feature_key, resource_id, resource_name = nil)
       feature_key = rsolv_key(feature_key, resource_name)
-      Rollout.redis.sadd(feature_key, resource_id)
+      FeatureFlagger.redis.sadd(feature_key, resource_id)
     end
 
     def unrelease!(feature_key, resource_id, resource_name = nil)
       feature_key = rsolv_key(feature_key, resource_name)
-      Rollout.redis.srem(feature_key, resource_id)
+      FeatureFlagger.redis.srem(feature_key, resource_id)
     end
 
     def resource_ids(feature_key, resource_name = nil)
       feature_key = rsolv_key(feature_key, resource_name)
-      Rollout.redis.smembers(feature_key)
+      FeatureFlagger.redis.smembers(feature_key)
     end
 
     private
