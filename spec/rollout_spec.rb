@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-RSpec.describe Rollout do
+RSpec.describe FeatureFlagger do
   describe '.configure' do
     let(:redis) { double('redis') }
 
     before do
-      Rollout.configure do |config|
+      FeatureFlagger.configure do |config|
         config.redis           = redis
         config.redis_namespace = 'rollout'
       end
     end
 
-    it { expect(Rollout.config[:redis]).to eq redis }
-    it { expect(Rollout.config[:redis_namespace]).to eq 'rollout' }
+    it { expect(FeatureFlagger.config[:redis]).to eq redis }
+    it { expect(FeatureFlagger.config[:redis_namespace]).to eq 'rollout' }
   end
 end

@@ -1,7 +1,7 @@
-module Rollout
+module FeatureFlagger
   # Model provides convinient methods for Rails Models
   # class Account
-  #   include Rollout::Model
+  #   include FeatureFlagger::Model
   # end
   #
   # Example:

@@ -1,4 +1,4 @@
-# Rollout
+# FeatureFlagger
 
 Partial release your features.
 
@@ -7,7 +7,7 @@ Partial release your features.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rollout'
+gem 'feature_flagger'
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install rollout
+    $ gem install feature_flagger
 
 ## Usage
 
@@ -27,14 +27,14 @@ Or install it yourself as:
 account: # model name
   email_marketing: # namespace (optional)
     new_email_flow: # feature key
-      description: 
+      description:
         @dispatch team uses this rollout to introduce a new email flow for certains users. Read more at [link]
 ```
 
 2. Adds rollout funcionality to your model:
 ```ruby
 class Account < ActiveRecord::Base
-  include Rollout::Model
+  include FeatureFlagger::Model
   # ....
 end
 ```
@@ -48,7 +48,7 @@ class DashboardController < ApplicationController
       # render something
     else
       # render something else
-    end            
+    end
   end
 end
 ```
@@ -58,5 +58,5 @@ P.S: If you try to check a inexistent rollout key will raise an error.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/ResultadosDigitais/rollout.
-
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/ResultadosDigitais/feature_flagger.
