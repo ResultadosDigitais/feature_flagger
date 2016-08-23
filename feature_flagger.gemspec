@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'rollout/version'
+require 'feature_flagger/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rollout"
+  spec.name          = "feature_flagger"
   spec.version       = FeatureFlagger::VERSION
   spec.authors       = ["Nando Sousa"]
   spec.email         = ["nandosousafr@gmail.com"]
 
   spec.summary       = %q{Write a short summary, because Rubygems requires one.}
   spec.description   = %q{Write a longer description or delete this line.}
-  spec.homepage      = "http://github.com/ResultadosDigitais/rollout"
+  spec.homepage      = "http://github.com/ResultadosDigitais/feature_flagger"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
