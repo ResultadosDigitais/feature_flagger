@@ -1,6 +1,7 @@
 require 'yaml'
 
 require 'rollout/version'
+require 'rollout/storage/redis'
 require 'rollout/control'
 require 'redis-namespace'
 require 'rollout/model'
