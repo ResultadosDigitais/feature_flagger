@@ -1,15 +1,15 @@
-module Rollout
+module FeatureFlagger
   class Feature
 
     def initialize(key, resource_name = nil)
       @key = resource_name.nil? ? key : key.clone.insert(0, resource_name)
       @key = Array(@key).collect(&:to_s)
-      @doc = Rollout.config[:info]
+      @doc = FeatureFlagger.config[:info]
     end
 
     def fetch!
       @data ||= find_value(@doc, *@key)
-      raise Rollout::KeyNotFoundError.new(@key) if @data.nil?
+      raise FeatureFlagger::KeyNotFoundError.new(@key) if @data.nil?
       @data
     end
 
@@ -33,4 +33,4 @@ module Rollout
   end
 end
 
-class Rollout::KeyNotFoundError < StandardError ; end
+class FeatureFlagger::KeyNotFoundError < StandardError ; end

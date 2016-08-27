@@ -1,13 +1,13 @@
 require 'yaml'
-
-require 'rollout/version'
-require 'rollout/storage/redis'
-require 'rollout/control'
 require 'redis-namespace'
-require 'rollout/model'
-require 'rollout/feature'
 
-module Rollout
+require 'feature_flagger/version'
+require 'feature_flagger/storage/redis'
+require 'feature_flagger/control'
+require 'feature_flagger/model'
+require 'feature_flagger/feature'
+
+module FeatureFlagger
   DEFAULT_CONFIG = { redis_namespace: 'rollout-control' }
 
   class << self

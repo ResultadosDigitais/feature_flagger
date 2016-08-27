@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-RSpec.describe Rollout::Storage::Redis do
+RSpec.describe FeatureFlagger::Storage::Redis do
   let(:redis)   { Redis.new(url: ENV['REDIS_URL']) }
-  let(:storage) { Rollout::Storage::Redis.new(redis) }
+  let(:storage) { described_class.new(redis) }
   let(:key)   { 'foo' }
   let(:value) { 'bar' }
 

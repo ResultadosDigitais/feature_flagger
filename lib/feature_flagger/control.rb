@@ -1,4 +1,4 @@
-module Rollout
+module FeatureFlagger
   class Control
     def initialize(storage)
       @storage = storage

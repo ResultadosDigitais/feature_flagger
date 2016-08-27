@@ -1,7 +1,7 @@
-module Rollout
+module FeatureFlagger
   # Model provides convinient methods for Rails Models
   # class Account
-  #   include Rollout::Model
+  #   include FeatureFlagger::Model
   # end
   #
   # Example:
@@ -26,7 +26,7 @@ module Rollout
     private
 
     def storage
-      Rollout::Storage::Redis.new(Rollout.redis)
+      FeatureFlagger::Storage::Redis.new(FeatureFlagger.redis)
     end
 
     def rollout_resource_name

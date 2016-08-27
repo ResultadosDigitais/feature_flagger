@@ -1,4 +1,4 @@
-# Rollout
+# FeatureFlagger
 
 Partial release your features.
 
@@ -7,7 +7,7 @@ Partial release your features.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rollout'
+gem 'feature_flagger'
 ```
 
 And then execute:
@@ -16,47 +16,58 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install rollout
+    $ gem install feature_flagger
 
-## Usage
 
-### Rails
+## Configuration
 
-1. Create a `rollout.yml` in _config_ path and declare a rollout:
+1. Configure redis by adding `config/initializers/feature_flagger.rb`:
+```ruby
+FeatureFlagger.configure do |config|
+  config.redis = $redis
+end
+```
+
+2. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
 account: # model name
   email_marketing: # namespace (optional)
     new_email_flow: # feature key
-      description: 
+      description:
         @dispatch team uses this rollout to introduce a new email flow for certains users. Read more at [link]
 ```
 
-2. Adds rollout funcionality to your model:
+3. Adds rollout funcionality to your model:
 ```ruby
 class Account < ActiveRecord::Base
-  include Rollout::Model
+  include FeatureFlagger::Model
   # ....
 end
 ```
 
+## Usage
 
-3. Check;
 ```ruby
-class DashboardController < ApplicationController
-  def index
-    if current_user.account.rollout?([:email_marketing, :new_email_flow])
-      # render something
-    else
-      # render something else
-    end            
-  end
-end
+account = Account.first
+
+# Release feature for account
+account.release!([:email_marketing, :new_email_flow])
+#=> true
+
+# Check feature for a given account
+account.rollout?([:email_marketing, :new_email_flow])
+#=> true
+
+# Remove feature for given account
+account.unrelease!([:email_marketing, :new_email_flow])
+#=> true
+
+# If you try to check an existent rollout key it will raise an error.
+account.rollout?([:email_marketing, :new_email_flo])
+FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
 ```
-
-P.S: If you try to check a inexistent rollout key will raise an error.
-
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/ResultadosDigitais/rollout.
-
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/ResultadosDigitais/feature_flagger.

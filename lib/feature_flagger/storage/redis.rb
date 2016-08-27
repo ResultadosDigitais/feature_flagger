@@ -1,4 +1,4 @@
-module Rollout
+module FeatureFlagger
   module Storage
     class Redis
       def initialize(redis)

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Rollout
+module FeatureFlagger
 
   class DummyClass
-    include Rollout::Model
+    include FeatureFlagger::Model
     def id; 14 end
   end
 
@@ -14,26 +14,26 @@ module Rollout
     before do
       filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
       info = YAML.load_file(filepath)
-      allow(Rollout).to receive(:config).and_return(info: info)
+      allow(FeatureFlagger).to receive(:config).and_return(info: info)
     end
 
     describe '#release!' do
       it 'calls Control#release! with appropriated methods' do
-        expect_any_instance_of(Control).to receive(:release!).with(key, subject.id, 'rollout_dummy_class')
+        expect_any_instance_of(Control).to receive(:release!).with(key, subject.id, 'feature_flagger_dummy_class')
         subject.release!(key)
       end
     end
 
     describe '#rollout?' do
       it 'calls Control#rollout? with appropriated methods' do
-        expect_any_instance_of(Control).to receive(:rollout?).with(key, subject.id, 'rollout_dummy_class')
+        expect_any_instance_of(Control).to receive(:rollout?).with(key, subject.id, 'feature_flagger_dummy_class')
         subject.rollout?(key)
       end
     end
 
     describe '#unrelease!' do
       it 'calls Control#unrelease! with appropriated methods' do
-        expect_any_instance_of(Control).to receive(:unrelease!).with(key, subject.id, 'rollout_dummy_class')
+        expect_any_instance_of(Control).to receive(:unrelease!).with(key, subject.id, 'feature_flagger_dummy_class')
         subject.unrelease!(key)
       end
     end
