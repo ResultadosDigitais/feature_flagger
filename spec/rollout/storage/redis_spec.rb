@@ -41,7 +41,7 @@ RSpec.describe Rollout::Storage::Redis do
 
     it 'returns all values for the given key' do
       redis.sadd(key, values)
-      expect(storage.all_values(key)).to eq values
+      expect(storage.all_values(key).sort).to eq values.sort
     end
   end
 end
