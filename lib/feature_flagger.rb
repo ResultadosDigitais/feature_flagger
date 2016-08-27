@@ -41,11 +41,17 @@ module FeatureFlagger
       @@control ||= Control.new(storage)
     end
 
-    private
+    def storage=(storage)
+      set_config
+      @@config[:storage] = storage
+    end
 
     def storage
-      Storage::Redis.new(redis)
+      set_config
+      @@config[:storage] ||= Storage::Redis.new(redis)
     end
+
+    private
 
     def set_config
       @@config ||= DEFAULT_CONFIG
