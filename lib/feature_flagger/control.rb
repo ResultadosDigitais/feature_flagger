@@ -1,5 +1,7 @@
 module FeatureFlagger
   class Control
+    attr_reader :storage
+
     def initialize(storage)
       @storage = storage
     end

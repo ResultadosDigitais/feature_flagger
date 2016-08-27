@@ -10,24 +10,20 @@ module FeatureFlagger
   module Model
     def rollout?(feature_key)
       Feature.new(feature_key, rollout_resource_name).fetch!
-      Control.new(storage).rollout?(feature_key, id, rollout_resource_name)
+      FeatureFlagger.control.rollout?(feature_key, id, rollout_resource_name)
     end
 
     def release!(feature_key)
       Feature.new(feature_key, rollout_resource_name).fetch!
-      Control.new(storage).release!(feature_key, id, rollout_resource_name)
+      FeatureFlagger.control.release!(feature_key, id, rollout_resource_name)
     end
 
     def unrelease!(feature_key)
       Feature.new(feature_key, rollout_resource_name).fetch!
-      Control.new(storage).unrelease!(feature_key, id, rollout_resource_name)
+      FeatureFlagger.control.unrelease!(feature_key, id, rollout_resource_name)
     end
 
     private
-
-    def storage
-      FeatureFlagger::Storage::Redis.new(FeatureFlagger.redis)
-    end
 
     def rollout_resource_name
       klass_name = self.class.name

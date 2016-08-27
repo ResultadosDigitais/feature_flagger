@@ -37,7 +37,15 @@ module FeatureFlagger
       @@config[:redis_namespace] = namespace
     end
 
+    def control
+      @@control ||= Control.new(storage)
+    end
+
     private
+
+    def storage
+      Storage::Redis.new(redis)
+    end
 
     def set_config
       @@config ||= DEFAULT_CONFIG

@@ -14,4 +14,12 @@ RSpec.describe FeatureFlagger do
     it { expect(FeatureFlagger.config[:redis]).to eq redis }
     it { expect(FeatureFlagger.config[:redis_namespace]).to eq 'rollout' }
   end
+
+  describe '.control' do
+    let(:control) { FeatureFlagger.control }
+    it 'initializes a Control with redis storage' do
+      expect(control).to be_a(FeatureFlagger::Control)
+      expect(control.storage).to be_a(FeatureFlagger::Storage::Redis)
+    end
+  end
 end
