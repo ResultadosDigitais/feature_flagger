@@ -37,5 +37,12 @@ module FeatureFlagger
         subject.unrelease!(key)
       end
     end
+
+    describe '.all_released_ids_for' do
+      it 'calls Control#resource_ids with appropriated methods' do
+        expect(Control).to receive(:resource_ids).with(key, 'feature_flagger_dummy_class')
+        DummyClass.all_released_ids_for(key)
+      end
+    end
   end
 end
