@@ -62,7 +62,7 @@ account.rollout?([:email_marketing, :new_email_flow])
 account.unrelease!([:email_marketing, :new_email_flow])
 #=> true
 
-# If you try to check an existent rollout key it will raise an error.
+# If you try to check an inexistent rollout key it will raise an error.
 account.rollout?([:email_marketing, :new_email_flo])
 FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
 ```
