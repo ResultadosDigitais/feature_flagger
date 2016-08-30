@@ -8,8 +8,6 @@ require 'feature_flagger/model'
 require 'feature_flagger/feature'
 
 module FeatureFlagger
-  DEFAULT_CONFIG = { redis_namespace: 'rollout-control' }
-
   class << self
     def configure(&block)
       set_config
@@ -19,22 +17,6 @@ module FeatureFlagger
     # TODO: rename to just _config_.
     def config
       @@config
-    end
-
-    def redis
-      redis_conn = @@config[:redis]
-      namespace  = @@config[:redis_namespace]
-      @@redis ||= Redis::Namespace.new(namespace, redis: redis_conn)
-    end
-
-    def redis=(conn)
-      set_config
-      @@config[:redis] = conn
-    end
-
-    def redis_namespace=(namespace)
-      set_config
-      @@config[:redis_namespace] = namespace
     end
 
     def control
@@ -48,13 +30,14 @@ module FeatureFlagger
 
     def storage
       set_config
-      @@config[:storage] ||= Storage::Redis.new(redis)
+      @@config[:storage]
     end
 
     private
 
     def set_config
-      @@config ||= DEFAULT_CONFIG
+      @@config ||= {}
+      @@config[:storage] ||= Storage::Redis.new
 
       # TODO: Provide a Rake to generate initial YAML file
       # for new projects.

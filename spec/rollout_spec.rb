@@ -7,14 +7,10 @@ RSpec.describe FeatureFlagger do
 
     before do
       FeatureFlagger.configure do |config|
-        config.redis           = redis
-        config.redis_namespace = 'rollout'
-        config.storage         = storage
+        config.storage = storage
       end
     end
 
-    it { expect(FeatureFlagger.config[:redis]).to eq redis }
-    it { expect(FeatureFlagger.config[:redis_namespace]).to eq 'rollout' }
     it { expect(FeatureFlagger.config[:storage]).to eq storage }
   end
 
