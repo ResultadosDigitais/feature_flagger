@@ -24,7 +24,7 @@ Or install it yourself as:
 1. Configure redis by adding `config/initializers/feature_flagger.rb`:
 ```ruby
 FeatureFlagger.configure do |config|
-  config.redis = $redis
+  config.storage.redis = $redis
 end
 ```
 

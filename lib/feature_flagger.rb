@@ -2,13 +2,12 @@ require 'yaml'
 require 'redis-namespace'
 
 require 'feature_flagger/version'
+require 'feature_flagger/storage/redis'
 require 'feature_flagger/control'
 require 'feature_flagger/model'
 require 'feature_flagger/feature'
 
 module FeatureFlagger
-  DEFAULT_CONFIG = { redis_namespace: 'rollout-control' }
-
   class << self
     def configure(&block)
       set_config
@@ -20,26 +19,25 @@ module FeatureFlagger
       @@config
     end
 
-    def redis
-      redis_conn = @@config[:redis]
-      namespace  = @@config[:redis_namespace]
-      @@redis ||= Redis::Namespace.new(namespace, redis: redis_conn)
+    def control
+      @@control ||= Control.new(storage)
     end
 
-    def redis=(conn)
+    def storage=(storage)
       set_config
-      @@config[:redis] = conn
+      @@config[:storage] = storage
     end
 
-    def redis_namespace=(namespace)
+    def storage
       set_config
-      @@config[:redis_namespace] = namespace
+      @@config[:storage]
     end
 
     private
 
     def set_config
-      @@config ||= DEFAULT_CONFIG
+      @@config ||= {}
+      @@config[:storage] ||= Storage::Redis.new
 
       # TODO: Provide a Rake to generate initial YAML file
       # for new projects.

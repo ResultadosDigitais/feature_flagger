@@ -15,19 +15,19 @@ module FeatureFlagger
     def rollout?(feature_key)
       resource_name = self.class.rollout_resource_name
       Feature.new(feature_key, resource_name).fetch!
-      Control.rollout?(feature_key, id, resource_name)
+      FeatureFlagger.control.rollout?(feature_key, id, resource_name)
     end
 
     def release!(feature_key)
       resource_name = self.class.rollout_resource_name
       Feature.new(feature_key, resource_name).fetch!
-      Control.release!(feature_key, id, resource_name)
+      FeatureFlagger.control.release!(feature_key, id, resource_name)
     end
 
     def unrelease!(feature_key)
       resource_name = self.class.rollout_resource_name
       Feature.new(feature_key, resource_name).fetch!
-      Control.unrelease!(feature_key, id, resource_name)
+      FeatureFlagger.control.unrelease!(feature_key, id, resource_name)
     end
 
     module ClassMethods
