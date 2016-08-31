@@ -6,8 +6,8 @@ require 'feature_flagger/version'
 Gem::Specification.new do |spec|
   spec.name          = "feature_flagger"
   spec.version       = FeatureFlagger::VERSION
-  spec.authors       = ["Nando Sousa"]
-  spec.email         = ["nandosousafr@gmail.com"]
+  spec.authors       = ["Nando Sousa", "Geison Biazus"]
+  spec.email         = ["nandosousafr@gmail.com", "geisonbiazus@gmail.com"]
   spec.licenses      = ['MIT']
 
   spec.summary       = %q{Partial release your features.}
