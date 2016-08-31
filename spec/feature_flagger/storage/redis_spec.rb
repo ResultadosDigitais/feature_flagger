@@ -1,46 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe FeatureFlagger::Storage::Redis do
-  let(:redis)   { Redis.new(url: ENV['REDIS_URL']) }
-  let(:storage) { described_class.new }
+  let(:redis)   { FakeRedis::Redis.new }
+  let(:storage) { described_class.new(redis) }
   let(:key)   { 'foo' }
   let(:value) { 'bar' }
 
-  describe '#redis' do
-    context 'no redis client assigned' do
-      let(:host) { 'redishost' }
-      let(:port) { 1234 }
-      let(:url)  { "redis://#{host}:#{port}" }
-
-      around :each do |example|
-        storage.redis = nil
-        redis_url = ENV['REDIS_URL']
-        ENV['REDIS_URL'] = url
-        example.run
-        ENV['REDIS_URL'] = redis_url
-      end
-
-      it 'initializes a default redis namespace on REDIS_URL env' do
-        expect(storage.redis.namespace).to eq described_class::DEFAULT_NAMESPACE
-        expect(storage.redis.client.host).to eq host
-        expect(storage.redis.client.port).to eq port
-      end
-    end
-
-    context 'with redis assigned' do
-      before do
-        storage.redis = redis
-      end
-
-      it 'uses the given redis' do
-        expect(storage.redis).to eq redis
-      end
-    end
-  end
-
   context do
     before do
-      storage.redis = redis
       redis.flushdb
     end
 

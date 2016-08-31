@@ -1,5 +1,4 @@
 require 'yaml'
-require 'redis-namespace'
 
 require 'feature_flagger/version'
 require 'feature_flagger/storage/redis'
@@ -37,7 +36,7 @@ module FeatureFlagger
 
     def set_config
       @@config ||= {}
-      @@config[:storage] ||= Storage::Redis.new
+      @@config[:storage] ||= default_client
 
       # TODO: Provide a Rake to generate initial YAML file
       # for new projects.
@@ -49,6 +48,10 @@ module FeatureFlagger
       if file_path = @@config[:yaml_filepath]
         @@config[:info] ||= YAML.load_file(file_path)
       end
+    end
+
+    def default_client
+      Storage::Redis.default_client
     end
   end
 end
