@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/ResultadosDigitais/feature_flagger/badges/gpa.svg)](https://codeclimate.com/github/ResultadosDigitais/feature_flagger)
+
 # FeatureFlagger
 
 Partial release your features.
