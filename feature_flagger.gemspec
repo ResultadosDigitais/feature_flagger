@@ -14,13 +14,13 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Management tool to make it easier rollouting features to customers.}
   spec.homepage      = "http://github.com/ResultadosDigitais/feature_flagger"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.files         = Dir['README.md', 'MIT-LICENSE', 'lib/**/*']
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'redis-namespace'
+  spec.add_dependency 'redis', '~> 3.2'
+  spec.add_dependency 'redis-namespace', '~> 1.3'
   spec.add_development_dependency "bundler", "~> 1.12"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "fakeredis"
 end

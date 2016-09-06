@@ -2,12 +2,12 @@ require 'spec_helper'
 
 module FeatureFlagger
   RSpec.describe Control do
-    let(:storage) { Storage::Redis.new }
+    let(:redis) { FakeRedis::Redis.new }
+    let(:storage) { Storage::Redis.new(redis) }
     let(:control) { Control.new(storage) }
 
     before do
-      storage.redis = Redis.new(url: ENV['REDIS_URL'])
-      storage.redis.flushdb
+      redis.flushdb
     end
 
     describe '.rollout?' do
@@ -35,7 +35,7 @@ module FeatureFlagger
           control.release!([:email_marketing, :whitelabel], 15)
         end
 
-        it { is_expected.to eq %w{1 2 15} }
+        it { is_expected.to match_array %w{1 2 15} }
       end
 
       context 'when resource_name is passed' do
@@ -47,7 +47,7 @@ module FeatureFlagger
           control.release!('account:email_marketing:whitelabel', 50)
         end
 
-        it { is_expected.to eq %w{ 30 40 50 } }
+        it { is_expected.to match_array %w{ 30 40 50 } }
       end
     end
   end

@@ -2,7 +2,7 @@
 
 # FeatureFlagger
 
-Partial release your features.
+Partially release your features.
 
 ## Installation
 
@@ -23,10 +23,17 @@ Or install it yourself as:
 
 ## Configuration
 
-1. Configure redis by adding `config/initializers/feature_flagger.rb`:
+By default, feature_flagger uses the REDIS_URL env var to setup it's storage.
+You can configure this by using `configure` like such:
+
+1. In a initializer file (e.g. `config/initializers/feature_flagger.rb`):
 ```ruby
+require 'redis-namespace'
+require 'feature_flagger'
+
 FeatureFlagger.configure do |config|
-  config.storage.redis = $redis
+  namespaced = ::Redis::Namespace.new("feature_flagger", redis: $redis)
+  config.storage = FeatureFlagger::Storage::Redis.new(namespaced)
 end
 ```
 
