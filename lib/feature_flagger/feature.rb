@@ -4,7 +4,7 @@ module FeatureFlagger
     def initialize(key, resource_name = nil)
       @key = resource_name.nil? ? key : key.clone.insert(0, resource_name)
       @key = Array(@key).collect(&:to_s)
-      @doc = FeatureFlagger.config[:info]
+      @doc = FeatureFlagger.config.info
     end
 
     def fetch!
