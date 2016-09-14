@@ -29,9 +29,13 @@ module FeatureFlagger
     private
 
     def rsolv_key(feature_key, resource_name = nil)
-      feature_key_arr = Array(feature_key)
-      feature_key_arr.insert(0, resource_name) unless resource_name.nil?
-      feature_key_arr.join(':')
+      resolved_key = nil
+      if resource_name
+        resolved_key = feature_key
+      else
+        resource_name + '.' + feature_key
+      end
+      resolved_key.tr('.', ':')
     end
   end
 end
