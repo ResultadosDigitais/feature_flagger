@@ -1,8 +1,7 @@
 module FeatureFlagger
   class Feature
     def initialize(feature_key, resource_name = nil)
-      @feature_key = resource_name.nil? ? feature_key : feature_key.clone.insert(0, resource_name)
-      @feature_key = Array(@feature_key).collect(&:to_s)
+      @feature_key = resolve_key(feature_key, resource_name)
       @doc = FeatureFlagger.config[:info]
       fetch_data
     end
@@ -16,6 +15,12 @@ module FeatureFlagger
     end
 
     private
+
+    def resolve_key(feature_key, resource_name)
+      key = Array(feature_key).flatten
+      key.insert(0, resource_name) if resource_name
+      key.map(&:to_s)
+    end
 
     def fetch_data
       @data ||= find_value(@doc, *@feature_key)

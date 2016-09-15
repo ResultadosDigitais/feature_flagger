@@ -20,66 +20,30 @@ module FeatureFlagger
     end
 
     describe '#release!' do
-      context 'with key as multiple arguments' do
-        it 'calls Control#release! with appropriated methods' do
-          expect(control).to receive(:release!).with(resolved_key, subject.id)
-          subject.release!(*key)
-        end
-      end
-
-      context 'with key argument as an array' do
-        it 'calls Control#release! with appropriated methods' do
-          expect(control).to receive(:release!).with(resolved_key, subject.id)
-          subject.release!(key)
-        end
+      it 'calls Control#release! with appropriated methods' do
+        expect(control).to receive(:release!).with(resolved_key, subject.id)
+        subject.release!(key)
       end
     end
 
     describe '#rollout?' do
-      context 'with key as multiple arguments' do
-        it 'calls Control#rollout? with appropriated methods' do
-          expect(control).to receive(:rollout?).with(resolved_key, subject.id)
-          subject.rollout?(*key)
-        end
-      end
-
-      context 'with key argument as an array' do
-        it 'calls Control#rollout? with appropriated methods' do
-          expect(control).to receive(:rollout?).with(resolved_key, subject.id)
-          subject.rollout?(key)
-        end
+      it 'calls Control#rollout? with appropriated methods' do
+        expect(control).to receive(:rollout?).with(resolved_key, subject.id)
+        subject.rollout?(key)
       end
     end
 
     describe '#unrelease!' do
-      context 'with key as multiple arguments' do
-        it 'calls Control#unrelease! with appropriated methods' do
-          expect(control).to receive(:unrelease!).with(resolved_key, subject.id)
-          subject.unrelease!(*key)
-        end
-      end
-
-      context 'with key argument as an array' do
-        it 'calls Control#unrelease! with appropriated methods' do
-          expect(control).to receive(:unrelease!).with(resolved_key, subject.id)
-          subject.unrelease!(key)
-        end
+      it 'calls Control#unrelease! with appropriated methods' do
+        expect(control).to receive(:unrelease!).with(resolved_key, subject.id)
+        subject.unrelease!(key)
       end
     end
 
     describe '.all_released_ids_for' do
-      context 'with key as multiple arguments' do
-        it 'calls Control#resource_ids with appropriated methods' do
-          expect(Control).to receive(:resource_ids).with(resolved_key)
-          DummyClass.all_released_ids_for(*key)
-        end
-      end
-
-      context 'with key argument as an array' do
-        it 'calls Control#resource_ids with appropriated methods' do
-          expect(Control).to receive(:resource_ids).with(resolved_key)
-          DummyClass.all_released_ids_for(key)
-        end
+      it 'calls Control#resource_ids with appropriated methods' do
+        expect(Control).to receive(:resource_ids).with(resolved_key)
+        DummyClass.all_released_ids_for(key)
       end
     end
   end

@@ -20,6 +20,14 @@ module FeatureFlagger
         let(:key) { [:email_marketing, :new_email_flow] }
         it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
       end
+
+      context 'with key argument as an array of arrays' do
+        let(:key)          { [[:email_marketing, :behavior_score]] }
+        let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
+        it 'flattens the array and acts as an unidimensional array' do
+          expect(subject.key).to eq resolved_key
+        end
+      end
     end
 
     describe '#description' do

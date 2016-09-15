@@ -13,21 +13,18 @@ module FeatureFlagger
     end
 
     def rollout?(*feature_key)
-      feature_key.flatten!
       resource_name = self.class.rollout_resource_name
       feature = Feature.new(feature_key, resource_name)
       FeatureFlagger.control.rollout?(feature.key, id)
     end
 
     def release!(*feature_key)
-      feature_key.flatten!
       resource_name = self.class.rollout_resource_name
       feature = Feature.new(feature_key, resource_name)
       FeatureFlagger.control.release!(feature.key, id)
     end
 
     def unrelease!(*feature_key)
-      feature_key.flatten!
       resource_name = self.class.rollout_resource_name
       feature = Feature.new(feature_key, resource_name)
       FeatureFlagger.control.unrelease!(feature.key, id)
