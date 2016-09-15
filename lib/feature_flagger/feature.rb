@@ -19,6 +19,7 @@ module FeatureFlagger
     end
 
     def key
+      fetch!
       @feature_key.join(':')
     end
 
