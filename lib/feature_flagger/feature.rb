@@ -1,29 +1,27 @@
 module FeatureFlagger
   class Feature
-
     def initialize(feature_key, resource_name = nil)
       @feature_key = resource_name.nil? ? feature_key : feature_key.clone.insert(0, resource_name)
       @feature_key = Array(@feature_key).collect(&:to_s)
       @doc = FeatureFlagger.config[:info]
-    end
-
-    def fetch!
-      @data ||= find_value(@doc, *@feature_key)
-      raise FeatureFlagger::KeyNotFoundError.new(@feature_key) if @data.nil?
-      @data
+      fetch_data
     end
 
     def description
-      fetch!
       @data['description']
     end
 
     def key
-      fetch!
       @feature_key.join(':')
     end
 
     private
+
+    def fetch_data
+      @data ||= find_value(@doc, *@feature_key)
+      raise FeatureFlagger::KeyNotFoundError.new(@feature_key) if @data.nil?
+      @data
+    end
 
     def find_value(hash, key, *tail)
       value = hash[key]
@@ -34,7 +32,6 @@ module FeatureFlagger
         find_value(value, *tail)
       end
     end
-
   end
 end
 

@@ -10,16 +10,21 @@ module FeatureFlagger
       allow(FeatureFlagger).to receive(:config).and_return(info: info)
     end
 
-    describe '#description' do
+    describe '#initialize' do
       context 'when feature is documented' do
         let(:key) { [:email_marketing, :behavior_score] }
-        it { expect(subject.description).to eq 'Enable behavior score experiment' }
+        it { expect(subject).to be_a Feature }
       end
 
       context 'when feature is not documented' do
         let(:key) { [:email_marketing, :new_email_flow] }
-        it { expect { subject.description }.to raise_error(FeatureFlagger::KeyNotFoundError) }
+        it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
       end
+    end
+
+    describe '#description' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.description).to eq 'Enable behavior score experiment' }
     end
 
     describe '#key' do
