@@ -12,28 +12,29 @@ module FeatureFlagger
       base.extend ClassMethods
     end
 
-    def rollout?(feature_key)
+    def rollout?(*feature_key)
       resource_name = self.class.rollout_resource_name
-      Feature.new(feature_key, resource_name).fetch!
-      FeatureFlagger.control.rollout?(feature_key, id, resource_name)
+      feature = Feature.new(feature_key, resource_name)
+      FeatureFlagger.control.rollout?(feature.key, id)
     end
 
-    def release!(feature_key)
+    def release!(*feature_key)
       resource_name = self.class.rollout_resource_name
-      Feature.new(feature_key, resource_name).fetch!
-      FeatureFlagger.control.release!(feature_key, id, resource_name)
+      feature = Feature.new(feature_key, resource_name)
+      FeatureFlagger.control.release!(feature.key, id)
     end
 
-    def unrelease!(feature_key)
+    def unrelease!(*feature_key)
       resource_name = self.class.rollout_resource_name
-      Feature.new(feature_key, resource_name).fetch!
-      FeatureFlagger.control.unrelease!(feature_key, id, resource_name)
+      feature = Feature.new(feature_key, resource_name)
+      FeatureFlagger.control.unrelease!(feature.key, id)
     end
 
     module ClassMethods
-      def all_released_ids_for(feature_key)
-        Feature.new(feature_key, rollout_resource_name).fetch!
-        Control.resource_ids(feature_key, rollout_resource_name)
+      def all_released_ids_for(*feature_key)
+        feature_key.flatten!
+        feature = Feature.new(feature_key, rollout_resource_name)
+        Control.resource_ids(feature.key)
       end
 
       def rollout_resource_name
