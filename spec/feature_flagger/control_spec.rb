@@ -25,17 +25,17 @@ module FeatureFlagger
       end
     end
 
-    describe '#release!' do
+    describe '#release' do
       it 'adds resource_id to storage' do
-        control.release!(key, resource_id)
+        control.release(key, resource_id)
         expect(storage).to have_value(key, resource_id)
       end
     end
 
-    describe '#unrelease!' do
+    describe '#unrelease' do
       it 'removes resource_id from storage' do
         storage.add(key, resource_id)
-        control.unrelease!(key, resource_id)
+        control.unrelease(key, resource_id)
         expect(storage).not_to have_value(key, resource_id)
       end
     end
@@ -44,9 +44,9 @@ module FeatureFlagger
       subject { control.resource_ids(key) }
 
       it 'returns all the values to given key' do
-        control.release!(key, 1)
-        control.release!(key, 2)
-        control.release!(key, 15)
+        control.release(key, 1)
+        control.release(key, 2)
+        control.release(key, 15)
         is_expected.to match_array %w(1 2 15)
       end
     end

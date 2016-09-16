@@ -19,10 +19,10 @@ module FeatureFlagger
       allow(FeatureFlagger).to receive(:config).and_return(info: info)
     end
 
-    describe '#release!' do
-      it 'calls Control#release! with appropriated methods' do
-        expect(control).to receive(:release!).with(resolved_key, subject.id)
-        subject.release!(key)
+    describe '#release' do
+      it 'calls Control#release with appropriated methods' do
+        expect(control).to receive(:release).with(resolved_key, subject.id)
+        subject.release(key)
       end
     end
 
@@ -33,10 +33,10 @@ module FeatureFlagger
       end
     end
 
-    describe '#unrelease!' do
-      it 'calls Control#unrelease! with appropriated methods' do
-        expect(control).to receive(:unrelease!).with(resolved_key, subject.id)
-        subject.unrelease!(key)
+    describe '#unrelease' do
+      it 'calls Control#unrelease with appropriated methods' do
+        expect(control).to receive(:unrelease).with(resolved_key, subject.id)
+        subject.unrelease(key)
       end
     end
 
