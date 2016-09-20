@@ -18,16 +18,28 @@ module FeatureFlagger
       FeatureFlagger.control.rollout?(feature.key, id)
     end
 
+    # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
     def release!(*feature_key)
-      resource_name = self.class.rollout_resource_name
-      feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.release!(feature.key, id)
+      warn "[DEPRECATION] `release!` is deprecated.  Please use `release` instead."
+      release(*feature_key)
     end
 
-    def unrelease!(*feature_key)
+    def release(*feature_key)
       resource_name = self.class.rollout_resource_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease!(feature.key, id)
+      FeatureFlagger.control.release(feature.key, id)
+    end
+
+    # <b>DEPRECATED:</b> Please use <tt>unrelease</tt> instead.
+    def unrelease!(*feature_key)
+      warn "[DEPRECATION] `unrelease!` is deprecated.  Please use `unrelease` instead."
+      unrelease(*feature_key)
+    end
+
+    def unrelease(*feature_key)
+      resource_name = self.class.rollout_resource_name
+      feature = Feature.new(feature_key, resource_name)
+      FeatureFlagger.control.unrelease(feature.key, id)
     end
 
     module ClassMethods
