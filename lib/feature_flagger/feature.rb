@@ -2,7 +2,7 @@ module FeatureFlagger
   class Feature
     def initialize(feature_key, resource_name = nil)
       @feature_key = resolve_key(feature_key, resource_name)
-      @doc = FeatureFlagger.config[:info]
+      @doc = FeatureFlagger.config.info
       fetch_data
     end
 
