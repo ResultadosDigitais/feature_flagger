@@ -5,49 +5,49 @@ module FeatureFlagger
     let(:redis) { FakeRedis::Redis.new }
     let(:storage) { Storage::Redis.new(redis) }
     let(:control) { Control.new(storage) }
+    let(:key)         { 'key' }
+    let(:resource_id) { 'resource_id' }
 
     before do
       redis.flushdb
     end
 
-    describe '.rollout?' do
-      let(:result) { control.rollout?([:email_marketing, :new_flow], 'resource_id') }
+    describe '#rollout?' do
+      let(:result) { control.rollout?(key, resource_id) }
 
       context 'when resource entity id has no access to release_key' do
         it { expect(result).to be_falsey }
       end
 
       context 'when resource entity id has access to release_key' do
-        before { control.release!([:email_marketing, :new_flow], 'resource_id') }
+        before { storage.add(key, resource_id) }
         it { expect(result).to be_truthy }
       end
     end
 
-    describe '.release!'
-    describe '.unrelease!'
-    describe '.resource_ids' do
-      context 'when resource_name is nil' do
-        subject { control.resource_ids([:email_marketing, :whitelabel]) }
-
-        before do
-          control.release!([:email_marketing, :whitelabel], 1)
-          control.release!([:email_marketing, :whitelabel], 2)
-          control.release!([:email_marketing, :whitelabel], 15)
-        end
-
-        it { is_expected.to match_array %w{1 2 15} }
+    describe '#release' do
+      it 'adds resource_id to storage' do
+        control.release(key, resource_id)
+        expect(storage).to have_value(key, resource_id)
       end
+    end
 
-      context 'when resource_name is passed' do
-        subject { control.resource_ids([:email_marketing, :whitelabel], :account) }
+    describe '#unrelease' do
+      it 'removes resource_id from storage' do
+        storage.add(key, resource_id)
+        control.unrelease(key, resource_id)
+        expect(storage).not_to have_value(key, resource_id)
+      end
+    end
 
-        before do
-          control.release!('account:email_marketing:whitelabel', 30)
-          control.release!('account:email_marketing:whitelabel', 40)
-          control.release!('account:email_marketing:whitelabel', 50)
-        end
+    describe '#resource_ids' do
+      subject { control.resource_ids(key) }
 
-        it { is_expected.to match_array %w{ 30 40 50 } }
+      it 'returns all the values to given key' do
+        control.release(key, 1)
+        control.release(key, 2)
+        control.release(key, 15)
+        is_expected.to match_array %w(1 2 15)
       end
     end
   end

@@ -60,19 +60,19 @@ end
 account = Account.first
 
 # Release feature for account
-account.release!([:email_marketing, :new_email_flow])
+account.release(:email_marketing, :new_email_flow)
 #=> true
 
 # Check feature for a given account
-account.rollout?([:email_marketing, :new_email_flow])
+account.rollout?(:email_marketing, :new_email_flow)
 #=> true
 
 # Remove feature for given account
-account.unrelease!([:email_marketing, :new_email_flow])
+account.unrelease(:email_marketing, :new_email_flow)
 #=> true
 
 # If you try to check an inexistent rollout key it will raise an error.
-account.rollout?([:email_marketing, :new_email_flo])
+account.rollout?(:email_marketing, :new_email_flow)
 FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
 ```
 
