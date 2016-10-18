@@ -46,7 +46,7 @@ module FeatureFlagger
       def all_released_ids_for(*feature_key)
         feature_key.flatten!
         feature = Feature.new(feature_key, rollout_resource_name)
-        Control.resource_ids(feature.key)
+        FeatureFlagger.control.resource_ids(feature.key)
       end
 
       def rollout_resource_name
