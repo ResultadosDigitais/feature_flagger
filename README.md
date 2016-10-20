@@ -74,6 +74,9 @@ account.unrelease(:email_marketing, :new_email_flow)
 # If you try to check an inexistent rollout key it will raise an error.
 account.rollout?(:email_marketing, :new_email_flow)
 FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
+
+# Get an array with all released Account ids
+Account.all_released_ids_for(:email_marketing, :new_email_flow)
 ```
 
 ## Contributing
