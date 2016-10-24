@@ -45,5 +45,19 @@ module FeatureFlagger
         DummyClass.all_released_ids_for(key)
       end
     end
+
+    describe '.release_for_all' do
+      it 'calls Control#release_for_all with appropriated methods' do
+        expect(control).to receive(:release_for_all).with(resolved_key)
+        DummyClass.release_for_all(key)
+      end
+    end
+
+    describe '.unrelease_for_all' do
+      it 'calls Control#unrelease_for_all with appropriated methods' do
+        expect(control).to receive(:unrelease_for_all).with(resolved_key)
+        DummyClass.unrelease_for_all(key)
+      end
+    end
   end
 end

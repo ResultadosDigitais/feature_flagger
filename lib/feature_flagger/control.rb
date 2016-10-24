@@ -2,6 +2,8 @@ module FeatureFlagger
   class Control
     attr_reader :storage
 
+    RELEASED_FEATURES = 'released_features'
+
     def initialize(storage)
       @storage = storage
     end
@@ -14,6 +16,10 @@ module FeatureFlagger
       @storage.add(feature_key, resource_id)
     end
 
+    def release_for_all(feature_key)
+      @storage.add(RELEASED_FEATURES, feature_key)
+    end
+
     # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
     def release!(feature_key, resource_id)
       warn "[DEPRECATION] `release!` is deprecated.  Please use `release` instead."
@@ -22,6 +28,10 @@ module FeatureFlagger
 
     def unrelease(feature_key, resource_id)
       @storage.remove(feature_key, resource_id)
+    end
+
+    def unrelease_for_all(feature_key)
+      @storage.remove(RELEASED_FEATURES, feature_key)
     end
 
     # <b>DEPRECATED:</b> Please use <tt>unrelease</tt> instead.
