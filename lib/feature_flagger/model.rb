@@ -59,6 +59,10 @@ module FeatureFlagger
         FeatureFlagger.control.unrelease_for_all(feature.key)
       end
 
+      def released_features_for_all
+        FeatureFlagger.control.released_features_for_all
+      end
+
       def rollout_resource_name
         klass_name = self.to_s
         klass_name.gsub!(/::/, '_')

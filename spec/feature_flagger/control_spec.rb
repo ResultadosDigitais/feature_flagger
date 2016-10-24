@@ -75,5 +75,16 @@ module FeatureFlagger
         is_expected.to match_array %w(1 2 15)
       end
     end
+
+    describe '#released_features_for_all' do
+      subject { control.released_features_for_all }
+
+      it 'returns all the values to given features' do
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1')
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name2')
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name15')
+        is_expected.to match_array %w(feature::name1 feature::name2 feature::name15)
+      end
+    end
   end
 end

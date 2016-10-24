@@ -59,5 +59,12 @@ module FeatureFlagger
         DummyClass.unrelease_for_all(key)
       end
     end
+
+    describe '.released_features_for_all' do
+      it 'calls Control#resource_ids with appropriated methods' do
+        expect(control).to receive(:released_features_for_all)
+        DummyClass.released_features_for_all
+      end
+    end
   end
 end

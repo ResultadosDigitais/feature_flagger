@@ -43,5 +43,9 @@ module FeatureFlagger
     def resource_ids(feature_key)
       @storage.all_values(feature_key)
     end
+
+    def released_features_for_all
+      @storage.all_values(RELEASED_FEATURES)
+    end
   end
 end
