@@ -9,7 +9,7 @@ require 'feature_flagger/configuration'
 
 module FeatureFlagger
   class << self
-    def configure(&block)
+    def configure
       yield config if block_given?
     end
 
