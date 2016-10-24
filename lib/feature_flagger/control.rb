@@ -9,7 +9,7 @@ module FeatureFlagger
     end
 
     def rollout?(feature_key, resource_id)
-      @storage.has_value?(feature_key, resource_id)
+      @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
     end
 
     def release(feature_key, resource_id)

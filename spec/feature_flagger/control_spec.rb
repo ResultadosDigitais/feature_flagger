@@ -17,11 +17,21 @@ module FeatureFlagger
 
       context 'when resource entity id has no access to release_key' do
         it { expect(result).to be_falsey }
+
+        context 'and a feature is release for all' do
+          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+          it { expect(result).to be_truthy }
+        end
       end
 
       context 'when resource entity id has access to release_key' do
         before { storage.add(key, resource_id) }
         it { expect(result).to be_truthy }
+
+        context 'and a feature is release for all' do
+          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+          it { expect(result).to be_truthy }
+        end
       end
     end
 
