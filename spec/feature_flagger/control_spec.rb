@@ -18,7 +18,7 @@ module FeatureFlagger
       context 'when resource entity id has no access to release_key' do
         it { expect(result).to be_falsey }
 
-        context 'and a feature is release for all' do
+        context 'and a feature is release to all' do
           before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
           it { expect(result).to be_truthy }
         end
@@ -28,7 +28,7 @@ module FeatureFlagger
         before { storage.add(key, resource_id) }
         it { expect(result).to be_truthy }
 
-        context 'and a feature is release for all' do
+        context 'and a feature is release to all' do
           before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
           it { expect(result).to be_truthy }
         end
@@ -42,9 +42,9 @@ module FeatureFlagger
       end
     end
 
-    describe '#release_for_all' do
+    describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        control.release_for_all(key)
+        control.release_to_all(key)
         expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end
@@ -57,10 +57,10 @@ module FeatureFlagger
       end
     end
 
-    describe '#unrelease_for_all' do
+    describe '#unrelease_to_all' do
       it 'removes feature_key to storage' do
         storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key)
-        control.unrelease_for_all(key)
+        control.unrelease_to_all(key)
         expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end
@@ -76,8 +76,8 @@ module FeatureFlagger
       end
     end
 
-    describe '#released_features_for_all' do
-      subject { control.released_features_for_all }
+    describe '#released_features_to_all' do
+      subject { control.released_features_to_all }
 
       it 'returns all the values to given features' do
         control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1')

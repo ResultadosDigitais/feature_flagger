@@ -49,18 +49,18 @@ module FeatureFlagger
         FeatureFlagger.control.resource_ids(feature.key)
       end
 
-      def release_for_all(*feature_key)
+      def release_to_all(*feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.release_for_all(feature.key)
+        FeatureFlagger.control.release_to_all(feature.key)
       end
 
-      def unrelease_for_all(*feature_key)
+      def unrelease_to_all(*feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.unrelease_for_all(feature.key)
+        FeatureFlagger.control.unrelease_to_all(feature.key)
       end
 
-      def released_features_for_all
-        FeatureFlagger.control.released_features_for_all
+      def released_features_to_all
+        FeatureFlagger.control.released_features_to_all
       end
 
       def rollout_resource_name

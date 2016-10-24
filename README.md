@@ -79,13 +79,13 @@ FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"
 Account.all_released_ids_for(:email_marketing, :new_email_flow)
 
 # Releasing a feature to all accounts
-Account.release_for_all(:email_marketing, :new_email_flow)
+Account.release_to_all(:email_marketing, :new_email_flow)
 
 # Unreleasing a feature to all accounts
-Account.unrelease_for_all(:email_marketing, :new_email_flow)
+Account.unrelease_to_all(:email_marketing, :new_email_flow)
 
 # Return an array with all features released for all
-Account.released_features_for_all
+Account.released_features_to_all
 ```
 
 ## Contributing

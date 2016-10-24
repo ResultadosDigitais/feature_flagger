@@ -46,24 +46,24 @@ module FeatureFlagger
       end
     end
 
-    describe '.release_for_all' do
-      it 'calls Control#release_for_all with appropriated methods' do
-        expect(control).to receive(:release_for_all).with(resolved_key)
-        DummyClass.release_for_all(key)
+    describe '.release_to_all' do
+      it 'calls Control#release_to_all with appropriated methods' do
+        expect(control).to receive(:release_to_all).with(resolved_key)
+        DummyClass.release_to_all(key)
       end
     end
 
-    describe '.unrelease_for_all' do
-      it 'calls Control#unrelease_for_all with appropriated methods' do
-        expect(control).to receive(:unrelease_for_all).with(resolved_key)
-        DummyClass.unrelease_for_all(key)
+    describe '.unrelease_to_all' do
+      it 'calls Control#unrelease_to_all with appropriated methods' do
+        expect(control).to receive(:unrelease_to_all).with(resolved_key)
+        DummyClass.unrelease_to_all(key)
       end
     end
 
-    describe '.released_features_for_all' do
+    describe '.released_features_to_all' do
       it 'calls Control#resource_ids with appropriated methods' do
-        expect(control).to receive(:released_features_for_all)
-        DummyClass.released_features_for_all
+        expect(control).to receive(:released_features_to_all)
+        DummyClass.released_features_to_all
       end
     end
   end

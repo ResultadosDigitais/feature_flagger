@@ -16,7 +16,7 @@ module FeatureFlagger
       @storage.add(feature_key, resource_id)
     end
 
-    def release_for_all(feature_key)
+    def release_to_all(feature_key)
       @storage.add(RELEASED_FEATURES, feature_key)
     end
 
@@ -30,7 +30,7 @@ module FeatureFlagger
       @storage.remove(feature_key, resource_id)
     end
 
-    def unrelease_for_all(feature_key)
+    def unrelease_to_all(feature_key)
       @storage.remove(RELEASED_FEATURES, feature_key)
     end
 
@@ -44,7 +44,7 @@ module FeatureFlagger
       @storage.all_values(feature_key)
     end
 
-    def released_features_for_all
+    def released_features_to_all
       @storage.all_values(RELEASED_FEATURES)
     end
   end
