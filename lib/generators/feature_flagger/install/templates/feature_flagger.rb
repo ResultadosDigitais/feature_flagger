@@ -1,4 +1,4 @@
-# File for Feature Flagger configure
+# File for Feature Flagger configuration
 # https://github.com/ResultadosDigitais/feature_flagger#configuration
 
 # require 'redis-namespace'
