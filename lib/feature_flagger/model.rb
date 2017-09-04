@@ -13,9 +13,13 @@ module FeatureFlagger
     end
 
     def rollout?(*feature_key)
+      rollout_by_id?(feature_key, id)
+    end
+
+    def rollout_by_id?(feature_key, resource_id)
       resource_name = self.class.rollout_resource_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.rollout?(feature.key, id)
+      FeatureFlagger.control.rollout?(feature.key, resource_id)
     end
 
     # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
