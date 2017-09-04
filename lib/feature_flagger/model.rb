@@ -42,8 +42,7 @@ module FeatureFlagger
 
     module ClassMethods
       def rollout_by_id?(feature_key, resource_id)
-        resource_name = rollout_resource_name
-        feature = Feature.new(feature_key, resource_name)
+        feature = Feature.new(feature_key, rollout_resource_name)
         FeatureFlagger.control.rollout?(feature.key, resource_id)
       end
 
