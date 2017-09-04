@@ -32,7 +32,6 @@ module FeatureFlagger
       end
     end
 
-
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
         expect(control).to receive(:unrelease).with(resolved_key, subject.id)
