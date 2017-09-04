@@ -10,6 +10,8 @@ require 'feature_flagger/configuration'
 module FeatureFlagger
   class << self
     def configure
+      @@configuration = nil
+      @@control = nil
       yield config if block_given?
     end
 
