@@ -39,13 +39,13 @@ module FeatureFlagger
       end
     end
 
-    describe '.rollout_by_id?' do
+    describe '.released_id?' do
       context 'given a specific resource id' do
         let(:resource_id) { 10 }
 
         it 'calls Control#rollout? with appropriated methods' do
           expect(control).to receive(:rollout?).with(resolved_key, resource_id)
-          DummyClass.rollout_by_id?(key, resource_id)
+          DummyClass.released_id?(resource_id, key)
         end
       end
     end

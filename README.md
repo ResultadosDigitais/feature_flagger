@@ -76,7 +76,7 @@ account.rollout?(:email_marketing, :new_email_flow)
 FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
 
 # Check feature for a specific account id
-Account.rollout_by_id?([:email_marketing, :new_email_flow], 42)
+Account.released_id?(42, :email_marketing, :new_email_flow)
 #=> true
 
 # Get an array with all released Account ids
