@@ -1,0 +1,10 @@
+# Add here your rollout settings.
+#
+# Example:
+#
+# user:
+#   account_settings:
+#     language_options:
+#       description: "When this rollout is active the user can see language options Account page."
+#
+# More info: https://github.com/ResultadosDigitais/feature_flagger#configuration
