@@ -12,9 +12,10 @@ module FeatureFlagger
       @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
     end
 
-    def released_keys(feature_key, resource_id)
-      features = @storage.all_keys("#{feature_key}*")
-      features.select { |f| @storage.has_value?(f, resource_id) }
+    def released_keys?(features_keys, resource_id)
+      @storage.pipelined do
+        features_keys.select { |f| @storage.has_value?(f, resource_id) }
+      end
     end
 
     def release(feature_key, resource_id)

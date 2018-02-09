@@ -34,8 +34,11 @@ module FeatureFlagger
 
     describe '#released_keys' do
       it 'calls Control#released_keys with appropriated methods' do
-        expect(control).to receive(:released_keys).with(resolved_key, subject.id)
-        subject.released_keys(key)
+        childs = %w(feature_flagger_dummy_class:email_marketing:behavior_score
+                    feature_flagger_dummy_class:email_marketing:whitelabel)
+
+        expect(control).to receive(:released_keys).with(childs, subject.id)
+        subject.released_keys(:email_marketing)
       end
     end
 

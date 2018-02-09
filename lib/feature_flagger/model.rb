@@ -52,7 +52,7 @@ module FeatureFlagger
 
       def released_keys(resource_id, *feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.released_keys(feature.key, resource_id)
+        FeatureFlagger.control.released_keys(feature.childs_keys, resource_id)
       end
 
       def all_released_ids_for(*feature_key)

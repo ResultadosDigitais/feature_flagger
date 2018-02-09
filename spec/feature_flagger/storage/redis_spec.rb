@@ -45,15 +45,5 @@ RSpec.describe FeatureFlagger::Storage::Redis do
         expect(storage.all_values(key).sort).to eq values.sort
       end
     end
-
-    describe '#all_keys' do
-      it 'returns all keys for the filter key' do
-        filter = 'prefix*'
-        keys = %w(prefix:value1 prefix:value2 not_prefix:value1)
-        keys.map { |k| redis.sadd(k, value) }
-
-        expect(storage.all_keys(filter)).to eq(%w(prefix:value1 prefix:value2))
-      end
-    end
   end
 end

@@ -33,8 +33,8 @@ module FeatureFlagger
         @redis.smembers(key)
       end
 
-      def all_keys(filter)
-        @redis.keys(filter)
+      def pipelined
+        yield
       end
     end
   end

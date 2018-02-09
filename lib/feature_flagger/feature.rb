@@ -14,6 +14,10 @@ module FeatureFlagger
       @feature_key.join(':')
     end
 
+    def childs_keys
+      @data.collect { |child_key, _| "#{key}:#{child_key}" }
+    end
+
     private
 
     def resolve_key(feature_key, resource_name)
