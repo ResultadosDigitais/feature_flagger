@@ -37,11 +37,12 @@ module FeatureFlagger
 
     describe '#released_keys' do
       let(:another_resource_id) { 'another_resource_id' }
+      let(:without_release_resource_id) { 'without_release_resource_id' }
       let(:keys) { %w(key key1 key2 key3) }
       let(:keys_resource) { %w(key key1 key3) }
       let(:keys_another_resource) { %w(key key1 key2 key3) }
 
-      context 'given exists key, key2 and key3 features' do
+      context 'given exists key, key1, key2 and key3 features' do
         before {
           keys.map do |key|
             values = [resource_id, another_resource_id]
@@ -50,17 +51,24 @@ module FeatureFlagger
           end
         }
 
-        context 'when resource entity id has access to key, key1 and notkey' do
+        context 'when resource entity id has access to key, key1 and key3' do
           it { 
             result = control.released_keys(keys, resource_id)
             expect(result).to eq(keys_resource)
           }
         end
 
-        context 'when resource entity id has access to key, key1 and key2' do
+        context 'when resource entity id has access to key, key1, key2 and key3' do
           it { 
             result = control.released_keys(keys, another_resource_id)
             expect(result).to eq(keys_another_resource)
+          }
+        end
+
+        context 'when resource entity id has no access' do
+          it { 
+            result = control.released_keys(keys, without_release_resource_id)
+            expect(result).to eq([])
           }
         end
       end
