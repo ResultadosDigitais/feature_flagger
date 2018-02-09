@@ -50,14 +50,14 @@ module FeatureFlagger
         context 'when resource entity id has access to key, key1 and notkey' do
           it { 
             result = control.released_keys(key, resource_id)
-            expect(result).to eq(%w(key1)) 
+            expect(result).to eq(%w(key key1)) 
           }
         end
 
         context 'when resource entity id has access to key, key1 and key2' do
           it { 
-            result = control.released_keys(key, resource_id)
-            expect(result).to eq(%w(key1 key2)) 
+            result = control.released_keys(key, another_resource_id)
+            expect(result).to eq(%w(key key1 key2)) 
           }
         end
       end
