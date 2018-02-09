@@ -13,8 +13,8 @@ module FeatureFlagger
     end
 
     def released_keys(feature_key, resource_id)
-      features = @storage.all_keys(feature_key)
-      features.map { @storage.has_value?(feature_key, resource_id) }
+      features = @storage.all_keys("#{feature_key}*")
+      features.select { |f| @storage.has_value?(f, resource_id) }
     end
 
     def release(feature_key, resource_id)

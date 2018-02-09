@@ -7,6 +7,7 @@ module FeatureFlagger
     let(:control) { Control.new(storage) }
     let(:key)         { 'key' }
     let(:resource_id) { 'resource_id' }
+    let(:another_resource_id) { 'another_resource_id' }
 
     before do
       redis.flushdb
@@ -31,6 +32,33 @@ module FeatureFlagger
         context 'and a feature is release to all' do
           before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
           it { expect(result).to be_truthy }
+        end
+      end
+    end
+
+    describe '#released_keys' do
+      let(:result) { control.released_keys(key, resource_id) }
+
+      context 'given exists key, key1, key2 and notkey features' do
+        before {
+          storage.add(key, %w(resource_id another_resource_id))
+          storage.add('key1', %w(resource_id another_resource_id)) 
+          storage.add('key2', another_resource_id) 
+          storage.add('notkey', resource_id) 
+        }
+
+        context 'when resource entity id has access to key, key1 and notkey' do
+          it { 
+            result = control.released_keys(key, resource_id)
+            expect(result).to eq(%w(key1)) 
+          }
+        end
+
+        context 'when resource entity id has access to key, key1 and key2' do
+          it { 
+            result = control.released_keys(key, resource_id)
+            expect(result).to eq(%w(key1 key2)) 
+          }
         end
       end
     end

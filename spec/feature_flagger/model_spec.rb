@@ -32,6 +32,13 @@ module FeatureFlagger
       end
     end
 
+    describe '#released_keys' do
+      it 'calls Control#released_keys with appropriated methods' do
+        expect(control).to receive(:released_keys).with(resolved_key, subject.id)
+        subject.released_keys(key)
+      end
+    end
+
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
         expect(control).to receive(:unrelease).with(resolved_key, subject.id)
