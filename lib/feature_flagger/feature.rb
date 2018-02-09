@@ -15,7 +15,8 @@ module FeatureFlagger
     end
 
     def childs_keys
-      @data.collect { |child_key, _| "#{key}:#{child_key}" }
+      @data.select { |child_key, _| child_key != 'description' }
+           .collect { |child_key, _| "#{key}:#{child_key}" }
     end
 
     private
