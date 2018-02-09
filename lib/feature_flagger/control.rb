@@ -12,6 +12,11 @@ module FeatureFlagger
       @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
     end
 
+    def released_keys(feature_key, resource_id)
+      features = @storage.all_keys(feature_key)
+      features.map { @storage.has_value?(feature_key, resource_id) }
+    end
+
     def release(feature_key, resource_id)
       @storage.add(feature_key, resource_id)
     end

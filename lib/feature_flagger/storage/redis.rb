@@ -32,6 +32,10 @@ module FeatureFlagger
       def all_values(key)
         @redis.smembers(key)
       end
+
+      def all_keys(prefix)
+        @redis.keys("prefix*")
+      end
     end
   end
 end
