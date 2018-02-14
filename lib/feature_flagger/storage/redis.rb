@@ -34,7 +34,9 @@ module FeatureFlagger
       end
 
       def pipelined
-        yield
+        @redis.pipelined do
+          yield
+        end
       end
     end
   end
