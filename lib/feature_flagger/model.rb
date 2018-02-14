@@ -16,8 +16,8 @@ module FeatureFlagger
       self.class.released_id?(id, feature_key)
     end
 
-    def released_keys(*feature_key)
-      self.class.released_keys(id, feature_key)
+    def released_features(*feature_key)
+      self.class.released_features(id, feature_key)
     end
 
     # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
@@ -50,9 +50,9 @@ module FeatureFlagger
         FeatureFlagger.control.rollout?(feature.key, resource_id)
       end
 
-      def released_keys(resource_id, *feature_key)
+      def released_features(resource_id, *feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.released_keys(feature.childs_keys, resource_id)
+        FeatureFlagger.control.released_features(feature.childs_keys, resource_id)
       end
 
       def all_released_ids_for(*feature_key)
