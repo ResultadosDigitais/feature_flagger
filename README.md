@@ -71,6 +71,10 @@ account.rollout?(:email_marketing, :new_email_flow)
 account.unrelease(:email_marketing, :new_email_flow)
 #=> true
 
+# Return an array with all features released for given account under a chain
+account.released_features(:email_marketing)
+#=> ['account:email_marketing:new_email_flow', 'account:email_marketing:super_new_email_flow']
+
 # If you try to check an inexistent rollout key it will raise an error.
 account.rollout?(:email_marketing, :new_email_flow)
 FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
