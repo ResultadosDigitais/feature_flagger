@@ -40,6 +40,10 @@ module FeatureFlagger
         expect(control).to receive(:released_features).with(childs_keys, subject.id)
         subject.released_features(:email_marketing)
       end
+
+      context 'given featured_keys is not informed' do
+
+      end
     end
 
     describe '#unrelease' do

@@ -16,7 +16,7 @@ module FeatureFlagger
       features_has_values = @storage.pipelined do
         features_keys.select { |f| @storage.has_value?(f, resource_id) }
       end
-      
+
       released_features = Hash[features_keys.zip(features_has_values)]
       released_features.select { |_, value| value }
                        .collect { |key,_| key }

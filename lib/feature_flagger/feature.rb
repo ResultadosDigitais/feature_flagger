@@ -1,8 +1,11 @@
 module FeatureFlagger
   class Feature
-    def initialize(feature_key, resource_name = nil)
-      @feature_key = resolve_key(feature_key, resource_name)
+    def initialize(feature_key = nil, resource_name = nil)
+      @resource_name = resource_name
       @doc = FeatureFlagger.config.info
+      return if feature_key == nil
+
+      @feature_key = resolve_key(feature_key, resource_name)
       fetch_data
     end
 
@@ -15,11 +18,26 @@ module FeatureFlagger
     end
 
     def childs_keys
+      return all_keys if @feature_key == nil
+
       @data.select { |child_key, _| child_key != 'description' }
            .collect { |child_key, _| "#{key}:#{child_key}" }
     end
 
     private
+
+    def all_keys
+      keys_and_child_keys = root_features.map do |key|
+        feature = Feature.new([key], @resource_name)
+        [feature.key] + feature.childs_keys
+      end
+
+      keys_and_child_keys.flatten
+    end
+
+    def root_features
+      @doc[@doc.keys.first].keys
+    end
 
     def resolve_key(feature_key, resource_name)
       key = Array(feature_key).flatten
