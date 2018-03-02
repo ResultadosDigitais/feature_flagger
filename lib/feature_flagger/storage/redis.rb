@@ -32,6 +32,12 @@ module FeatureFlagger
       def all_values(key)
         @redis.smembers(key)
       end
+
+      def pipelined
+        @redis.pipelined do
+          yield
+        end
+      end
     end
   end
 end

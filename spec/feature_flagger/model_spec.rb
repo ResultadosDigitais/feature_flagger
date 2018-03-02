@@ -32,6 +32,27 @@ module FeatureFlagger
       end
     end
 
+    describe '#released_features' do
+      it 'calls Control#released_features with appropriated methods' do
+        childs_keys = %w(feature_flagger_dummy_class:email_marketing:behavior_score
+                         feature_flagger_dummy_class:email_marketing:whitelabel)
+
+        expect(control).to receive(:released_features).with(childs_keys, subject.id)
+        subject.released_features(:email_marketing)
+      end
+
+      context 'given featured_keys is not informed' do
+        it 'calls Control#released_features with appropriated methods' do
+          childs_keys = %w(feature_flagger_dummy_class:email_marketing
+                           feature_flagger_dummy_class:email_marketing:behavior_score
+                           feature_flagger_dummy_class:email_marketing:whitelabel)
+
+          expect(control).to receive(:released_features).with(childs_keys, subject.id)
+          subject.released_features
+        end
+      end
+    end
+
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
         expect(control).to receive(:unrelease).with(resolved_key, subject.id)

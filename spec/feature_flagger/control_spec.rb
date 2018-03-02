@@ -35,6 +35,45 @@ module FeatureFlagger
       end
     end
 
+    describe '#released_features' do
+      let(:another_resource_id) { 'another_resource_id' }
+      let(:without_release_resource_id) { 'without_release_resource_id' }
+      let(:keys) { %w(key key1 key2 key3) }
+      let(:keys_resource) { %w(key key1 key3) }
+      let(:keys_another_resource) { %w(key key1 key2 key3) }
+
+      context 'given exists key, key1, key2 and key3 features' do
+        before {
+          keys.map do |key|
+            values = [resource_id, another_resource_id]
+            values.delete(resource_id) unless keys_resource.include?(key)
+            storage.add(key, values)
+          end
+        }
+
+        context 'when resource entity id has access to key, key1 and key3' do
+          it { 
+            result = control.released_features(keys, resource_id)
+            expect(result).to eq(keys_resource)
+          }
+        end
+
+        context 'when resource entity id has access to key, key1, key2 and key3' do
+          it { 
+            result = control.released_features(keys, another_resource_id)
+            expect(result).to eq(keys_another_resource)
+          }
+        end
+
+        context 'when resource entity id has no access' do
+          it { 
+            result = control.released_features(keys, without_release_resource_id)
+            expect(result).to eq([])
+          }
+        end
+      end
+    end
+
     describe '#release' do
       it 'adds resource_id to storage' do
         control.release(key, resource_id)

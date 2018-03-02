@@ -16,6 +16,10 @@ module FeatureFlagger
       self.class.released_id?(id, feature_key)
     end
 
+    def released_features(*feature_key)
+      self.class.released_features(id, feature_key)
+    end
+
     # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
     def release!(*feature_key)
       warn "[DEPRECATION] `release!` is deprecated.  Please use `release` instead."
@@ -44,6 +48,17 @@ module FeatureFlagger
       def released_id?(resource_id, *feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
         FeatureFlagger.control.rollout?(feature.key, resource_id)
+      end
+
+      def released_features(resource_id, *feature_key)
+        feature_key.flatten!
+        if feature_key.any?
+          features_keys = Feature.new(feature_key, rollout_resource_name).childs_keys
+        else
+          features_keys = Feature.all_keys(rollout_resource_name)
+        end
+        
+        FeatureFlagger.control.released_features(features_keys, resource_id)
       end
 
       def all_released_ids_for(*feature_key)

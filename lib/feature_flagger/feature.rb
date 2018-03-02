@@ -2,7 +2,7 @@ module FeatureFlagger
   class Feature
     def initialize(feature_key, resource_name = nil)
       @feature_key = resolve_key(feature_key, resource_name)
-      @doc = FeatureFlagger.config.info
+      @doc = self.class.fetch_config
       fetch_data
     end
 
@@ -12,6 +12,20 @@ module FeatureFlagger
 
     def key
       @feature_key.join(':')
+    end
+
+    def childs_keys
+      @data.select { |child_key, _| child_key != 'description' }
+           .collect { |child_key, _| "#{key}:#{child_key}" }
+    end
+
+    def self.all_keys(resource_name)
+      keys_and_child_keys = root_features.map do |key|
+        feature = Feature.new([key], resource_name)
+        [feature.key] + feature.childs_keys
+      end
+
+      keys_and_child_keys.flatten
     end
 
     private
@@ -36,6 +50,15 @@ module FeatureFlagger
       else
         find_value(value, *tail)
       end
+    end
+
+    def self.root_features
+      doc = fetch_config
+      doc[doc.keys.first].keys
+    end
+
+    def self.fetch_config
+      FeatureFlagger.config.info
     end
   end
 end
