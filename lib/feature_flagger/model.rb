@@ -51,8 +51,13 @@ module FeatureFlagger
       end
 
       def released_features(resource_id, *feature_key)
-        feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.released_features(feature.childs_keys, resource_id)
+        if feature_key
+          features_keys = Feature.new(feature_key, rollout_resource_name).childs_keys
+        else
+          features_keys = Feature.all_keys(rollout_resource_name)
+        end
+        
+        FeatureFlagger.control.released_features(features_keys, resource_id)
       end
 
       def all_released_ids_for(*feature_key)
