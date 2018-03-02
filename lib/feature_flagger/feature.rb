@@ -1,6 +1,6 @@
 module FeatureFlagger
   class Feature
-    def initialize(feature_key = nil, resource_name)
+    def initialize(feature_key, resource_name = nil)
       @feature_key = resolve_key(feature_key, resource_name)
       @doc = self.class.fetch_config
       fetch_data

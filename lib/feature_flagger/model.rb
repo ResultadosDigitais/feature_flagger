@@ -51,7 +51,8 @@ module FeatureFlagger
       end
 
       def released_features(resource_id, *feature_key)
-        if feature_key
+        feature_key.flatten!
+        if feature_key.any?
           features_keys = Feature.new(feature_key, rollout_resource_name).childs_keys
         else
           features_keys = Feature.all_keys(rollout_resource_name)
