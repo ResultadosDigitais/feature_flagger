@@ -24,7 +24,7 @@ Or install it yourself as:
 ## Configuration
 
 By default, feature_flagger uses the REDIS_URL env var to setup it's storage.
-You can configure this by using `configure` like such:
+You can configure this by using `configure`. Configure Redis directly on feature_flagger initializer, don’t reuse $redis like Sidekiq does.
 
 1. In a initializer file (e.g. `config/initializers/feature_flagger.rb`):
 ```ruby
@@ -32,7 +32,8 @@ require 'redis-namespace'
 require 'feature_flagger'
 
 FeatureFlagger.configure do |config|
-  namespaced = ::Redis::Namespace.new("feature_flagger", redis: $redis)
+  redis = Redis.new(host: ENV['host'])
+  namespaced = Redis::Namespace.new('feature-flagger', redis: redis)
   config.storage = FeatureFlagger::Storage::Redis.new(namespaced)
 end
 ```
