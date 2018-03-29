@@ -24,20 +24,19 @@ Or install it yourself as:
 ## Configuration
 
 By default, feature_flagger uses the REDIS_URL env var to setup it's storage.
-You can configure this by using `configure` like such:
-
-1. In a initializer file (e.g. `config/initializers/feature_flagger.rb`):
+You can set up FeatureFlagger by creating a file called ```config/initializers/feature_flagger``` with the following lines:
 ```ruby
 require 'redis-namespace'
 require 'feature_flagger'
 
 FeatureFlagger.configure do |config|
-  namespaced = ::Redis::Namespace.new("feature_flagger", redis: $redis)
+  redis = Redis.new(host: ENV['REDIS_URL'])
+  namespaced = Redis::Namespace.new('feature_flagger', redis: redis)
   config.storage = FeatureFlagger::Storage::Redis.new(namespaced)
 end
 ```
 
-2. Create a `rollout.yml` in _config_ path and declare a rollout:
+1. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
 account: # model name
   email_marketing: # namespace (optional)
@@ -46,7 +45,7 @@ account: # model name
         @dispatch team uses this rollout to introduce a new email flow for certains users. Read more at [link]
 ```
 
-3. Adds rollout funcionality to your model:
+2. Adds rollout funcionality to your model:
 ```ruby
 class Account < ActiveRecord::Base
   include FeatureFlagger::Model
