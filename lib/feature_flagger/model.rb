@@ -12,8 +12,14 @@ module FeatureFlagger
       base.extend ClassMethods
     end
 
-    def rollout?(*feature_key)
+    def released?(*feature_key)
       self.class.released_id?(id, feature_key)
+    end
+
+    # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
+    def rollout?(*feature_key)
+      warn "[DEPRECATION] `rollout?` is deprecated.  Please use `released?` instead."
+      released?(*feature_key)
     end
 
     # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
@@ -43,7 +49,7 @@ module FeatureFlagger
     module ClassMethods
       def released_id?(resource_id, *feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
-        FeatureFlagger.control.rollout?(feature.key, resource_id)
+        FeatureFlagger.control.released?(feature.key, resource_id)
       end
 
       def all_released_ids_for(*feature_key)

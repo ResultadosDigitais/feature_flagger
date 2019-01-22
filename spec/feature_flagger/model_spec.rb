@@ -26,9 +26,9 @@ module FeatureFlagger
     end
 
     describe '#rollout?' do
-      it 'calls Control#rollout? with appropriated methods' do
-        expect(control).to receive(:rollout?).with(resolved_key, subject.id)
-        subject.rollout?(key)
+      it 'calls Control#released? with appropriated methods' do
+        expect(control).to receive(:released?).with(resolved_key, subject.id)
+        subject.released?(key)
       end
     end
 
@@ -43,8 +43,8 @@ module FeatureFlagger
       context 'given a specific resource id' do
         let(:resource_id) { 10 }
 
-        it 'calls Control#rollout? with appropriated methods' do
-          expect(control).to receive(:rollout?).with(resolved_key, resource_id)
+        it 'calls Control#released? with appropriated methods' do
+          expect(control).to receive(:released?).with(resolved_key, resource_id)
           DummyClass.released_id?(resource_id, key)
         end
       end

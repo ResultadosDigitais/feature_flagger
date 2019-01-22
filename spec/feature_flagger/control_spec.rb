@@ -12,6 +12,29 @@ module FeatureFlagger
       redis.flushdb
     end
 
+    describe '#released?' do
+      let(:result) { control.released?(key, resource_id) }
+
+      context 'when resource entity id has no access to release_key' do
+        it { expect(result).to be_falsey }
+
+        context 'and a feature is release to all' do
+          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+          it { expect(result).to be_truthy }
+        end
+      end
+
+      context 'when resource entity id has access to release_key' do
+        before { storage.add(key, resource_id) }
+        it { expect(result).to be_truthy }
+
+        context 'and a feature is release to all' do
+          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+          it { expect(result).to be_truthy }
+        end
+      end
+    end
+
     describe '#rollout?' do
       let(:result) { control.rollout?(key, resource_id) }
 

@@ -8,8 +8,13 @@ module FeatureFlagger
       @storage = storage
     end
 
-    def rollout?(feature_key, resource_id)
+    def released?(feature_key, resource_id)
       @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
+    end
+
+    def rollout?(feature_key, resource_id)
+      warn "[DEPRECATION] `rollou?` is deprecated.  Please use `released?` instead."
+      released?(feature_key, resource_id)
     end
 
     def release(feature_key, resource_id)
