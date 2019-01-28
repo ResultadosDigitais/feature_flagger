@@ -25,13 +25,6 @@ module FeatureFlagger
       end
     end
 
-    describe '#rollout?' do
-      it 'calls Control#released? with appropriated methods' do
-        expect(control).to receive(:released?).with(resolved_key, subject.id)
-        subject.released?(key)
-      end
-    end
-
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
         expect(control).to receive(:unrelease).with(resolved_key, subject.id)
