@@ -50,6 +50,17 @@ module FeatureFlagger
       end
     end
 
+    describe '.release_id' do
+      context 'given a specific resource id' do
+        let(:resource_id) { 10 }
+
+        it 'calls Control#release with appropriated methods' do
+          expect(control).to receive(:release).with(resolved_key, resource_id)
+          DummyClass.release_id(resource_id, key)
+        end
+      end
+    end
+
     describe '.all_released_ids_for' do
       it 'calls Control#resource_ids with appropriated methods' do
         expect(control).to receive(:resource_ids).with(resolved_key)

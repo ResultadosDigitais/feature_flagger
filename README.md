@@ -78,6 +78,10 @@ FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"
 Account.released_id?(42, :email_marketing, :new_email_flow)
 #=> true
 
+# Release a feature for a specific account id
+Account.release_id(42, :email_marketing, :new_email_flow)
+#=> true
+
 # Get an array with all released Account ids
 Account.all_released_ids_for(:email_marketing, :new_email_flow)
 
