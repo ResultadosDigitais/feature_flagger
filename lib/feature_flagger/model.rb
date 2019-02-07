@@ -16,26 +16,8 @@ module FeatureFlagger
       self.class.released_id?(id, feature_key)
     end
 
-    # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
-    def rollout?(*feature_key)
-      warn "[DEPRECATION] `rollout?` is deprecated.  Please use `released?` instead."
-      released?(*feature_key)
-    end
-
-    # <b>DEPRECATED:</b> Please use <tt>release</tt> instead.
-    def release!(*feature_key)
-      warn "[DEPRECATION] `release!` is deprecated.  Please use `release` instead."
-      release(*feature_key)
-    end
-
     def release(*feature_key)
       self.class.release_id(id, *feature_key)
-    end
-
-    # <b>DEPRECATED:</b> Please use <tt>unrelease</tt> instead.
-    def unrelease!(*feature_key)
-      warn "[DEPRECATION] `unrelease!` is deprecated.  Please use `unrelease` instead."
-      unrelease(*feature_key)
     end
 
     def unrelease(*feature_key)
