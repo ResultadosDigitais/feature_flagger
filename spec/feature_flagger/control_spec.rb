@@ -86,5 +86,19 @@ module FeatureFlagger
         is_expected.to match_array %w(feature::name1 feature::name2 feature::name15)
       end
     end
+
+    describe '#released_to_all?' do
+      let(:result) { control.released_to_all?(key) }
+
+      context 'when feature was not released to all' do
+        before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        it { expect(result).to be_falsey}
+      end
+
+      context 'when feature was released to all' do
+        before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        it { expect(result).to be_truthy}
+      end
+    end
   end
 end
