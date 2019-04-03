@@ -97,5 +97,5 @@ Account.released_features_to_all
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/ResultadosDigitais/feature_flagger.
+Bug reports and pull requests are welcome!
+Please take a look at our guidelines [here](CONTRIBUTING.md).
