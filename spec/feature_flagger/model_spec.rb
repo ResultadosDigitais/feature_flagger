@@ -76,7 +76,7 @@ module FeatureFlagger
     end
 
     describe '.released_features_to_all' do
-      it 'calls Control#resource_ids with appropriated methods' do
+      it 'calls Control#released_features_to_all with appropriated methods' do
         expect(control).to receive(:released_features_to_all)
         DummyClass.released_features_to_all
       end
