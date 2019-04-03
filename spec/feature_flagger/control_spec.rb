@@ -44,7 +44,9 @@ module FeatureFlagger
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
+        storage.add(key, 1)
         control.release_to_all(key)
+        expect(storage).not_to have_value(key, 1)
         expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end
@@ -61,6 +63,13 @@ module FeatureFlagger
       it 'removes feature_key to storage' do
         storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key)
         control.unrelease_to_all(key)
+        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+      end
+
+      it 'removes added resources' do
+        storage.add(key, 1)
+        control.unrelease_to_all(key)
+        expect(storage).not_to have_value(key, 1)
         expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end

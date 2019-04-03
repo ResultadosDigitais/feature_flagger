@@ -5,6 +5,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
   let(:storage) { described_class.new(redis) }
   let(:key)   { 'foo' }
   let(:value) { 'bar' }
+  let(:global_key) { 'released_features' }
 
   context do
     before do
@@ -29,10 +30,26 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       end
     end
 
+    describe '#add_all' do
+      it 'adds value to redis global key and clear key' do
+        storage.add_all(global_key, key)
+        expect(redis.sismember(global_key, key)).to be_truthy
+        expect(redis.sismember(key, value)).to be_falsey
+      end
+    end
+
     describe '#remove' do
       it 'removes the value from redis' do
         redis.sadd(key, value)
         storage.remove(key, value)
+        expect(redis.sismember(key, value)).to be_falsey
+      end
+    end
+
+    describe '#remove_all' do
+      it 'removes all values from redis' do
+        redis.sadd(key, value)
+        storage.remove_all(global_key, key)
         expect(redis.sismember(key, value)).to be_falsey
       end
     end
