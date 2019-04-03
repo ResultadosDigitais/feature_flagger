@@ -10,4 +10,4 @@ install:
   - docker-compose build
 
 script:
-  - docker-compose run feature_flagger rpec
+  - docker-compose run feature_flagger rspec
