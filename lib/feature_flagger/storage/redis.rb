@@ -29,6 +29,20 @@ module FeatureFlagger
         @redis.srem(key, value)
       end
 
+      def remove_all(global_key, key)
+        @redis.multi do |redis|
+          redis.srem(global_key, key)
+          redis.del(key)
+        end
+      end
+
+      def add_all(global_key, key)
+        @redis.multi do |redis|
+          redis.sadd(global_key, key)
+          redis.del(key)
+        end
+      end
+
       def all_values(key)
         @redis.smembers(key)
       end
