@@ -1,0 +1,25 @@
+version: '2'
+services:
+  feature_flagger:
+    build: .
+    working_dir: /var/app
+    command: irb
+    restart: always
+    volumes:
+      - .:/var/app
+    depends_on:
+      - redis
+    ports:
+     - "5000:5000"
+    environment:
+      REDIS_URL: redis://redis:6379
+
+  redis:
+    image: redis:3.0.3
+    expose:
+      - '6379'
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:

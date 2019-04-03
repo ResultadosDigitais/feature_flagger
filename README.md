@@ -99,3 +99,12 @@ Account.released_features_to_all
 
 Bug reports and pull requests are welcome on GitHub at
 https://github.com/ResultadosDigitais/feature_flagger.
+
+
+# Environment
+
+Open IRB
+`docker-compose run feature_flagger`
+
+Running tests
+`docker-compose run feature_flagger rspec`
