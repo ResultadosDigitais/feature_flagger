@@ -35,5 +35,9 @@ module FeatureFlagger
     def released_features_to_all
       @storage.all_values(RELEASED_FEATURES)
     end
+
+    def released_to_all?(feature_key)
+      @storage.has_value?(RELEASED_FEATURES, feature_key)
+    end
   end
 end
