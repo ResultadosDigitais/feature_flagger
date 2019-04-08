@@ -4,6 +4,14 @@
 
 Partially release your features.
 
+## Working with Docker
+
+Open IRB
+`docker-compose run feature_flagger`
+
+Running tests
+`docker-compose run feature_flagger rspec`
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -97,14 +105,5 @@ Account.released_features_to_all
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/ResultadosDigitais/feature_flagger.
-
-
-# Environment
-
-Open IRB
-`docker-compose run feature_flagger`
-
-Running tests
-`docker-compose run feature_flagger rspec`
+Bug reports and pull requests are welcome!
+Please take a look at our guidelines [here](CONTRIBUTING.md).

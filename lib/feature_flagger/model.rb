@@ -57,6 +57,11 @@ module FeatureFlagger
         FeatureFlagger.control.released_features_to_all
       end
 
+      def released_to_all?(*feature_key)
+        feature = Feature.new(feature_key, rollout_resource_name)
+        FeatureFlagger.control.released_to_all?(feature.key)
+      end
+
       def rollout_resource_name
         klass_name = self.to_s
         klass_name.gsub!(/::/, '_')
