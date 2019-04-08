@@ -27,6 +27,7 @@ module FeatureFlagger
     end
 
     module ClassMethods
+
       def released_id?(resource_id, *feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
         FeatureFlagger.control.released?(feature.key, resource_id)
@@ -60,6 +61,19 @@ module FeatureFlagger
       def released_to_all?(*feature_key)
         feature = Feature.new(feature_key, rollout_resource_name)
         FeatureFlagger.control.released_to_all?(feature.key)
+      end
+
+      def removed_rollouts
+        persisted = FeatureFlagger.control.search_keys("#{rollout_resource_name}:*").to_a
+        persisted - rollout_keys
+      end
+
+      def rollout_keys
+        keys = []
+        FeatureFlagger.config.info[rollout_resource_name].map do |namespace, features|
+          features.keys.each { |feature| keys.push("#{rollout_resource_name}:#{namespace}:#{feature}") }
+        end
+        keys
       end
 
       def rollout_resource_name

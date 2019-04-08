@@ -88,5 +88,21 @@ module FeatureFlagger
         DummyClass.released_to_all?(key)
       end
     end
+
+    describe '.rollout_keys' do
+      it 'ensure retrieval of rollouts keys from file' do
+        expect(DummyClass.rollout_keys).to contain_exactly(
+          'feature_flagger_dummy_class:email_marketing:behavior_score',
+          'feature_flagger_dummy_class:email_marketing:whitelabel'
+        )
+      end
+    end
+
+    describe '.removed_rollouts' do
+      it 'calls Control#search_keys with appropriated methods' do
+        expect(control).to receive(:search_keys).with('feature_flagger_dummy_class:*')
+        DummyClass.removed_rollouts
+      end
+    end
   end
 end
