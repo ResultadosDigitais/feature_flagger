@@ -4,6 +4,14 @@
 
 Partially release your features.
 
+## Working with Docker
+
+Open IRB
+`docker-compose run feature_flagger`
+
+Running tests
+`docker-compose run feature_flagger rspec`
+
 ## Installation
 
 Add this line to your application's Gemfile:
