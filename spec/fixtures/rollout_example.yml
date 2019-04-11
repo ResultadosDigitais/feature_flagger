@@ -4,5 +4,21 @@ feature_flagger_dummy_class:
       description: "Enable behavior score experiment"
     whitelabel:
       description: "Enables whitelabel"
-
-
+other_feature_flagger_dummy_class:
+  feature_a:
+    feature_a_1:
+      feature_a_1_1:
+        description: "Key to test rollout with n levels"
+      feature_a_1_2:
+        description: "Key to test rollout with n levels"
+  feature_b:
+    description: "Key to test rollout with n levels"
+  feature_c:
+    feature_c_1:
+      description: "Key to test rollout with n levels"
+    feature_c_2:
+      description: "Key to test rollout with n levels"
+    feature_c_3:
+      feature_c_3_1:
+        feature_c_3_1_1:
+          description: "Key to test rollout with n levels"
