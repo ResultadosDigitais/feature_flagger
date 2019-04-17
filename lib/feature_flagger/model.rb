@@ -63,17 +63,16 @@ module FeatureFlagger
         FeatureFlagger.control.released_to_all?(feature.key)
       end
 
-      def removed_rollouts
-        persisted = FeatureFlagger.control.search_keys("#{rollout_resource_name}:*").to_a
-        persisted - rollout_keys
+      def detached_feature_keys
+        persisted_features = FeatureFlagger.control.search_keys("#{rollout_resource_name}:*").to_a
+        mapped_feature_keys = FeatureFlagger.config.mapped_feature_keys(rollout_resource_name)
+        (persisted_features - mapped_feature_keys).map { |key| key.sub("#{rollout_resource_name}:",'') }
       end
 
-      def rollout_keys
-        keys = []
-        FeatureFlagger.config.info[rollout_resource_name].map do |namespace, features|
-          features.keys.each { |feature| keys.push("#{rollout_resource_name}:#{namespace}:#{feature}") }
-        end
-        keys
+      def remove_detached_feature_key(key)
+        key_value = FeatureFlagger.config.info[rollout_resource_name].dig(*key.split(":"))
+        raise "key is still mapped" if key_value
+        FeatureFlagger.control.unrelease_to_all("#{rollout_resource_name}:#{key}")
       end
 
       def rollout_resource_name

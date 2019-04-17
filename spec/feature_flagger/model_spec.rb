@@ -89,20 +89,59 @@ module FeatureFlagger
       end
     end
 
-    describe '.rollout_keys' do
-      it 'ensure retrieval of rollouts keys from file' do
-        expect(DummyClass.rollout_keys).to contain_exactly(
-          'feature_flagger_dummy_class:email_marketing:behavior_score',
-          'feature_flagger_dummy_class:email_marketing:whitelabel'
-        )
+    describe '.detached_feature_keys' do
+      let(:redis) { FakeRedis::Redis.new }
+      let(:storage) { Storage::Redis.new(redis) }
+
+      before do
+        FeatureFlagger.configure do |config|
+          config.storage = storage
+        end
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0)
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0)
+
+        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        FeatureFlagger.config.yaml_filepath = filepath
+      end
+
+      it 'returns all detached feature keys' do
+        expect(DummyClass.detached_feature_keys).to contain_exactly("feature_a","feature_b")
       end
     end
 
-    describe '.removed_rollouts' do
-      it 'calls Control#search_keys with appropriated methods' do
-        expect(control).to receive(:search_keys).with('feature_flagger_dummy_class:*')
-        DummyClass.removed_rollouts
+    describe '.remove_detached_feature_key' do
+
+      context "detached feature key" do
+        let(:redis) { FakeRedis::Redis.new }
+        let(:storage) { Storage::Redis.new(redis) }
+        let(:feature_key) { 'feature_flagger_dummy_class:feature_a' }
+
+        before do
+          FeatureFlagger.configure do |config|
+            config.storage = storage
+          end
+          FeatureFlagger.control.release(feature_key, 0)
+
+          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          FeatureFlagger.config.yaml_filepath = filepath
+        end
+
+        it 'remove key' do
+          DummyClass.remove_detached_feature_key("feature_a")
+          expect(DummyClass.detached_feature_keys).not_to include "feature_a"
+        end
+      end
+
+      context "mapped feature key" do
+        it 'do not remove key' do
+          expect {
+            DummyClass.remove_detached_feature_key(
+              'email_marketing:behavior_score'
+            )
+          }.to raise_error("key is still mapped")
+        end
       end
     end
+
   end
 end
