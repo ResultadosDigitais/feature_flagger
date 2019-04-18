@@ -69,10 +69,11 @@ module FeatureFlagger
         (persisted_features - mapped_feature_keys).map { |key| key.sub("#{rollout_resource_name}:",'') }
       end
 
-      def remove_detached_feature_key(key)
-        key_value = FeatureFlagger.config.info[rollout_resource_name].dig(*key.split(":"))
+      def cleanup_detached(*feature_key)
+        complete_feature_key = feature_key.map(&:to_s).insert(0, rollout_resource_name)
+        key_value = FeatureFlagger.config.info.dig(*complete_feature_key)
         raise "key is still mapped" if key_value
-        FeatureFlagger.control.unrelease_to_all("#{rollout_resource_name}:#{key}")
+        FeatureFlagger.control.unrelease_to_all(complete_feature_key.join(':'))
       end
 
       def rollout_resource_name

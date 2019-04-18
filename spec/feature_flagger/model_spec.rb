@@ -109,7 +109,7 @@ module FeatureFlagger
       end
     end
 
-    describe '.remove_detached_feature_key' do
+    describe '.cleanup_detached' do
 
       context "detached feature key" do
         let(:redis) { FakeRedis::Redis.new }
@@ -126,18 +126,16 @@ module FeatureFlagger
           FeatureFlagger.config.yaml_filepath = filepath
         end
 
-        it 'remove key' do
-          DummyClass.remove_detached_feature_key("feature_a")
+        it 'cleanup key' do
+          DummyClass.cleanup_detached(:feature_a)
           expect(DummyClass.detached_feature_keys).not_to include "feature_a"
         end
       end
 
       context "mapped feature key" do
-        it 'do not remove key' do
+        it 'do not cleanup key' do
           expect {
-            DummyClass.remove_detached_feature_key(
-              'email_marketing:behavior_score'
-            )
+            DummyClass.cleanup_detached(:email_marketing, :behavior_score)
           }.to raise_error("key is still mapped")
         end
       end

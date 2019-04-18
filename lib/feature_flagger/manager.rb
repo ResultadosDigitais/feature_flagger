@@ -7,9 +7,11 @@ module FeatureFlagger
       persisted_features - mapped_feature_keys
     end
 
-    def self.remove_detached_feature_key(key)
-      raise "key is still mapped" if FeatureFlagger.config.info.dig(*key.split(":"))
-      FeatureFlagger.control.unrelease_to_all(key)
+    def self.cleanup_detached(resource_name, *feature_key)
+      complete_feature_key = feature_key.map(&:to_s).insert(0, resource_name.to_s)
+      key_value = FeatureFlagger.config.info.dig(*complete_feature_key)
+      raise "key is still mapped" if key_value
+      FeatureFlagger.control.unrelease_to_all(complete_feature_key.join(':'))
     end
 
   end
