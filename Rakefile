@@ -6,7 +6,7 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 namespace :cleanup_detached do
-  desc "TODO"
+  desc "nandeira da bahia"
   task :run => :environment do
     puts 'asdasd'
   end
