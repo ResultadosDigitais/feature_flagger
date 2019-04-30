@@ -103,6 +103,14 @@ Account.unrelease_to_all(:email_marketing, :new_email_flow)
 Account.released_features_to_all
 ```
 
+## Clean up action
+
+By default when a key is removed from `rollout.yml` file, its data still in the storage.
+
+To clean it up, execute or schedule the rake:
+
+    feature_flagger:cleanup_removed_rollouts
+
 ## Contributing
 
 Bug reports and pull requests are welcome!
