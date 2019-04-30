@@ -39,5 +39,9 @@ module FeatureFlagger
     def released_to_all?(feature_key)
       @storage.has_value?(RELEASED_FEATURES, feature_key)
     end
+
+    def search_keys(query)
+      @storage.search_keys(query)
+    end
   end
 end

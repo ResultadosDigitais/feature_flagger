@@ -20,16 +20,19 @@ module FeatureFlagger
 
         context 'and a feature is release to all' do
           before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+
           it { expect(result).to be_truthy }
         end
       end
 
       context 'when resource entity id has access to release_key' do
         before { storage.add(key, resource_id) }
+
         it { expect(result).to be_truthy }
 
         context 'and a feature is release to all' do
           before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+
           it { expect(result).to be_truthy }
         end
       end
@@ -81,7 +84,7 @@ module FeatureFlagger
         control.release(key, 1)
         control.release(key, 2)
         control.release(key, 15)
-        is_expected.to match_array %w(1 2 15)
+        expect(subject).to match_array %w[1 2 15]
       end
     end
 
@@ -92,7 +95,7 @@ module FeatureFlagger
         control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1')
         control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name2')
         control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name15')
-        is_expected.to match_array %w(feature::name1 feature::name2 feature::name15)
+        expect(subject).to match_array %w[feature::name1 feature::name2 feature::name15]
       end
     end
 
@@ -101,12 +104,30 @@ module FeatureFlagger
 
       context 'when feature was not released to all' do
         before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key) }
-        it { expect(result).to be_falsey}
+
+        it { expect(result).to be_falsey }
       end
 
       context 'when feature was released to all' do
         before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
-        it { expect(result).to be_truthy}
+
+        it { expect(result).to be_truthy }
+      end
+    end
+
+    describe '#search_keys' do
+      before do
+        storage.add('namespace:1', 1)
+        storage.add('namespace:2', 2)
+        storage.add('exclusive', 3)
+      end
+
+      context 'without matching result' do
+        it { expect(control.search_keys('invalid').to_a).to be_empty }
+      end
+
+      context 'with matching results' do
+        it { expect(control.search_keys("*ame*pac*").to_a).to contain_exactly('namespace:1', 'namespace:2') }
       end
     end
   end

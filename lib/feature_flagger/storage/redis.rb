@@ -46,6 +46,10 @@ module FeatureFlagger
       def all_values(key)
         @redis.smembers(key)
       end
+
+      def search_keys(query)
+        @redis.scan_each(match: query)
+      end
     end
   end
 end

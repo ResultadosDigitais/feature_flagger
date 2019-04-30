@@ -88,5 +88,58 @@ module FeatureFlagger
         DummyClass.released_to_all?(key)
       end
     end
+
+    describe '.detached_feature_keys' do
+      let(:redis) { FakeRedis::Redis.new }
+      let(:storage) { Storage::Redis.new(redis) }
+
+      before do
+        FeatureFlagger.configure do |config|
+          config.storage = storage
+        end
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0)
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0)
+
+        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        FeatureFlagger.config.yaml_filepath = filepath
+      end
+
+      it 'returns all detached feature keys' do
+        expect(DummyClass.detached_feature_keys).to contain_exactly("feature_a","feature_b")
+      end
+    end
+
+    describe '.cleanup_detached' do
+
+      context "detached feature key" do
+        let(:redis) { FakeRedis::Redis.new }
+        let(:storage) { Storage::Redis.new(redis) }
+        let(:feature_key) { 'feature_flagger_dummy_class:feature_a' }
+
+        before do
+          FeatureFlagger.configure do |config|
+            config.storage = storage
+          end
+          FeatureFlagger.control.release(feature_key, 0)
+
+          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          FeatureFlagger.config.yaml_filepath = filepath
+        end
+
+        it 'cleanup key' do
+          DummyClass.cleanup_detached(:feature_a)
+          expect(DummyClass.detached_feature_keys).not_to include "feature_a"
+        end
+      end
+
+      context "mapped feature key" do
+        it 'do not cleanup key' do
+          expect {
+            DummyClass.cleanup_detached(:email_marketing, :behavior_score)
+          }.to raise_error("key is still mapped")
+        end
+      end
+    end
+
   end
 end
