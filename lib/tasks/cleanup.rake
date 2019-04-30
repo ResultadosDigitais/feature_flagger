@@ -1,0 +1,10 @@
+namespace :feature_flagger do
+  desc "cleaning up keys from storage that are no longer in the rollout.yml file"
+  task :cleanup_removed_rollouts => :environment do
+    keys = FeatureFlagger::Manager.detached_feature_keys
+    puts "Found keys to remove: #{keys}"
+    keys.each do |key|
+      FeatureFlagger::Manager.cleanup_detached key
+    end
+  end
+end

@@ -7,6 +7,7 @@ require 'feature_flagger/model'
 require 'feature_flagger/feature'
 require 'feature_flagger/configuration'
 require 'feature_flagger/manager'
+require 'feature_flagger/railtie'
 
 module FeatureFlagger
   class << self
