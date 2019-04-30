@@ -109,7 +109,7 @@ By default when a key is removed from `rollout.yml` file, its data still in the 
 
 To clean it up, execute or schedule the rake:
 
-    feature_flagger:cleanup_removed_rollouts
+    $ bundle exec rake feature_flagger:cleanup_removed_rollouts
 
 ## Contributing
 
