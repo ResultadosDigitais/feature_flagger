@@ -110,7 +110,6 @@ module FeatureFlagger
     end
 
     describe '.cleanup_detached' do
-
       context "detached feature key" do
         let(:redis) { FakeRedis::Redis.new }
         let(:storage) { Storage::Redis.new(redis) }
@@ -138,6 +137,29 @@ module FeatureFlagger
             DummyClass.cleanup_detached(:email_marketing, :behavior_score)
           }.to raise_error("key is still mapped")
         end
+      end
+    end
+
+    describe '.feature_flagger' do
+      class CustomizedDummyClass
+        include FeatureFlagger::Model
+
+        feature_flagger do |config|
+          config.identifier_field = :uuid
+          config.entity_name = :account
+        end
+
+        def uuid
+          'f11bc560-8ef9-40cf-909e-ebb1c6f41163'
+        end
+      end
+
+      it 'expect to be using account entity name and uuid as field' do
+        CustomizedDummyClass.new.release(:email_marketing, :behavior_score)
+
+        expect(CustomizedDummyClass.all_released_ids_for(:email_marketing, :behavior_score)).to include(
+          'f11bc560-8ef9-40cf-909e-ebb1c6f41163'
+        )
       end
     end
 

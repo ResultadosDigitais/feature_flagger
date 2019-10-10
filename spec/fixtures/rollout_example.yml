@@ -22,3 +22,7 @@ other_feature_flagger_dummy_class:
       feature_c_3_1:
         feature_c_3_1_1:
           description: "Key to test rollout with n levels"
+account:
+  email_marketing:
+    behavior_score:
+      description: "Enable behavior score experiment"
