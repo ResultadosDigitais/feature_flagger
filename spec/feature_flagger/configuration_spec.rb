@@ -40,7 +40,8 @@ module FeatureFlagger
             'other_feature_flagger_dummy_class:feature_b',
             'other_feature_flagger_dummy_class:feature_c:feature_c_1',
             'other_feature_flagger_dummy_class:feature_c:feature_c_2',
-            'other_feature_flagger_dummy_class:feature_c:feature_c_3:feature_c_3_1:feature_c_3_1_1'
+            'other_feature_flagger_dummy_class:feature_c:feature_c_3:feature_c_3_1:feature_c_3_1_1',
+            'account:email_marketing:behavior_score'
           )
         end
       end

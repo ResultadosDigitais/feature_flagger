@@ -3,8 +3,7 @@ services:
   feature_flagger:
     build: .
     working_dir: /var/app
-    command: irb
-    restart: always
+    command: bash
     volumes:
       - .:/var/app
     depends_on:
