@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.5.0
+      - image: redis:3.0.3
+    steps:
+      - checkout
+      - run: gem install bundler
+      - run: bundle install -j4
+      - type: shell
+        command: |
+          bundle exec rspec --profile 10
