@@ -17,16 +17,28 @@ module FeatureFlagger
         new(ns)
       end
 
-      def has_value?(key, value)
-        @redis.sismember(key, value)
+      def has_value?(key, value, resource_key)
+        value = @redis.sismember(key, value)
+        value &&= @redis.sadd(resource_key, key) unless @redis.sismember(resource_key, key)
+        value
       end
 
-      def add(key, value)
-        @redis.sadd(key, value)
+      def add(key, value, resource_key)
+        @redis.multi do |redis|
+          redis.sadd(key, value)
+          redis.sadd(resource_key, key)
+        end
       end
 
-      def remove(key, value)
-        @redis.srem(key, value)
+      def remove(key, value, resource_key)
+        @redis.multi do |redis|
+          redis.srem(key, value)
+          redis.srem(resource_key, key)
+        end
+      end
+
+      def all_keys(global_key, resource_key)
+        @redis.sunion(global_key, resource_key)
       end
 
       def remove_all(global_key, key)
