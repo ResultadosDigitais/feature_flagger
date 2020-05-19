@@ -27,6 +27,13 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       end
     end
 
+    describe '#add_single' do
+      it 'adds the value to redis' do
+        storage.add_single(key, value)
+        expect(redis.sismember(key, value)).to be_truthy
+      end
+    end
+
     describe '#add' do
       it 'adds the value to redis' do
         storage.add(key, value, resource_key)

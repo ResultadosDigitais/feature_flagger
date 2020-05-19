@@ -116,6 +116,16 @@ module FeatureFlagger
       end
     end
 
+    describe '#attach_resource_keys' do
+      subject { control.attach_resource_keys }
+
+      before do
+        storage.add_single("avenue:key", 42)
+      end
+      
+      it { expect(subject).not_to include(false) }
+    end
+
     describe '#search_keys' do
       before do
         storage.add('namespace:1', 1, resource_key)

@@ -14,5 +14,8 @@ module FeatureFlagger
       FeatureFlagger.control.unrelease_to_all(complete_feature_key.join(':'))
     end
 
+    def self.attach_resource_key
+      FeatureFlagger.control.attach_resource_keys
+    end
   end
 end
