@@ -43,6 +43,7 @@ module FeatureFlagger
     describe '.released_id?' do
       context 'given a specific resource id' do
         let(:resource_id) { 10 }
+        let(:resolved_resource_key)  { 'feature_flagger_dummy_class:10' }
 
         it 'calls Control#released? with appropriated methods' do
           expect(control).to receive(:released?).with(resolved_key, resource_id)
@@ -54,10 +55,11 @@ module FeatureFlagger
     describe '.release_id' do
       context 'given a specific resource id' do
         let(:resource_id) { 10 }
+        let(:resolved_resource_key)  { 'feature_flagger_dummy_class:10' }
 
         it 'calls Control#release with appropriated methods' do
           expect(control).to receive(:release).with(resolved_key, resource_id, resolved_resource_key)
-          DummyClass.release_id(resource_id, resolved_resource_key, key)
+          DummyClass.release_id(resource_id, key)
         end
       end
     end
@@ -65,10 +67,11 @@ module FeatureFlagger
     describe '.unrelease_id' do
       context 'given a specific resource id' do
         let(:resource_id) { 20 }
+        let(:resolved_resource_key)  { 'feature_flagger_dummy_class:20' }
 
         it 'calls Control#release with appropriated methods' do
           expect(control).to receive(:unrelease).with(resolved_key, resource_id, resolved_resource_key)
-          DummyClass.unrelease_id(resource_id, resolved_resource_key, key)
+          DummyClass.unrelease_id(resource_id, key)
         end
       end
     end
