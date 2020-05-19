@@ -17,10 +17,8 @@ module FeatureFlagger
         new(ns)
       end
 
-      def has_value?(key, value, resource_key)
-        value = @redis.sismember(key, value)
-        value &&= @redis.sadd(resource_key, key) unless @redis.sismember(resource_key, key)
-        value
+      def has_value?(key, value)
+        @redis.sismember(key, value)
       end
 
       def add(key, value, resource_key)

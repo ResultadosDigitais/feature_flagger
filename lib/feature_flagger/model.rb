@@ -13,21 +13,21 @@ module FeatureFlagger
     end
 
     def released?(*feature_key)
-      self.class.released_id?(feature_flagger_identifier, feature_flagger_key, feature_key)
+      self.class.released_id?(feature_flagger_identifier, feature_key)
     end
 
     def release(*feature_key)
-      self.class.release_id(feature_flagger_identifier, feature_flagger_key, *feature_key)
+      self.class.release_id(feature_flagger_identifier, resource_key, *feature_key)
     end
 
     def releases
-      self.class.release_keys(feature_flagger_key)
+      self.class.release_keys(resource_key)
     end
 
     def unrelease(*feature_key)
       resource_name = self.class.feature_flagger_model_settings.entity_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease(feature.key, id, feature_flagger_key)
+      FeatureFlagger.control.unrelease(feature.key, id, resource_key)
     end
 
     private
@@ -40,7 +40,7 @@ module FeatureFlagger
       self.class.feature_flagger_model_settings.entity_name
     end
 
-    def feature_flagger_key
+    def resource_key
       "#{feature_flagger_name}:#{feature_flagger_identifier}"
     end
 
@@ -50,9 +50,9 @@ module FeatureFlagger
         yield feature_flagger_model_settings
       end
 
-      def released_id?(resource_id, resource_key, *feature_key)
+      def released_id?(resource_id, *feature_key)
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.released?(feature.key, resource_id, resource_key)
+        FeatureFlagger.control.released?(feature.key, resource_id)
       end
 
       def release_id(resource_id, resource_key, *feature_key)
@@ -99,6 +99,7 @@ module FeatureFlagger
         persisted_features = FeatureFlagger.control.search_keys("#{rollout_resource_name}:*").to_a
         mapped_feature_keys = FeatureFlagger.config.mapped_feature_keys(rollout_resource_name)
         (persisted_features - mapped_feature_keys).map do |key| 
+          # This condition prevents searching for keys related to Model#releases structure.
           key.sub("#{rollout_resource_name}:",'') unless (key =~ /#{rollout_resource_name}:\d+/)
         end.compact
       end

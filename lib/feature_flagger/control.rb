@@ -8,9 +8,9 @@ module FeatureFlagger
       @storage = storage
     end
 
-    def released?(feature_key, resource_id, resource_key)
-      @storage.has_value?(RELEASED_FEATURES, feature_key, resource_key) ||
-        @storage.has_value?(feature_key, resource_id, resource_key)
+    def released?(feature_key, resource_id)
+      @storage.has_value?(RELEASED_FEATURES, feature_key) ||
+        @storage.has_value?(feature_key, resource_id)
     end
 
     def release(feature_key, resource_id, resource_key)
@@ -41,8 +41,8 @@ module FeatureFlagger
       @storage.all_values(RELEASED_FEATURES)
     end
 
-    def released_to_all?(feature_key, resource_key)
-      @storage.has_value?(RELEASED_FEATURES, feature_key, resource_key)
+    def released_to_all?(feature_key)
+      @storage.has_value?(RELEASED_FEATURES, feature_key)
     end
 
     def search_keys(query)

@@ -14,7 +14,7 @@ module FeatureFlagger
     end
 
     describe '#released?' do
-      let(:result) { control.released?(key, resource_id, resource_key) }
+      let(:result) { control.released?(key, resource_id) }
 
       context 'when resource entity id has no access to release_key' do
         it { expect(result).to be_falsey }
@@ -42,7 +42,7 @@ module FeatureFlagger
     describe '#release' do
       it 'adds resource_id to storage' do
         control.release(key, resource_id, resource_key)
-        expect(storage).to have_value(key, resource_id, resource_key)
+        expect(storage).to have_value(key, resource_id)
       end
     end
 
@@ -50,8 +50,8 @@ module FeatureFlagger
       it 'adds feature_key to storage' do
         storage.add(resource_key, key, 1)
         control.release_to_all(key)
-        expect(storage).not_to have_value(key, 1, resource_key)
-        expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key)
+        expect(storage).not_to have_value(key, 1)
+        expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end
 
@@ -59,7 +59,7 @@ module FeatureFlagger
       it 'removes resource_id from storage' do
         storage.add(key, resource_id, resource_key)
         control.unrelease(key, resource_id, resource_key)
-        expect(storage).not_to have_value(key, resource_id, resource_key)
+        expect(storage).not_to have_value(key, resource_id)
       end
     end
 
@@ -67,14 +67,14 @@ module FeatureFlagger
       it 'removes feature_key to storage' do
         storage.add_all(FeatureFlagger::Control::RELEASED_FEATURES, key)
         control.unrelease_to_all(key)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key)
+        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
 
       it 'removes added resources' do
         storage.add(key, 1, resource_key)
         control.unrelease_to_all(key)
-        expect(storage).not_to have_value(key, 1, resource_key)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key)
+        expect(storage).not_to have_value(key, 1)
+        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
       end
     end
 
@@ -101,7 +101,7 @@ module FeatureFlagger
     end
 
     describe '#released_to_all?' do
-      let(:result) { control.released_to_all?(key, resource_key) }
+      let(:result) { control.released_to_all?(key) }
 
       context 'when feature was not released to all' do
         before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key) }

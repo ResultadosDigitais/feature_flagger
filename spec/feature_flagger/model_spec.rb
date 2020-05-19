@@ -45,8 +45,8 @@ module FeatureFlagger
         let(:resource_id) { 10 }
 
         it 'calls Control#released? with appropriated methods' do
-          expect(control).to receive(:released?).with(resolved_key, resource_id, resolved_resource_key)
-          DummyClass.released_id?(resource_id, resolved_resource_key, key)
+          expect(control).to receive(:released?).with(resolved_key, resource_id)
+          DummyClass.released_id?(resource_id, key)
         end
       end
     end

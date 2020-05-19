@@ -19,11 +19,11 @@ RSpec.describe FeatureFlagger::Storage::Redis do
           redis.sadd(key, value)
           redis.sadd(resource_key, key)
         }
-        it { expect(storage).to have_value(key, value, resource_key) }
+        it { expect(storage).to have_value(key, value) }
       end
 
       context 'value is not stored for given key' do
-        it { expect(storage).not_to have_value(key, value, resource_key) }
+        it { expect(storage).not_to have_value(key, value) }
       end
     end
 
