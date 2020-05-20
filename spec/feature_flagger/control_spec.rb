@@ -117,13 +117,26 @@ module FeatureFlagger
     end
 
     describe '#attach_resource_keys' do
-      subject { control.attach_resource_keys }
+      context 'when not contains resource key on storage' do
+        subject { control.attach_resource_keys }
 
-      before do
-        storage.add("avenue:key", 42)
+        before do
+          storage.add("avenue:key", 42)
+        end
+
+        it { expect(subject).to match([true]) }
       end
-      
-      it { expect(subject).not_to include(false) }
+
+      context 'when contains resource keys on storage' do
+        subject { control.attach_resource_keys }
+
+        before do
+          storage.add("avenue:key", 42)
+          storage.add("avenue:42", "key")
+        end
+
+        it { expect(subject).to match([true, false]) }
+      end
     end
 
     describe '#search_keys' do

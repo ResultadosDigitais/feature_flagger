@@ -58,7 +58,7 @@ module FeatureFlagger
 
     def release_resource_key(key)
       entity = key.gsub(/\:.*/, '')
-      return unless key =~ /#{entity}:\d+/
+      return false if key =~ /#{entity}:\d+/
 
       @storage.all_values(key).map do |value|
         @storage.add("#{entity}:#{value}", key)
