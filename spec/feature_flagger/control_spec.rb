@@ -27,7 +27,7 @@ module FeatureFlagger
       end
 
       context 'when resource entity id has access to release_key' do
-        before { storage.add(key, resource_id, resource_key) }
+        before { storage.add_multi(key, resource_id, resource_key) }
 
         it { expect(result).to be_truthy }
 
@@ -48,7 +48,7 @@ module FeatureFlagger
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        storage.add(resource_key, key, 1)
+        storage.add_multi(resource_key, key, 1)
         control.release_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -57,7 +57,7 @@ module FeatureFlagger
 
     describe '#unrelease' do
       it 'removes resource_id from storage' do
-        storage.add(key, resource_id, resource_key)
+        storage.add_multi(key, resource_id, resource_key)
         control.unrelease(key, resource_id, resource_key)
         expect(storage).not_to have_value(key, resource_id)
       end
@@ -71,7 +71,7 @@ module FeatureFlagger
       end
 
       it 'removes added resources' do
-        storage.add(key, 1, resource_key)
+        storage.add_multi(key, 1, resource_key)
         control.unrelease_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -110,7 +110,7 @@ module FeatureFlagger
       end
 
       context 'when feature was released to all' do
-        before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key) }
+        before { storage.add_multi(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key) }
 
         it { expect(result).to be_truthy }
       end
@@ -120,7 +120,7 @@ module FeatureFlagger
       subject { control.attach_resource_keys }
 
       before do
-        storage.add_single("avenue:key", 42)
+        storage.add("avenue:key", 42)
       end
       
       it { expect(subject).not_to include(false) }
@@ -128,9 +128,9 @@ module FeatureFlagger
 
     describe '#search_keys' do
       before do
-        storage.add('namespace:1', 1, resource_key)
-        storage.add('namespace:2', 2, resource_key)
-        storage.add('exclusive', 3, resource_key)
+        storage.add_multi('namespace:1', 1, resource_key)
+        storage.add_multi('namespace:2', 2, resource_key)
+        storage.add_multi('exclusive', 3, resource_key)
       end
 
       context 'without matching result' do

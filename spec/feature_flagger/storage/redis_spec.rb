@@ -29,14 +29,14 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
     describe '#add_single' do
       it 'adds the value to redis' do
-        storage.add_single(key, value)
+        storage.add(key, value)
         expect(redis.sismember(key, value)).to be_truthy
       end
     end
 
     describe '#add' do
       it 'adds the value to redis' do
-        storage.add(key, value, resource_key)
+        storage.add_multi(key, value, resource_key)
         expect(redis.sismember(key, value)).to be_truthy
         expect(redis.sismember(resource_key, key)).to be_truthy
       end
@@ -52,8 +52,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
     describe '#remove' do
       it 'removes the value from redis' do
-        redis.sadd(key, value)
-        redis.sadd(resource_key, key)
+        storage.add_multi(key, value, resource_key)
         storage.remove(key, value, resource_key)
         expect(redis.sismember(key, value)).to be_falsey
         expect(redis.sismember(resource_key, key)).to be_falsey
@@ -62,7 +61,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
     describe '#all_keys' do
       it 'list all key features from redis' do
-        storage.add(resource_key, key, value)
+        storage.add_multi(resource_key, key, value)
         storage.add_all(global_key, key)
         expect(storage.all_keys(global_key, resource_key)).to match([key])
       end

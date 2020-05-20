@@ -14,7 +14,7 @@ module FeatureFlagger
     end
 
     def release(feature_key, resource_id, resource_key)
-      @storage.add(feature_key, resource_id, resource_key)
+      @storage.add_multi(feature_key, resource_id, resource_key)
     end
 
     def release_to_all(feature_key)
@@ -61,7 +61,7 @@ module FeatureFlagger
       return unless key =~ /#{entity}:\d+/
 
       @storage.all_values(key).map do |value|
-        @storage.add_single("#{entity}:#{value}", key)
+        @storage.add("#{entity}:#{value}", key)
       end
     end
   end

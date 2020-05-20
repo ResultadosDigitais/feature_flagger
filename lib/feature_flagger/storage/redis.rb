@@ -21,11 +21,11 @@ module FeatureFlagger
         @redis.sismember(key, value)
       end
 
-      def add_single(key, value)
+      def add(key, value)
         @redis.sadd(key, value)
       end
 
-      def add(key, value, resource_key)
+      def add_multi(key, value, resource_key)
         @redis.multi do |redis|
           redis.sadd(key, value)
           redis.sadd(resource_key, key)
