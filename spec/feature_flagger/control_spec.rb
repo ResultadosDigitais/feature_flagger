@@ -120,16 +120,14 @@ module FeatureFlagger
     end
 
     describe '#attach_resource_keys' do
-      context 'when not contains resource key on storage' do
-        subject { control.attach_resource_keys }
+      subject { control.attach_resource_keys }
 
-        let(:result) { control.released?(resource_key, key) }
+      let(:result) { control.released?(resource_key, key) }
 
-        before { storage.add(resource_key, key) }
+      before { storage.add(resource_key, key) }
 
-        it 'validates resource key presence' do
-          expect(result).to be_truthy
-        end
+      it 'validates resource key presence' do
+        expect(result).to be_truthy
       end
     end
 
