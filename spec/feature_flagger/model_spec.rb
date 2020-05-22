@@ -11,7 +11,7 @@ module FeatureFlagger
     subject             { DummyClass.new }
     let(:key)           { [:email_marketing, :whitelabel] }
     let(:resolved_key)  { 'feature_flagger_dummy_class:email_marketing:whitelabel' }
-    let(:resolved_resource_key)  { 'feature_flagger_dummy_class:14' }
+    let(:resource_name) { 'feature_flagger_dummy_class' }
     let(:control)       { FeatureFlagger.control }
 
     before do
@@ -21,21 +21,21 @@ module FeatureFlagger
 
     describe '#release' do
       it 'calls Control#release with appropriated methods' do
-        expect(control).to receive(:release).with(resolved_key, subject.id, resolved_resource_key)
+        expect(control).to receive(:release).with(resolved_key, subject.id, resource_name)
         subject.release(key)
       end
     end
 
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
-        expect(control).to receive(:unrelease).with(resolved_key, subject.id, resolved_resource_key)
+        expect(control).to receive(:unrelease).with(resolved_key, subject.id, resource_name)
         subject.unrelease(key)
       end
     end
 
     describe '#releases_keys' do
       it 'calls Control#all_keys with appropriated methods' do
-        expect(control).to receive(:all_keys).with(resolved_resource_key)
+        expect(control).to receive(:all_keys).with(subject.id, resource_name)
         subject.releases
       end
     end
@@ -58,7 +58,7 @@ module FeatureFlagger
         let(:resolved_resource_key)  { 'feature_flagger_dummy_class:10' }
 
         it 'calls Control#release with appropriated methods' do
-          expect(control).to receive(:release).with(resolved_key, resource_id, resolved_resource_key)
+          expect(control).to receive(:release).with(resolved_key, resource_id, resource_name)
           DummyClass.release_id(resource_id, key)
         end
       end
@@ -70,7 +70,7 @@ module FeatureFlagger
         let(:resolved_resource_key)  { 'feature_flagger_dummy_class:20' }
 
         it 'calls Control#release with appropriated methods' do
-          expect(control).to receive(:unrelease).with(resolved_key, resource_id, resolved_resource_key)
+          expect(control).to receive(:unrelease).with(resolved_key, resource_id, resource_name)
           DummyClass.unrelease_id(resource_id, key)
         end
       end
@@ -119,8 +119,8 @@ module FeatureFlagger
         FeatureFlagger.configure do |config|
           config.storage = storage
         end
-        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0, resolved_resource_key)
-        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0, resolved_resource_key)
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0, resource_name)
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0, resource_name)
 
         filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
         FeatureFlagger.config.yaml_filepath = filepath
@@ -141,7 +141,7 @@ module FeatureFlagger
           FeatureFlagger.configure do |config|
             config.storage = storage
           end
-          FeatureFlagger.control.release(feature_key, 0, resolved_resource_key)
+          FeatureFlagger.control.release(feature_key, 0, resource_name)
 
           filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
           FeatureFlagger.config.yaml_filepath = filepath

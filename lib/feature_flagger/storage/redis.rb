@@ -25,22 +25,22 @@ module FeatureFlagger
         @redis.sadd(key, value)
       end
 
-      def add_multi(key, value, resource_key)
+      def add_multi(key, value, resource_name)
         @redis.multi do |redis|
           redis.sadd(key, value)
-          redis.sadd(resource_key, key)
+          redis.sadd("#{resource_name}:#{value}", key)
         end
       end
 
-      def remove(key, value, resource_key)
+      def remove(key, value, resource_name)
         @redis.multi do |redis|
           redis.srem(key, value)
-          redis.srem(resource_key, key)
+          redis.srem("#{resource_name}:#{value}", key)
         end
       end
 
-      def all_keys(global_key, resource_key)
-        @redis.sunion(global_key, resource_key)
+      def all_keys(global_key, value, resource_name)
+        @redis.sunion(global_key, "#{resource_name}:#{value}")
       end
 
       def remove_all(global_key, key)

@@ -13,20 +13,20 @@ module FeatureFlagger
         @storage.has_value?(feature_key, resource_id)
     end
 
-    def release(feature_key, resource_id, resource_key)
-      @storage.add_multi(feature_key, resource_id, resource_key)
+    def release(feature_key, resource_id, resource_name)
+      @storage.add_multi(feature_key, resource_id, resource_name)
     end
 
     def release_to_all(feature_key)
       @storage.add_all(RELEASED_FEATURES, feature_key)
     end
 
-    def all_keys(resource_key)
-      @storage.all_keys(RELEASED_FEATURES, resource_key)
+    def all_keys(resource_id, resource_name)
+      @storage.all_keys(RELEASED_FEATURES, resource_id, resource_name)
     end
 
-    def unrelease(feature_key, resource_id, resource_key)
-      @storage.remove(feature_key, resource_id, resource_key)
+    def unrelease(feature_key, resource_id, resource_name)
+      @storage.remove(feature_key, resource_id, resource_name)
     end
 
     def unrelease_to_all(feature_key)
@@ -56,12 +56,12 @@ module FeatureFlagger
 
     private
 
-    def release_resource_key(key)
-      entity = key.gsub(/\:.*/, '')
-      return false if key =~ /#{entity}:\d+/
+    def release_resource_key(feature_key)
+      resource_name = key.gsub(/\:.*/, '')
+      return false if key =~ /#{resource_name}:\d+/
 
-      @storage.all_values(key).map do |value|
-        @storage.add("#{entity}:#{value}", key)
+      @storage.all_values(key).map do |resource_id|
+        @storage.add("#{resource_name}:#{resource_id}", feature_key)
       end
     end
   end

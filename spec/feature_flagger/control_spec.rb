@@ -2,12 +2,13 @@ require 'spec_helper'
 
 module FeatureFlagger
   RSpec.describe Control do
-    let(:redis) { FakeRedis::Redis.new }
-    let(:storage) { Storage::Redis.new(redis) }
-    let(:control) { Control.new(storage) }
-    let(:resource_key) { 'avenue:42' }
-    let(:key)          { 'key' }
-    let(:resource_id)  { 'resource_id' }
+    let(:redis)         { FakeRedis::Redis.new }
+    let(:storage)       { Storage::Redis.new(redis) }
+    let(:control)       { Control.new(storage) }
+    let(:key)           { 'key' }
+    let(:resource_id)   { 'resource_id' }
+    let(:resource_name) { 'avenue' }
+    let(:resource_key)  { "#{resource_name}:#{resource_id}" }
 
     before do
       redis.flushdb
@@ -41,14 +42,15 @@ module FeatureFlagger
 
     describe '#release' do
       it 'adds resource_id to storage' do
-        control.release(key, resource_id, resource_key)
+        control.release(key, resource_id, resource_name)
         expect(storage).to have_value(key, resource_id)
+        expect(storage).to have_value(resource_key, key)
       end
     end
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        storage.add_multi(resource_key, key, 1)
+        storage.add_multi(key, 1, resource_name)
         control.release_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -57,9 +59,10 @@ module FeatureFlagger
 
     describe '#unrelease' do
       it 'removes resource_id from storage' do
-        storage.add_multi(key, resource_id, resource_key)
-        control.unrelease(key, resource_id, resource_key)
+        storage.add_multi(key, resource_id, resource_name)
+        control.unrelease(key, resource_id, resource_name)
         expect(storage).not_to have_value(key, resource_id)
+        expect(storage).not_to have_value(resource_key, key)
       end
     end
 
@@ -71,7 +74,7 @@ module FeatureFlagger
       end
 
       it 'removes added resources' do
-        storage.add_multi(key, 1, resource_key)
+        storage.add_multi(key, 1, resource_name)
         control.unrelease_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -82,9 +85,9 @@ module FeatureFlagger
       subject { control.resource_ids(key) }
 
       it 'returns all the values to given key' do
-        control.release(key, 1, resource_key)
-        control.release(key, 2, resource_key)
-        control.release(key, 15, resource_key)
+        control.release(key, 1, resource_name)
+        control.release(key, 2, resource_name)
+        control.release(key, 15, resource_name)
         expect(subject).to match_array %w[1 2 15]
       end
     end
@@ -93,9 +96,9 @@ module FeatureFlagger
       subject { control.released_features_to_all }
 
       it 'returns all the values to given features' do
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1', resource_key)
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name2', resource_key)
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name15', resource_key)
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1', resource_name)
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name2', resource_name)
+        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name15', resource_name)
         expect(subject).to match_array %w[feature::name1 feature::name2 feature::name15]
       end
     end
@@ -104,13 +107,13 @@ module FeatureFlagger
       let(:result) { control.released_to_all?(key) }
 
       context 'when feature was not released to all' do
-        before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key) }
+        before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_name) }
 
         it { expect(result).to be_falsey }
       end
 
       context 'when feature was released to all' do
-        before { storage.add_multi(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_key) }
+        before { storage.add_multi(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_name) }
 
         it { expect(result).to be_truthy }
       end
@@ -120,30 +123,21 @@ module FeatureFlagger
       context 'when not contains resource key on storage' do
         subject { control.attach_resource_keys }
 
-        before do
-          storage.add("avenue:key", 42)
+        let(:result) { control.released?(resource_key, key) }
+
+        before { storage.add(resource_key, key) }
+
+        it 'validates resource key presence' do
+          expect(result).to be_truthy
         end
-
-        it { expect(subject).to match([true]) }
-      end
-
-      context 'when contains resource keys on storage' do
-        subject { control.attach_resource_keys }
-
-        before do
-          storage.add("avenue:key", 42)
-          storage.add("avenue:42", "key")
-        end
-
-        it { expect(subject).to match([true, false]) }
       end
     end
 
     describe '#search_keys' do
       before do
-        storage.add_multi('namespace:1', 1, resource_key)
-        storage.add_multi('namespace:2', 2, resource_key)
-        storage.add_multi('exclusive', 3, resource_key)
+        storage.add_multi('namespace:1', 1, resource_name)
+        storage.add_multi('namespace:2', 2, resource_name)
+        storage.add_multi('exclusive', 3, resource_name)
       end
 
       context 'without matching result' do

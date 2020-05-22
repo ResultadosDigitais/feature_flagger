@@ -21,13 +21,13 @@ module FeatureFlagger
     end
 
     def releases
-      self.class.release_keys(resource_key)
+      self.class.release_keys(feature_flagger_identifier, feature_flagger_name)
     end
 
     def unrelease(*feature_key)
       resource_name = self.class.feature_flagger_model_settings.entity_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease(feature.key, id, resource_key)
+      FeatureFlagger.control.unrelease(feature.key, id, resource_name)
     end
 
     private
@@ -38,10 +38,6 @@ module FeatureFlagger
 
     def feature_flagger_name
       self.class.feature_flagger_model_settings.entity_name
-    end
-
-    def resource_key
-      "#{feature_flagger_name}:#{feature_flagger_identifier}"
     end
 
     module ClassMethods
@@ -56,19 +52,19 @@ module FeatureFlagger
       end
 
       def release_id(resource_id, *feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        resource_key = "#{feature_flagger_model_settings.entity_name}:#{resource_id}"
-        FeatureFlagger.control.release(feature.key, resource_id, resource_key)
+        resource_name = feature_flagger_model_settings.entity_name
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.release(feature.key, resource_id, resource_name)
       end
 
-      def release_keys(resource_key)
-        FeatureFlagger.control.all_keys(resource_key)
+      def release_keys(resource_id, resource_name)
+        FeatureFlagger.control.all_keys(resource_id, resource_name)
       end
 
       def unrelease_id(resource_id, *feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        resource_key = "#{feature_flagger_model_settings.entity_name}:#{resource_id}"
-        FeatureFlagger.control.unrelease(feature.key, resource_id, resource_key)
+        resource_name = feature_flagger_model_settings.entity_name
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.unrelease(feature.key, resource_id, resource_name)
       end
 
       def all_released_ids_for(*feature_key)
