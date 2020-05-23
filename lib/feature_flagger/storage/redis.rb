@@ -21,11 +21,7 @@ module FeatureFlagger
         @redis.sismember(key, value)
       end
 
-      def add(key, value)
-        @redis.sadd(key, value)
-      end
-
-      def add_multi(key, value, resource_name)
+      def add(key, value, resource_name)
         @redis.multi do |redis|
           redis.sadd(key, value)
           redis.sadd("#{resource_name}:#{value}", key)
@@ -39,7 +35,7 @@ module FeatureFlagger
         end
       end
 
-      def all_keys(global_key, value, resource_name)
+      def all_feature_keys(global_key, value, resource_name)
         @redis.sunion(global_key, "#{resource_name}:#{value}")
       end
 

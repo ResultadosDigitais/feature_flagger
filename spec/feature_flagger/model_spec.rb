@@ -34,8 +34,8 @@ module FeatureFlagger
     end
 
     describe '#releases_keys' do
-      it 'calls Control#all_keys with appropriated methods' do
-        expect(control).to receive(:all_keys).with(subject.id, resource_name)
+      it 'calls Control#all_feature_keys with appropriated methods' do
+        expect(control).to receive(:all_feature_keys).with(subject.id, resource_name)
         subject.releases
       end
     end

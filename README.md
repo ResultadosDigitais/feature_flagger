@@ -74,6 +74,9 @@ account.release(:email_marketing, :new_email_flow)
 account.released?(:email_marketing, :new_email_flow)
 #=> true
 
+# Get an array with all features for a specific account id
+account.releases
+
 # Remove feature for given account
 account.unrelease(:email_marketing, :new_email_flow)
 #=> true

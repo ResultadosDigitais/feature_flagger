@@ -28,7 +28,7 @@ module FeatureFlagger
       end
 
       context 'when resource entity id has access to release_key' do
-        before { storage.add_multi(key, resource_id, resource_key) }
+        before { storage.add(key, resource_id, resource_key) }
 
         it { expect(result).to be_truthy }
 
@@ -50,7 +50,7 @@ module FeatureFlagger
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        storage.add_multi(key, 1, resource_name)
+        storage.add(key, 1, resource_name)
         control.release_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -59,7 +59,7 @@ module FeatureFlagger
 
     describe '#unrelease' do
       it 'removes resource_id from storage' do
-        storage.add_multi(key, resource_id, resource_name)
+        storage.add(key, resource_id, resource_name)
         control.unrelease(key, resource_id, resource_name)
         expect(storage).not_to have_value(key, resource_id)
         expect(storage).not_to have_value(resource_key, key)
@@ -74,7 +74,7 @@ module FeatureFlagger
       end
 
       it 'removes added resources' do
-        storage.add_multi(key, 1, resource_name)
+        storage.add(key, 1, resource_name)
         control.unrelease_to_all(key)
         expect(storage).not_to have_value(key, 1)
         expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
@@ -113,29 +113,17 @@ module FeatureFlagger
       end
 
       context 'when feature was released to all' do
-        before { storage.add_multi(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_name) }
+        before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key, resource_name) }
 
         it { expect(result).to be_truthy }
       end
     end
 
-    describe '#attach_resource_keys' do
-      subject { control.attach_resource_keys }
-
-      let(:result) { control.released?(resource_key, key) }
-
-      before { storage.add(resource_key, key) }
-
-      it 'validates resource key presence' do
-        expect(result).to be_truthy
-      end
-    end
-
     describe '#search_keys' do
       before do
-        storage.add_multi('namespace:1', 1, resource_name)
-        storage.add_multi('namespace:2', 2, resource_name)
-        storage.add_multi('exclusive', 3, resource_name)
+        storage.add('namespace:1', 1, resource_name)
+        storage.add('namespace:2', 2, resource_name)
+        storage.add('exclusive', 3, resource_name)
       end
 
       context 'without matching result' do

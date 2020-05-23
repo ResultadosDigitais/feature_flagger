@@ -58,7 +58,7 @@ module FeatureFlagger
       end
 
       def release_keys(resource_id, resource_name)
-        FeatureFlagger.control.all_keys(resource_id, resource_name)
+        FeatureFlagger.control.all_feature_keys(resource_id, resource_name)
       end
 
       def unrelease_id(resource_id, *feature_key)
