@@ -1,21 +1,25 @@
 module FeatureFlagger
   class FeatureKeysMigration
 
-    class << self
-      def call
-        feature_keys = FeatureFlagger.control.search_keys("*").to_a
-        feature_keys.map{ |key| release_key(key) }.flatten
-      end
-    
-      private
+    def initialize(control)
+      @control = control
+    end
 
-      def release_key(feature_key)
-        resource_name = key.gsub(/\:.*/, '')
-        return false if key =~ /#{resource_name}:\d+/
+    def call
+      feature_keys = control.search_keys("*").to_a
+      feature_keys.map{ |key| release_key(key) }.flatten
+    end
 
-        FeatureFlagger.control.all_values(feature_key).map do |resource_id|
-          FeatureFlagger.control.release(feature_key, resource_id, resource_name)
-        end
+    private
+
+    attr_reader :control
+
+    def release_key(feature_key)
+      resource_name = feature_key.gsub(/\:.*/, '')
+      return false if feature_key =~ /#{resource_name}:\d+/
+
+      control.resource_ids(feature_key).map do |resource_id|
+        control.release(feature_key, resource_id, resource_name)
       end
     end
   end
