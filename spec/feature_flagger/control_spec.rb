@@ -41,6 +41,15 @@ module FeatureFlagger
     end
 
     describe '#release' do
+      context 'when resource_id is an Array' do
+        it 'adds all the ids to storage' do
+          resource_ids = [resource_id, 'another_resource_id']
+          control.release(key, resource_ids)
+
+          expect(control.resource_ids(key)).to match_array(resource_ids)
+        end
+      end
+
       it 'adds resource_id to storage' do
         control.release(key, resource_id, resource_name)
         expect(storage).to have_value(key, resource_id)
