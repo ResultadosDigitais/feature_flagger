@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'benchmark'
 
 module FeatureFlagger
   RSpec.describe Manager do
@@ -70,6 +71,43 @@ module FeatureFlagger
             )
           }.to raise_error("key is still mapped")
         end
+      end
+    end
+
+    describe 'how fast can I count models with feature', :wip do
+      let(:redis) { FakeRedis::Redis.new }
+      let(:storage) { Storage::Redis.new(redis) }
+
+      before do
+        FeatureFlagger.configure do |config|
+          config.storage = storage
+        end
+      end
+
+      it 'returns all detached feature keys' do
+        # Criar uma lista de 10000 features
+        # Criar 10 models
+        filepath = File.expand_path('../fixtures/features_performance.yaml', __dir__)
+        FeatureFlagger.config.yaml_filepath = filepath
+
+        models = (0..9).map{ |i| "model_#{i}" }
+        features = (0...1000).map{ |f| "feature_#{f}" }
+
+        # Liberar Aleatoriamente Features p/ models
+        models.each do |model|
+          features.each do |feature|
+            FeatureFlagger.control.release("#{model}:#{feature}",  (0..rand(10_000)).to_a)
+          end
+        end
+
+        puts Benchmark.measure {
+          # Bench: Quantas models tem a feature
+          puts FeatureFlagger.control.resource_ids("#{models.first}:#{features.first}").count
+        }
+
+        # Bench: Quantas features tem a model
+
+        expect(true).to eq(true)
       end
     end
   end
