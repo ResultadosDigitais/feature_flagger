@@ -17,48 +17,67 @@ module FeatureFlagger
         new(ns)
       end
 
-      def has_value?(key, value)
-        @redis.sismember(key, value)
+      def has_value?(feature_key, resource_name, resource_id)
+        @redis.sismember("#{resource_name}:#{resource_id}", feature_key)
       end
 
-      def add(key, value, resource_name)
+      def add(feature_key, resource_name, resource_ids)
         @redis.multi do |redis|
-          redis.sadd(key, value)
-          redis.sadd("#{resource_name}:#{value}", key)
+          Array(resource_ids).each do |resource_id|
+            redis.sadd("#{resource_name}:#{resource_id}", feature_key)
+          end
         end
       end
 
-      def remove(key, value, resource_name)
+      def remove(feature_key, resource_name, resource_ids)
         @redis.multi do |redis|
-          redis.srem(key, value)
-          redis.srem("#{resource_name}:#{value}", key)
+          Array(resource_ids).each do |resource_id|
+            redis.srem("#{resource_name}:#{resource_id}", feature_key)
+          end
         end
       end
 
-      def all_feature_keys(global_key, value, resource_name)
-        @redis.sunion(global_key, "#{resource_name}:#{value}")
+      def all_feature_keys(global_features_key, resource_name, resource_id)
+        @redis.sunion(global_features_key, "#{resource_name}:#{resource_id}")
       end
 
-      def remove_all(global_key, key)
+      def remove_all(global_features_key, feature_key, resource_name)
+        keys = search_keys("#{resource_name}:*")
+        @redis.srem(global_features_key, feature_key)
+
         @redis.multi do |redis|
-          redis.srem(global_key, key)
-          redis.del(key)
+          keys.map do |key|
+            redis.srem(key, feature_key)
+          end
         end
       end
 
-      def add_all(global_key, key)
+      def add_all(global_features_key, feature_key, resource_name)
+        keys = search_keys("#{resource_name}:*")
+        @redis.sadd(global_features_key, feature_key)
+
         @redis.multi do |redis|
-          redis.sadd(global_key, key)
-          redis.del(key)
+          keys.map do |key|
+            redis.srem("#{key}", feature_key)
+          end
         end
       end
 
-      def all_values(key)
-        @redis.smembers(key)
+      def all_values(feature_key, resource_name)
+        keys = search_keys("#{resource_name}:*")
+        ids = []
+        @redis.pipelined do |redis|
+          keys.map do |key|
+            if redis.sismember(key, feature_key)
+              ids << key.gsub("#{resource_name}:", '')
+            end
+          end
+        end
+        ids
       end
 
-      def search_keys(query)
-        @redis.scan_each(match: query)
+      def search_keys(pattern)
+        @redis.keys(pattern)
       end
     end
   end
