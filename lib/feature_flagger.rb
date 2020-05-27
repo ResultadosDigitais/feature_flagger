@@ -29,9 +29,5 @@ module FeatureFlagger
     def control
       @@control ||= Control.new(config.storage)
     end
-
-    def migrate_feature_keys
-      FeatureKeysMigration.new(control).call
-    end
   end
 end
