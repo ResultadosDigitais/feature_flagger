@@ -22,9 +22,9 @@ module FeatureFlagger
 
       context 'with key argument as an array of arrays' do
         let(:key)          { [[:email_marketing, :behavior_score]] }
-        let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
+        let(:resolved_key) { 'email_marketing:behavior_score' }
         it 'flattens the array and acts as an unidimensional array' do
-          expect(subject.key).to eq resolved_key
+          expect(subject.feature_key).to eq resolved_key
         end
       end
     end
@@ -34,12 +34,12 @@ module FeatureFlagger
       it { expect(subject.description).to eq 'Enable behavior score experiment' }
     end
 
-    describe '#key' do
+    describe '#feature_key' do
       let(:key)          { [:email_marketing, :behavior_score] }
-      let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
+      let(:resolved_key) { 'email_marketing:behavior_score' }
 
-      it 'returns the given key resolved and joined with resource_name' do
-        expect(subject.key).to eq resolved_key
+      it 'returns the given key resolved_key' do
+        expect(subject.feature_key).to eq resolved_key
       end
     end
   end

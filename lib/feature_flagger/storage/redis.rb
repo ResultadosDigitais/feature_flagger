@@ -37,13 +37,19 @@ module FeatureFlagger
         end
       end
 
-      def all_feature_keys(global_features_key, resource_name, resource_id)
-        @redis.sunion(global_features_key, "#{resource_name}:#{resource_id}")
+      def all_feature_keys(global_features_key, resource_name, resource_id = nil)
+        if resource_id
+          return @redis.sunion(
+            "#{resource_name}:#{global_features_key}",
+            "#{resource_name}:#{resource_id}"
+          )
+        end
+
+        @redis.smembers("#{resource_name}:#{global_features_key}")
       end
 
       def remove_all(global_features_key, feature_key, resource_name)
         keys = search_keys("#{resource_name}:*")
-        @redis.srem(global_features_key, feature_key)
 
         @redis.multi do |redis|
           keys.map do |key|
@@ -53,8 +59,9 @@ module FeatureFlagger
       end
 
       def add_all(global_features_key, feature_key, resource_name)
-        keys = search_keys("#{resource_name}:*")
-        @redis.sadd(global_features_key, feature_key)
+        keys = search_keys("#{resource_name}:*") - ["#{resource_name}:#{global_features_key}"]
+
+        add(feature_key, resource_name, global_features_key)
 
         @redis.multi do |redis|
           keys.map do |key|

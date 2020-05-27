@@ -1,26 +1,26 @@
 module FeatureFlagger
   class FeatureKeysMigration
 
-    def initialize(control)
-      @control = control
+    def initialize(from_redis, to_control)
+      @from_redis = from_redis
+      @to_control = to_control
     end
 
     def call
-      feature_keys = control.search_keys("*").to_a
-      feature_keys.map{ |key| release_key(key) }.flatten
+      @from_redis.keys("*").map{ |key| migrate_key(key) }.flatten
     end
 
     private
 
-    attr_reader :control
+    def migrate_key(key)
+      resource_ids = @from_redis.smembers(key)
 
-    def release_key(feature_key)
-      resource_name = feature_key.gsub(/\:.*/, '')
-      return false if feature_key =~ /#{resource_name}:\d+/
+      keys_array = key.split(':')
+      resource_name = keys_array.shift
 
-      control.resource_ids(feature_key).map do |resource_id|
-        control.release(feature_key, resource_id, resource_name)
-      end
+      return false if key =~ /#{resource_name}:\d+/
+
+      @to_control.release(keys_array.join(':'), resource_name, resource_ids)
     end
   end
 end

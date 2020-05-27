@@ -85,15 +85,28 @@ RSpec.describe FeatureFlagger::Storage::Redis do
   end
 
   describe '#all_feature_keys' do
-    it 'list all features keys for a resource' do
+    context 'when resource_id is provided' do
+      it 'list all features keys for a resource' do
+        another_feature_key = 'cool_feature_key'
+
+        storage.add(another_feature_key, resource_name, resource_id)
+        storage.add_all(global_feature_key, feature_key, resource_name)
+
+        features = storage.all_feature_keys(global_feature_key, resource_name, resource_id)
+
+        expect(features).to match_array([feature_key, another_feature_key])
+      end
+    end
+
+    it 'list all features globally available' do
       another_feature_key = 'cool_feature_key'
 
       storage.add(another_feature_key, resource_name, resource_id)
       storage.add_all(global_feature_key, feature_key, resource_name)
 
-      features = storage.all_feature_keys(global_feature_key, resource_name, resource_id)
+      features = storage.all_feature_keys(global_feature_key, resource_name)
 
-      expect(features).to match_array([feature_key, another_feature_key])
+      expect(features).to match_array([feature_key])
     end
   end
 
