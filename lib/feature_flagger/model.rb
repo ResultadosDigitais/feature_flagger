@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
   # Model provides convinient methods for Rails Models
   # class Account
@@ -21,13 +23,13 @@ module FeatureFlagger
     end
 
     def releases
-      self.class.release_keys(feature_flagger_identifier, feature_flagger_name)
+      self.class.release_keys(feature_flagger_identifier)
     end
 
     def unrelease(*feature_key)
       resource_name = self.class.feature_flagger_model_settings.entity_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease(feature.key, id, resource_name)
+      FeatureFlagger.control.unrelease(feature.feature_key, resource_name, id)
     end
 
     private
@@ -43,78 +45,78 @@ module FeatureFlagger
     module ClassMethods
       def feature_flagger
         raise ArgumentError unless block_given?
+
         yield feature_flagger_model_settings
       end
 
       def released_id?(resource_id, *feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.released?(feature.key, resource_id)
+        entity_name = feature_flagger_model_settings.entity_name
+        feature = Feature.new(feature_key, entity_name)
+        FeatureFlagger.control.released?(feature.feature_key, entity_name, resource_id)
       end
 
       def release_id(resource_id, *feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.release(feature.key, resource_id, resource_name)
+        entity_name = feature_flagger_model_settings.entity_name
+        feature = Feature.new(feature_key, entity_name)
+        FeatureFlagger.control.release(feature.feature_key, entity_name, resource_id)
       end
 
-      def release_keys(resource_id, resource_name)
-        FeatureFlagger.control.all_feature_keys(resource_id, resource_name)
+      def release_keys(resource_id)
+        FeatureFlagger.control.all_feature_keys(feature_flagger_model_settings.entity_name, resource_id)
       end
 
       def unrelease_id(resource_id, *feature_key)
         resource_name = feature_flagger_model_settings.entity_name
         feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.unrelease(feature.key, resource_id, resource_name)
+        FeatureFlagger.control.unrelease(feature.feature_key, resource_name, resource_id)
       end
 
       def all_released_ids_for(*feature_key)
+        resource_name = feature_flagger_model_settings.entity_name
         feature_key.flatten!
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.resource_ids(feature.key)
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.resource_ids(feature.feature_key, resource_name)
       end
 
       def release_to_all(*feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.release_to_all(feature.key)
+        resource_name = feature_flagger_model_settings.entity_name
+
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.release_to_all(feature.feature_key, resource_name)
       end
 
       def unrelease_to_all(*feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.unrelease_to_all(feature.key)
+        resource_name = feature_flagger_model_settings.entity_name
+
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.unrelease_to_all(feature.feature_key, resource_name)
       end
 
       def released_features_to_all
-        FeatureFlagger.control.released_features_to_all
+        FeatureFlagger.control.released_features_to_all(feature_flagger_model_settings.entity_name)
       end
 
       def released_to_all?(*feature_key)
-        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.released_to_all?(feature.key)
+        resource_name = feature_flagger_model_settings.entity_name
+
+        feature = Feature.new(feature_key, resource_name)
+        FeatureFlagger.control.released_to_all?(feature.feature_key, resource_name)
       end
 
       def detached_feature_keys
-        rollout_resource_name = feature_flagger_model_settings.entity_name
-        persisted_features = FeatureFlagger.control.search_keys("#{rollout_resource_name}:*").to_a
-        mapped_feature_keys = FeatureFlagger.config.mapped_feature_keys(rollout_resource_name)
-        (persisted_features - mapped_feature_keys).map do |key| 
-          # This condition prevents searching for keys related to Model#releases structure.
-          key.sub("#{rollout_resource_name}:",'') unless (key =~ /#{rollout_resource_name}:\d+/)
-        end.compact
+        Manager.detached_feature_keys(feature_flagger_model_settings.entity_name)
       end
 
       def cleanup_detached(*feature_key)
-        complete_feature_key = feature_key.map(&:to_s).insert(0, feature_flagger_model_settings.entity_name)
-        key_value = FeatureFlagger.config.info.dig(*complete_feature_key)
-        raise "key is still mapped" if key_value
-        FeatureFlagger.control.unrelease_to_all(complete_feature_key.join(':'))
+        Manager.cleanup_detached(feature_flagger_model_settings.entity_name, feature_key)
       end
 
       def rollout_resource_name
-        klass_name = self.to_s
+        klass_name = to_s
         klass_name.gsub!(/::/, '_')
-        klass_name.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
-        klass_name.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
-        klass_name.tr!("-", "_")
+        klass_name.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2')
+        klass_name.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+        klass_name.tr!('-', '_')
         klass_name.downcase!
         klass_name
       end
