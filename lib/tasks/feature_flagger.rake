@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 namespace :feature_flagger do
-  desc 'cleaning up keys from storage that are no longer in the rollout.yml file'
-  task cleanup_removed_rollouts: :environment do
-    keys = FeatureFlagger::Manager.detached_feature_keys
+  desc "cleaning up keys from storage that are no longer in the rollout.yml file, Usage: `$ bundle exec rake feature_flagger:cleanup_removed_rollouts\[Account\] `"
+  task :cleanup_removed_rollouts, %i[entity_name] => :environment do
+    entity = args.entity_name.constantize
+    keys = FeatureFlagger::Manager.detached_feature_keys(entity)
     puts "Found keys to remove: #{keys}"
     keys.each do |key|
-      FeatureFlagger::Manager.cleanup_detached key
+      FeatureFlagger::Manager.cleanup_detached(entity, key)
     end
   end
 
