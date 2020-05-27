@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
   class Control
     attr_reader :storage
@@ -30,7 +32,7 @@ module FeatureFlagger
     end
 
     def unrelease_to_all(feature_key, resource_name)
-      @storage.remove_all(RELEASED_FEATURES, feature_key, resource_name)
+      @storage.remove_all(feature_key, resource_name)
     end
 
     def resource_ids(feature_key, resource_name)

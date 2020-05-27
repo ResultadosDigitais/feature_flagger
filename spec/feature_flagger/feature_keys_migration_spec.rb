@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module FeatureFlagger
@@ -34,7 +36,7 @@ module FeatureFlagger
 
       context 'when there are keys in the new format' do
         context 'when there are keys in the old format' do
-          it "uses the old format as source of truth"
+          it 'uses the old format as source of truth'
         end
       end
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
   class KeyNotFoundError < StandardError; end
 

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
   class ModelSettings
     def initialize(arguments)
       arguments.each do |field, value|
-        self.public_send("#{field}=", value)
+        public_send("#{field}=", value)
       end
     end
 
@@ -12,7 +14,7 @@ module FeatureFlagger
 
     # Public: entity_name to which entity the model is targeting.
     # Take this yaml file as example:
-    # 
+    #
     # account:
     #   email_marketing:
     #       whitelabel:

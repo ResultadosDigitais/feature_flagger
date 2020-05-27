@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module FeatureFlagger
@@ -27,7 +29,7 @@ module FeatureFlagger
       end
 
       context 'when resource entity id has access to feature key' do
-        before {  control.release(feature_key, resource_name, resource_id) }
+        before { control.release(feature_key, resource_name, resource_id) }
 
         it { expect(result).to be_truthy }
 
@@ -147,7 +149,7 @@ module FeatureFlagger
       end
 
       context 'with matching results' do
-        it { expect(control.search_keys("*av*nu*")).to match_array(['avenue:1', 'avenue:2']) }
+        it { expect(control.search_keys('*av*nu*')).to match_array(['avenue:1', 'avenue:2']) }
       end
     end
   end

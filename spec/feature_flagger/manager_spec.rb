@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'benchmark'
 
@@ -20,7 +22,7 @@ module FeatureFlagger
         FeatureFlagger.control.release('feature_b', resource_name, resource_id)
         FeatureFlagger.control.release('feature_d', resource_name, resource_id)
 
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
         FeatureFlagger.config.yaml_filepath = filepath
 
         expect(described_class.detached_feature_keys(resource_name)).to include(
@@ -31,7 +33,7 @@ module FeatureFlagger
     end
 
     describe 'cleanup_detached' do
-      context "detached feature key" do
+      context 'detached feature key' do
         let(:redis) { FakeRedis::Redis.new }
         let(:storage) { Storage::Redis.new(redis) }
         let(:feature_key) { 'feature_d' }
@@ -44,7 +46,7 @@ module FeatureFlagger
           end
           FeatureFlagger.control.release(feature_key, resource_name, resource_id)
 
-          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
           FeatureFlagger.config.yaml_filepath = filepath
         end
 
@@ -55,18 +57,18 @@ module FeatureFlagger
         end
       end
 
-      context "mapped feature key" do
+      context 'mapped feature key' do
         before do
-          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
           FeatureFlagger.config.yaml_filepath = filepath
         end
 
         it 'do not cleanup key' do
-          expect {
+          expect do
             described_class.cleanup_detached(
               :feature_flagger_dummy_class, :email_marketing, :behavior_score
             )
-          }.to raise_error("key is still mapped")
+          end.to raise_error('key is still mapped')
         end
       end
     end
