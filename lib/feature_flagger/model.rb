@@ -27,9 +27,8 @@ module FeatureFlagger
     end
 
     def unrelease(*feature_key)
-      resource_name = self.class.feature_flagger_model_settings.entity_name
-      feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease(feature.feature_key, resource_name, id)
+      feature = Feature.new(feature_key, feature_flagger_name)
+      FeatureFlagger.control.unrelease(feature.key, feature_flagger_name, id)
     end
 
     private
@@ -50,66 +49,64 @@ module FeatureFlagger
       end
 
       def released_id?(resource_id, *feature_key)
-        entity_name = feature_flagger_model_settings.entity_name
-        feature = Feature.new(feature_key, entity_name)
-        FeatureFlagger.control.released?(feature.feature_key, entity_name, resource_id)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.released?(feature.key, feature_flagger_name, resource_id)
       end
 
       def release_id(resource_id, *feature_key)
-        entity_name = feature_flagger_model_settings.entity_name
-        feature = Feature.new(feature_key, entity_name)
-        FeatureFlagger.control.release(feature.feature_key, entity_name, resource_id)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.release(feature.key, feature_flagger_name, resource_id)
       end
 
       def release_keys(resource_id)
-        FeatureFlagger.control.all_feature_keys(feature_flagger_model_settings.entity_name, resource_id)
+        FeatureFlagger.control.all_feature_keys(feature_flagger_name, resource_id)
       end
 
       def unrelease_id(resource_id, *feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.unrelease(feature.feature_key, resource_name, resource_id)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.unrelease(feature.key, feature_flagger_name, resource_id)
       end
 
       def all_released_ids_for(*feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-        feature_key.flatten!
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.resource_ids(feature.feature_key, resource_name)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.resource_ids(feature.key, feature_flagger_name)
       end
 
       def release_to_all(*feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.release_to_all(feature.feature_key, resource_name)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.release_to_all(feature.key, feature_flagger_name)
       end
 
       def unrelease_to_all(*feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.unrelease_to_all(feature.feature_key, resource_name)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.unrelease_to_all(feature.key, feature_flagger_name)
       end
 
       def released_features_to_all
-        FeatureFlagger.control.released_features_to_all(feature_flagger_model_settings.entity_name)
+        FeatureFlagger.control.released_features_to_all(feature_flagger_name)
       end
 
       def released_to_all?(*feature_key)
-        resource_name = feature_flagger_model_settings.entity_name
-
-        feature = Feature.new(feature_key, resource_name)
-        FeatureFlagger.control.released_to_all?(feature.feature_key, resource_name)
+        feature = Feature.new(feature_key, feature_flagger_name)
+        FeatureFlagger.control.released_to_all?(feature.key, feature_flagger_name)
       end
 
       def detached_feature_keys
-        Manager.detached_feature_keys(feature_flagger_model_settings.entity_name)
+        Manager.detached_feature_keys(feature_flagger_name)
       end
 
       def cleanup_detached(*feature_key)
-        Manager.cleanup_detached(feature_flagger_model_settings.entity_name, feature_key)
+        Manager.cleanup_detached(feature_flagger_name, feature_key)
       end
+
+      def feature_flagger_model_settings
+        @feature_flagger_model_settings ||= FeatureFlagger::ModelSettings.new(
+          identifier_field: :id,
+          entity_name: rollout_resource_name
+        )
+      end
+
+      private
 
       def rollout_resource_name
         klass_name = to_s
@@ -121,15 +118,8 @@ module FeatureFlagger
         klass_name
       end
 
-      def feature_flagger_model_settings
-        @feature_flagger_model_settings ||= FeatureFlagger::ModelSettings.new(
-          identifier_field: :id,
-          entity_name: rollout_resource_name
-        )
-      end
-
-      def feature_flagger_identifier
-        public_send(feature_flagger_model_settings.identifier_field)
+      def feature_flagger_name
+        feature_flagger_model_settings.entity_name
       end
     end
   end

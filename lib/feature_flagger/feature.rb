@@ -14,7 +14,7 @@ module FeatureFlagger
       @data['description']
     end
 
-    def feature_key
+    def key
       @key_resolver.normalized_key.join(':')
     end
 
