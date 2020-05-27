@@ -8,7 +8,7 @@ module FeatureFlagger
     end
 
     def info
-      raise RuntimeError, 'Missing configuration file.' unless yaml_filepath
+      raise 'Missing configuration file.' unless yaml_filepath
 
       @info ||= YAML.load_file(yaml_filepath)
     end
@@ -42,7 +42,7 @@ module FeatureFlagger
 
     def join_key(resource_name, key)
       key.unshift resource_name if resource_name
-      key.join(":")
+      key.join(':')
     end
   end
 end

@@ -4,7 +4,6 @@ require 'redis-namespace'
 module FeatureFlagger
   module Storage
     class Redis
-
       DEFAULT_NAMESPACE = :feature_flagger
 
       def initialize(redis)
@@ -13,7 +12,7 @@ module FeatureFlagger
 
       def self.default_client
         redis = ::Redis.new(url: ENV['REDIS_URL'])
-        ns = ::Redis::Namespace.new(DEFAULT_NAMESPACE, :redis => redis)
+        ns = ::Redis::Namespace.new(DEFAULT_NAMESPACE, redis: redis)
         new(ns)
       end
 
@@ -48,7 +47,7 @@ module FeatureFlagger
         @redis.smembers("#{resource_name}:#{global_features_key}")
       end
 
-      def remove_all(global_features_key, feature_key, resource_name)
+      def remove_all(feature_key, resource_name)
         keys = search_keys("#{resource_name}:*")
 
         @redis.multi do |redis|
@@ -65,7 +64,7 @@ module FeatureFlagger
 
         @redis.multi do |redis|
           keys.map do |key|
-            redis.srem("#{key}", feature_key)
+            redis.srem(key.to_s, feature_key)
           end
         end
       end

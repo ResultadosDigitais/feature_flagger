@@ -26,7 +26,7 @@ module FeatureFlagger
       let(:configuration) { described_class.new }
 
       before do
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
         configuration.yaml_filepath = filepath
       end
 

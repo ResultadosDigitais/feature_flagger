@@ -1,13 +1,12 @@
 module FeatureFlagger
   class FeatureKeysMigration
-
     def initialize(from_redis, to_control)
       @from_redis = from_redis
       @to_control = to_control
     end
 
     def call
-      @from_redis.keys("*").map{ |key| migrate_key(key) }.flatten
+      @from_redis.keys('*').map { |key| migrate_key(key) }.flatten
     end
 
     private

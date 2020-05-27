@@ -114,7 +114,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
     it 'removes feature from all resources' do
       storage.add(feature_key, resource_name, resource_id)
 
-      storage.remove_all(global_feature_key, feature_key, resource_name)
+      storage.remove_all(feature_key, resource_name)
 
       expect(storage).to_not have_value(feature_key, resource_name, resource_id)
     end
@@ -122,14 +122,14 @@ RSpec.describe FeatureFlagger::Storage::Redis do
     it 'removes value from global feature key' do
       storage.add(feature_key, resource_name, resource_id)
 
-      storage.remove_all(global_feature_key, feature_key, resource_name)
+      storage.remove_all(feature_key, resource_name)
 
       expect(redis.smembers(global_feature_key)).to_not include(feature_key)
     end
   end
 
   describe '#all_values' do
-    let(:values) { %w(value1 value2) }
+    let(:values) { %w[value1 value2] }
 
     it 'returns all ids for the given feature key' do
       storage.add(feature_key, resource_name, values)
