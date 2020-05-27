@@ -22,6 +22,13 @@ module FeatureFlagger
       FeatureFlagger.config.yaml_filepath = filepath
     end
 
+    describe '#released?' do
+      it 'calls Control#released? with appropriated methods' do
+        expect(control).to receive(:released?).with(feature_key, resource_name, subject.id)
+        subject.released?(key)
+      end
+    end
+
     describe '#release' do
       it 'calls Control#release with appropriated methods' do
         expect(control).to receive(:release).with(feature_key, resource_name, subject.id)
