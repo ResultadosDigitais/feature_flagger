@@ -8,7 +8,9 @@ module FeatureFlagger
     end
 
     def info
-      @info ||= YAML.load_file(yaml_filepath) if yaml_filepath
+      raise RuntimeError, 'Missing configuration file.' unless yaml_filepath
+
+      @info ||= YAML.load_file(yaml_filepath)
     end
 
     def mapped_feature_keys(resource_name = nil)
