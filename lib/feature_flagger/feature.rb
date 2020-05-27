@@ -3,22 +3,6 @@
 module FeatureFlagger
   class KeyNotFoundError < StandardError; end
 
-  class KeyResolver
-    def initialize(feature_key, resource_name)
-      @feature_key = feature_key
-      @resource_name = resource_name
-    end
-
-    def normalized_key
-      @normalized_key ||= Array(@feature_key).flatten
-                                             .map(&:to_s)
-    end
-
-    def normalized_key_with_name
-      @normalized_key_with_name ||= [@resource_name] + normalized_key
-    end
-  end
-
   class Feature
     def initialize(feature_key, resource_name)
       @key_resolver = KeyResolver.new(feature_key, resource_name.to_s)
