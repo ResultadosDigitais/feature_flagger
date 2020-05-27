@@ -11,6 +11,23 @@ namespace :feature_flagger do
     end
   end
 
+  namespace :storage do
+    namespace :redis do
+      desc 'Migrate the old key format to the new one, Usage: `$ bundle exec rake feature_flagger:storage:redis:migrate`'
+      task :migrate do |_, _args|
+        require 'feature_flagger'
+
+        redis = ::Redis::Namespace.new(
+          FeatureFlagger::Storage::Redis::DEFAULT_NAMESPACE,
+          redis: ::Redis.new(url: ENV['REDIS_URL'])
+        )
+        control = FeatureFlagger.control
+
+        FeatureFlagger::FeatureKeysMigration.new(redis, control).call
+      end
+    end
+  end
+
   desc "Release feature to given identifiers, Usage: `$ bundle exec rake feature_flagger:release\[Account,email_marketing:whitelabel,1,2,3,4\]`"
   task :release, %i[entity_name feature_key] => :environment do |_, args|
     entity = args.entity_name.constantize

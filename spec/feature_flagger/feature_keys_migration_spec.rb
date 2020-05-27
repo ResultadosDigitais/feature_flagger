@@ -52,6 +52,7 @@ module FeatureFlagger
 
             # Setup old key format
             redis.sadd("#{class_name}:#{feature_key}", id)
+            redis.sadd(FeatureFlagger::Control::RELEASED_FEATURES, "#{class_name}:global_released_feature")
 
             # Also setup new keys
             control.release(feature_key, class_name, 2)
@@ -63,6 +64,7 @@ module FeatureFlagger
             expect(control.released?(feature_key, class_name, id)).to be_truthy
             expect(control.released?(feature_key, class_name, 2)).to be_truthy
             expect(control.released?('another_feature', class_name, id)).to be_truthy
+            expect(control.released?('global_released_feature', class_name, id)).to be_truthy
           end
         end
       end
