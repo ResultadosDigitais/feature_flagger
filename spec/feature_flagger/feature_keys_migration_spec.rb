@@ -4,68 +4,74 @@ require 'spec_helper'
 
 module FeatureFlagger
   RSpec.describe FeatureKeysMigration do
+    subject(:migrator) { described_class.new(from_redis, to_control) }
 
+    let(:from_redis) { FakeRedis::Redis.new }
+    let(:to_redis)   { FakeRedis::Redis.new }
+    let(:to_control) { Control.new(Storage::Redis.new(to_redis)) }
+    let(:global_key) { FeatureFlagger::Control::RELEASED_FEATURES }
+
+    before do
+      from_redis.select(1)
+      to_redis.select(2)
+    end
+
+    # This method migrates features key from the old fashioned to the new
+    # format.
+    #
+    # It must convert feature keys with changes:
+    # 
+    # from "avenue:traffic_lights" => 42
+    # to   "avenue:42" => traffic_lights
     describe '.call' do
       context 'when there are keys in the old format' do
-        subject(:migrator) { described_class.new(from_redis, to_control) }
+        before do
+          from_redis.sadd('avenue:traffic_light', 42)
+          from_redis.sadd('avenue:hydrant', 42)
+          from_redis.sadd('avenue:hydrant', 1)
+          from_redis.sadd(global_key, 'avenue:crosswalk')
+          from_redis.sadd(global_key, 'avenue:streetlight')
 
-        let(:from_redis)   { FakeRedis::Redis.new }
-
-        let(:to_redis)   { FakeRedis::Redis.new }
-        let(:to_control) { Control.new(Storage::Redis.new(to_redis)) }
-
-        it 'migrates the keys to the new format' do
-          # old_format: { class_name:feature_key => [id] }
-          # new_format: { class_name:id => [feature_key] }
-          feature_key = 'traffic_light'
-          id = 42
-          class_name = 'avenue'
-
-          # Setup old key format
-          from_redis.select(1)
-          from_redis.sadd("#{class_name}:#{feature_key}", id)
-
-          # Setup second redis
-          to_redis.select(2)
-
-          # Run the migration
           migrator.call
+        end
 
-          expect(to_control.released?(feature_key, class_name, id)).to be_truthy
+        it 'migrates feature keys to the new format' do
+          expect(to_control.released?('traffic_light', 'avenue', 42)).to be_truthy
+          expect(to_control.released?('hydrant', 'avenue', 42)).to be_truthy
+          expect(to_control.released?('hydrant', 'avenue', 1)).to be_truthy
+        end
+
+        it 'migrates all released feature keys to the new format ' do
+          expect(to_control.released_to_all?('crosswalk', 'avenue')).to be_truthy
+          expect(to_control.released_to_all?('streetlight', 'avenue')).to be_truthy
         end
       end
 
-      context 'when there are keys in the new format' do
-        context 'when there are keys in the old format' do
-          subject(:migrator) { described_class.new(redis, control) }
+      context 'when there are keys in both formats' do
+        before do
+          from_redis.sadd('avenue:traffic_light', 42)
+          from_redis.sadd('avenue:hydrant', 42)
+          from_redis.sadd('avenue:hydrant', 1)
+          from_redis.sadd(global_key, 'avenue:crosswalk')
+          from_redis.sadd(global_key, 'avenue:streetlight')
 
-          let(:redis)   { FakeRedis::Redis.new }
-          let(:control) { Control.new(Storage::Redis.new(redis)) }
+          to_control.release('payphone', 'avenue', 42)
+          to_control.release_to_all('cameras', 'avenue')
 
+          migrator.call
+        end
 
-          it 'uses the old format as source of truth' do
-            # old_format: { class_name:feature_key => [id] }
-            # new_format: { class_name:id => [feature_key] }
-            feature_key = 'traffic_light'
-            id = 42
-            class_name = 'avenue'
+        it 'migrates feature keys to the new format' do
+          expect(to_control.released?('traffic_light', 'avenue', 42)).to be_truthy
+          expect(to_control.released?('hydrant', 'avenue', 42)).to be_truthy
+          expect(to_control.released?('hydrant', 'avenue', 1)).to be_truthy
+          expect(to_control.released?('payphone', 'avenue', 42)).to be_truthy
+        end
 
-            # Setup old key format
-            redis.sadd("#{class_name}:#{feature_key}", id)
-            redis.sadd(FeatureFlagger::Control::RELEASED_FEATURES, "#{class_name}:global_released_feature")
-
-            # Also setup new keys
-            control.release(feature_key, class_name, 2)
-            control.release_to_all('another_feature', class_name)
-
-            # Run the migration
-            migrator.call
-
-            expect(control.released?(feature_key, class_name, id)).to be_truthy
-            expect(control.released?(feature_key, class_name, 2)).to be_truthy
-            expect(control.released?('another_feature', class_name, id)).to be_truthy
-            # expect(control.released?('global_released_feature', class_name, id)).to be_truthy
-          end
+        it 'migrates all released feature keys to the new format ' do
+          expect(to_control.released_to_all?('crosswalk', 'avenue')).to be_truthy
+          expect(to_control.released_to_all?('streetlight', 'avenue')).to be_truthy
+          expect(to_control.released_to_all?('cameras', 'avenue')).to be_truthy
         end
       end
     end
