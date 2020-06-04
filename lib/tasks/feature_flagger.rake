@@ -23,7 +23,7 @@ namespace :feature_flagger do
         )
         control = FeatureFlagger.control
 
-        FeatureFlagger::FeatureKeysMigration.new(redis, control).call
+        FeatureFlagger::Storage::FeatureKeysMigration.new(redis, control).call
       end
     end
   end
