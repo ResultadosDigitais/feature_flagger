@@ -35,6 +35,8 @@ module FeatureFlagger
     end
 
     def find_value(hash, key, *tail)
+      return nil if hash.nil?
+
       value = hash[key]
 
       if tail.any?
