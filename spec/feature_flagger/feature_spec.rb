@@ -17,6 +17,11 @@ module FeatureFlagger
       context 'when feature is documented' do
         let(:key) { %i[email_marketing behavior_score] }
         it { expect(subject).to be_a Feature }
+
+        context 'when feature key is incomplete' do
+          let(:key) { [:email_marketing] }
+          it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
+        end
       end
 
       context 'when feature is not documented' do

@@ -27,7 +27,9 @@ module FeatureFlagger
     def fetch_data
       @data ||= find_value(config_info, *@key_resolver.normalized_key_with_name)
 
-      raise FeatureFlagger::KeyNotFoundError, @feature_key if @data.nil?
+      if @data.nil? || @data["description"].nil?
+        raise FeatureFlagger::KeyNotFoundError, @feature_key
+      end
 
       @data
     end
@@ -35,11 +37,11 @@ module FeatureFlagger
     def find_value(hash, key, *tail)
       value = hash[key]
 
-      if value.nil? || tail.empty?
-        value
-      else
-        find_value(value, *tail)
+      if tail.any?
+        return find_value(value, *tail)
       end
+
+      value
     end
   end
 end
