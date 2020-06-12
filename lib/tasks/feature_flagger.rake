@@ -3,11 +3,13 @@
 namespace :feature_flagger do
   desc "cleaning up keys from storage that are no longer in the rollout.yml file, Usage: `$ bundle exec rake feature_flagger:cleanup_removed_rollouts\[Account\] `"
   task :cleanup_removed_rollouts, %i[entity_name] => :environment do
-    entity = args.entity_name.constantize
-    keys = FeatureFlagger::Manager.detached_feature_keys(entity)
-    puts "Found keys to remove: #{keys}"
-    keys.each do |key|
-      FeatureFlagger::Manager.cleanup_detached(entity, key)
+    resource_name = args.entity_name.constantize
+    feature_keys = FeatureFlagger::Manager.detached_feature_keys(resource_name)
+    puts "Found keys to remove: #{feature_keys}"
+    feature_keys.each do |feature_key|
+      FeatureFlagger::Manager.cleanup_detached(resource_name, feature_key)
+    rescue RuntimeError, 'key is still mapped'
+      next
     end
   end
 
