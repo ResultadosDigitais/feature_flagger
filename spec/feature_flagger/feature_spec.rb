@@ -19,7 +19,7 @@ module FeatureFlagger
         it { expect(subject).to be_a Feature }
 
         context 'when feature key is incomplete' do
-          let(:key) { [:email_marketing] }
+          let(:key) { %i[email_marketing] }
           it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
         end
       end
