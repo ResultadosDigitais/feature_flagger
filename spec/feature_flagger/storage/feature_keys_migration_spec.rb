@@ -21,13 +21,13 @@ module FeatureFlagger
       # format.
       #
       # It must convert feature keys with changes:
-      # 
+      #
       # from "avenue:traffic_lights" => 42
       # to   "avenue:42" => traffic_lights
       describe '.call' do
         context 'when there are keys in the old format' do
           before do
-            from_redis.sadd('avenue:traffic_light', 42)
+            from_redis.sadd('avenue:traffic_light:with_time', 42)
             from_redis.sadd('avenue:hydrant', 42)
             from_redis.sadd('avenue:hydrant', 1)
             from_redis.sadd(global_key, 'avenue:crosswalk')
@@ -37,7 +37,7 @@ module FeatureFlagger
           end
 
           it 'migrates feature keys to the new format' do
-            expect(to_control.released?('traffic_light', 'avenue', 42)).to be_truthy
+            expect(to_control.released?('traffic_light:with_time', 'avenue', 42)).to be_truthy
             expect(to_control.released?('hydrant', 'avenue', 42)).to be_truthy
             expect(to_control.released?('hydrant', 'avenue', 1)).to be_truthy
           end

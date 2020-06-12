@@ -35,7 +35,10 @@ module FeatureFlagger
         return false if key =~ /(\d+).*/
 
         resource_ids = @from_redis.smembers(key)
-        resource_name, feature_key = key.split(':')
+
+        decomposed_key = key.split(':')
+        resource_name = decomposed_key.shift
+        feature_key = decomposed_key.join(':')
 
         @to_control.release(feature_key, resource_name, resource_ids)
       end
