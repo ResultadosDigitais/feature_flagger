@@ -16,9 +16,7 @@ namespace :feature_flagger do
   namespace :storage do
     namespace :redis do
       desc 'Migrate the old key format to the new one, Usage: `$ bundle exec rake feature_flagger:storage:redis:migrate`'
-      task :migrate do |_, _args|
-        require 'feature_flagger'
-
+      task :migrate => :environment do |_, _args|
         redis = ::Redis::Namespace.new(
           FeatureFlagger::Storage::Redis::DEFAULT_NAMESPACE,
           redis: ::Redis.new(url: ENV['REDIS_URL'])
