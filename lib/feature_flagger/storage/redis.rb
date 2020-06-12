@@ -73,15 +73,18 @@ module FeatureFlagger
 
       def all_values(feature_key, resource_name)
         keys = search_keys("#{resource_name}:*")
-        ids = []
+        query = {}
         @redis.pipelined do |redis|
           keys.map do |key|
-            if redis.sismember(key, feature_key)
-              ids << key.gsub("#{resource_name}:", '')
-            end
+            query[key] = @redis.sismember(key, feature_key)
           end
         end
-        ids
+
+        query.map do |key, in_redis|
+          next unless in_redis.value == true
+
+          key.gsub("#{resource_name}:", '')
+        end.compact
       end
 
       def search_keys(pattern)

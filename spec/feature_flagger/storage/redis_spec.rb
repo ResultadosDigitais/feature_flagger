@@ -135,6 +135,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
     it 'returns all ids for the given feature key' do
       storage.add(feature_key, resource_name, values)
+      storage.add('another_feature', resource_name, 'another_id')
 
       expect(storage.all_values(feature_key, resource_name)).to match_array(values)
     end

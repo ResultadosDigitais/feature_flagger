@@ -104,6 +104,7 @@ module FeatureFlagger
         control.release(feature_key, resource_name, 1)
         control.release(feature_key, resource_name, 2)
         control.release(feature_key, resource_name, 15)
+        control.release('another_feature', resource_name, 20)
 
         expect(control.resource_ids(feature_key, resource_name)).to match_array(%w[1 2 15])
       end
