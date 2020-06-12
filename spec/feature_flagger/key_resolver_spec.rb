@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe KeyResolver do
+RSpec.describe FeatureFlagger::KeyResolver do
   let(:subject) do
    described_class.new([:this,:is,[:some,[:interesting, :composition],:of],:keys], 'class_name')
  end
