@@ -20,13 +20,14 @@ jobs:
         environment:
           COVERAGE: true
     steps:
+      - checkout
+
       - run:
           name: Setup Code Climate test-reporter
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
 
-      - checkout
       - run: gem install bundler
       - run: bundle install -j4
       - run: ./cc-test-reporter before-build
