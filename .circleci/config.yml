@@ -14,6 +14,25 @@ jobs:
       - run: bundle install -j4
       - run: bundle exec rspec --profile 10
 
+  coverage:
+    docker:
+      - image: circleci/ruby:2.5.8
+        environment:
+          COVERAGE: true
+    steps:
+      - checkout
+
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - run: gem install bundler
+      - run: bundle install -j4
+      - run: ./cc-test-reporter before-build
+      - run: bundle exec rspec --profile 10
+      - run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
 workflows:
   all-tests:
     jobs:
@@ -21,3 +40,4 @@ workflows:
           matrix:
             parameters:
               ruby-version: ["circleci/ruby:2.5.8", "circleci/ruby:2.6.6", "circleci/ruby:2.7.1"]
+      - coverage
