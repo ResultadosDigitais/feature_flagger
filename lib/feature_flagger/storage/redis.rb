@@ -76,7 +76,7 @@ module FeatureFlagger
         query = {}
         @redis.pipelined do |redis|
           keys.map do |key|
-            query[key] = @redis.sismember(key, feature_key)
+            query[key] = redis.sismember(key, feature_key)
           end
         end
 

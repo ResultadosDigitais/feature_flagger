@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
   class KeyResolver
     def initialize(feature_key, resource_name)

@@ -25,8 +25,8 @@ module FeatureFlagger
       end
 
       context 'when resource name is not documented in configuration' do
-        let(:key) { ["email_marketing"] }
-        let(:class_name) { "something_else" }
+        let(:key) { ['email_marketing'] }
+        let(:class_name) { 'something_else' }
 
         it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
       end
