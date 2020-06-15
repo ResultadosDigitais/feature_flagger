@@ -1,13 +1,23 @@
-version: 2
+version: 2.1
+
 jobs:
   build:
+    parameters:
+      ruby-version:
+        type: string
     docker:
-      - image: circleci/ruby:2.5.0
-      - image: redis:3.0.3
+      - image: << parameters.ruby-version >>
+      - image: redis:5.0.9
     steps:
       - checkout
       - run: gem install bundler
       - run: bundle install -j4
-      - type: shell
-        command: |
-          bundle exec rspec --profile 10
+      - run: bundle exec rspec --profile 10
+
+workflows:
+  all-tests:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              ruby-version: ["circleci/ruby:2.5.8", "circleci/ruby:2.6.6", "circleci/ruby:2.7.1"]
