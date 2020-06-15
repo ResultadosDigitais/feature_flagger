@@ -1,44 +1,52 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module FeatureFlagger
   RSpec.describe Feature do
-    subject { Feature.new(key, :feature_flagger_dummy_class) }
+    subject { Feature.new(key, class_name) }
+
+    let(:class_name) { :feature_flagger_dummy_class }
 
     before do
-      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
       FeatureFlagger.config.yaml_filepath = filepath
     end
 
     describe '#initialize' do
       context 'when feature is documented' do
-        let(:key) { [:email_marketing, :behavior_score] }
+        let(:key) { %i[email_marketing behavior_score] }
         it { expect(subject).to be_a Feature }
+
+        context 'when feature key is incomplete' do
+          let(:key) { %i[email_marketing] }
+          it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
+        end
       end
 
-      context 'when feature is not documented' do
-        let(:key) { [:email_marketing, :new_email_flow] }
+      context 'when resource name is not documented in configuration' do
+        let(:key) { ['email_marketing'] }
+        let(:class_name) { 'something_else' }
+
         it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
       end
 
-      context 'with key argument as an array of arrays' do
-        let(:key)          { [[:email_marketing, :behavior_score]] }
-        let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
-        it 'flattens the array and acts as an unidimensional array' do
-          expect(subject.key).to eq resolved_key
-        end
+      context 'when feature is not documented' do
+        let(:key) { %i[email_marketing new_email_flow] }
+        it { expect { subject }.to raise_error(FeatureFlagger::KeyNotFoundError) }
       end
     end
 
     describe '#description' do
-      let(:key) { [:email_marketing, :behavior_score] }
+      let(:key) { %i[email_marketing behavior_score] }
       it { expect(subject.description).to eq 'Enable behavior score experiment' }
     end
 
     describe '#key' do
-      let(:key)          { [:email_marketing, :behavior_score] }
-      let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
+      let(:key)          { [%i[email_marketing behavior_score]] }
+      let(:resolved_key) { 'email_marketing:behavior_score' }
 
-      it 'returns the given key resolved and joined with resource_name' do
+      it 'returns the given key resolved_key' do
         expect(subject.key).to eq resolved_key
       end
     end

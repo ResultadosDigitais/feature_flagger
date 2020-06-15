@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 module FeatureFlagger
+  class KeyNotFoundError < StandardError; end
+
   class Feature
-    def initialize(feature_key, resource_name = nil)
-      @feature_key = resolve_key(feature_key, resource_name)
-      @doc = FeatureFlagger.config.info
+    def initialize(feature_key, resource_name)
+      @key_resolver = KeyResolver.new(feature_key, resource_name.to_s)
+
       fetch_data
     end
 
@@ -11,33 +15,35 @@ module FeatureFlagger
     end
 
     def key
-      @feature_key.join(':')
+      @key_resolver.normalized_key.join(':')
     end
 
     private
 
-    def resolve_key(feature_key, resource_name)
-      key = Array(feature_key).flatten
-      key.insert(0, resource_name) if resource_name
-      key.map(&:to_s)
+    def config_info
+      FeatureFlagger.config.info
     end
 
     def fetch_data
-      @data ||= find_value(@doc, *@feature_key)
-      raise FeatureFlagger::KeyNotFoundError.new(@feature_key) if @data.nil?
+      @data ||= find_value(config_info, *@key_resolver.normalized_key_with_name)
+
+      if @data.nil? || @data["description"].nil?
+        raise FeatureFlagger::KeyNotFoundError, @feature_key
+      end
+
       @data
     end
 
     def find_value(hash, key, *tail)
+      return nil if hash.nil?
+
       value = hash[key]
 
-      if value.nil? || tail.empty?
-        value
-      else
-        find_value(value, *tail)
+      if tail.any?
+        return find_value(value, *tail)
       end
+
+      value
     end
   end
 end
-
-class FeatureFlagger::KeyNotFoundError < StandardError ; end

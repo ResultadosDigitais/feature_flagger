@@ -1,37 +1,40 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module FeatureFlagger
   RSpec.describe Control do
-    let(:redis) { FakeRedis::Redis.new }
-    let(:storage) { Storage::Redis.new(redis) }
-    let(:control) { Control.new(storage) }
-    let(:key)         { 'key' }
-    let(:resource_id) { 'resource_id' }
+    let(:redis)         { FakeRedis::Redis.new }
+    let(:storage)       { Storage::Redis.new(redis) }
+    let(:control)       { Control.new(storage) }
+    let(:feature_key)   { 'key' }
+    let(:resource_id)   { 'resource_id' }
+    let(:resource_name) { 'avenue' }
 
     before do
       redis.flushdb
     end
 
     describe '#released?' do
-      let(:result) { control.released?(key, resource_id) }
+      let(:result) { control.released?(feature_key, resource_name, resource_id) }
 
-      context 'when resource entity id has no access to release_key' do
+      context 'when resource entity id has no access to feature key' do
         it { expect(result).to be_falsey }
 
-        context 'and a feature is release to all' do
-          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        context 'when a feature is released to all' do
+          before { control.release_to_all(feature_key, resource_name) }
 
           it { expect(result).to be_truthy }
         end
       end
 
-      context 'when resource entity id has access to release_key' do
-        before { storage.add(key, resource_id) }
+      context 'when resource entity id has access to feature key' do
+        before { control.release(feature_key, resource_name, resource_id) }
 
         it { expect(result).to be_truthy }
 
-        context 'and a feature is release to all' do
-          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        context 'when a feature is release to all' do
+          before { control.release_to_all(feature_key, resource_name) }
 
           it { expect(result).to be_truthy }
         end
@@ -39,77 +42,97 @@ module FeatureFlagger
     end
 
     describe '#release' do
+      context 'when resource_id is an Array' do
+        it 'adds all the ids to storage' do
+          resource_ids = [resource_id, 'another_resource_id']
+          control.release(feature_key, resource_name, resource_ids)
+
+          expect(control.resource_ids(feature_key, resource_name)).to match_array(resource_ids)
+        end
+      end
+
       it 'adds resource_id to storage' do
-        control.release(key, resource_id)
-        expect(storage).to have_value(key, resource_id)
+        control.release(feature_key, resource_name, resource_id)
+
+        expect(storage).to have_value(feature_key, resource_name, resource_id)
       end
     end
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        storage.add(key, 1)
-        control.release_to_all(key)
-        expect(storage).not_to have_value(key, 1)
-        expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+        control.release_to_all(feature_key, resource_name)
+
+        expect(control.released?(feature_key, resource_name, 1)).to be_truthy
+        expect(control.all_feature_keys(resource_name, 1)).to eq([feature_key])
       end
     end
 
     describe '#unrelease' do
       it 'removes resource_id from storage' do
-        storage.add(key, resource_id)
-        control.unrelease(key, resource_id)
-        expect(storage).not_to have_value(key, resource_id)
+        control.release(feature_key, resource_name, resource_id)
+        expect(control.released?(feature_key, resource_name, resource_id)).to be_truthy
+
+        control.unrelease(feature_key, resource_name, resource_id)
+
+        expect(control.released?(feature_key, resource_name, resource_id)).to be_falsey
       end
     end
 
     describe '#unrelease_to_all' do
-      it 'removes feature_key to storage' do
-        storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key)
-        control.unrelease_to_all(key)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+      it 'removes feature_key from storage' do
+        control.release_to_all(feature_key, resource_name)
+        expect(control.released?(feature_key, resource_name, resource_id)).to be_truthy
+
+        control.unrelease_to_all(feature_key, resource_name)
+
+        expect(control.released?(feature_key, resource_name, resource_id)).to be_falsey
       end
 
       it 'removes added resources' do
-        storage.add(key, 1)
-        control.unrelease_to_all(key)
-        expect(storage).not_to have_value(key, 1)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+        control.release(feature_key, resource_name, 1)
+
+        control.unrelease_to_all(feature_key, resource_name)
+
+        expect(control.released?(feature_key, resource_name, 1)).to be_falsey
       end
     end
 
     describe '#resource_ids' do
-      subject { control.resource_ids(key) }
+      subject { control.resource_ids(feature_key, resource_name) }
 
-      it 'returns all the values to given key' do
-        control.release(key, 1)
-        control.release(key, 2)
-        control.release(key, 15)
-        expect(subject).to match_array %w[1 2 15]
+      it 'returns all the resource ids for the given feature key' do
+        control.release(feature_key, resource_name, 1)
+        control.release(feature_key, resource_name, 2)
+        control.release(feature_key, resource_name, 15)
+        control.release('another_feature', resource_name, 20)
+
+        expect(control.resource_ids(feature_key, resource_name)).to match_array(%w[1 2 15])
       end
     end
 
     describe '#released_features_to_all' do
-      subject { control.released_features_to_all }
-
       it 'returns all the values to given features' do
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name1')
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name2')
-        control.release(FeatureFlagger::Control::RELEASED_FEATURES, 'feature::name15')
-        expect(subject).to match_array %w[feature::name1 feature::name2 feature::name15]
+        control.release_to_all('feature1', resource_name)
+        control.release_to_all('feature2', resource_name)
+        control.release_to_all('feature15', resource_name)
+
+        features_list = control.released_features_to_all(resource_name)
+
+        expect(features_list).to match_array(%w[feature1 feature2 feature15])
       end
     end
 
     describe '#released_to_all?' do
-      let(:result) { control.released_to_all?(key) }
+      let(:result) { control.released_to_all?(feature_key, resource_name) }
 
       context 'when feature was not released to all' do
-        before { storage.remove(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        before { control.unrelease_to_all(feature_key, resource_name) }
 
         it { expect(result).to be_falsey }
       end
 
       context 'when feature was released to all' do
-        before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        before { control.release_to_all(feature_key, resource_name) }
 
         it { expect(result).to be_truthy }
       end
@@ -117,17 +140,17 @@ module FeatureFlagger
 
     describe '#search_keys' do
       before do
-        storage.add('namespace:1', 1)
-        storage.add('namespace:2', 2)
-        storage.add('exclusive', 3)
+        control.release('namespace:1', resource_name, 1)
+        control.release('namespace:2', resource_name, 2)
+        control.release('namespace:1', 'exclusive', 3)
       end
 
       context 'without matching result' do
-        it { expect(control.search_keys('invalid').to_a).to be_empty }
+        it { expect(control.search_keys('invalid')).to be_empty }
       end
 
       context 'with matching results' do
-        it { expect(control.search_keys("*ame*pac*").to_a).to contain_exactly('namespace:1', 'namespace:2') }
+        it { expect(control.search_keys('*av*nu*')).to match_array(['avenue:1', 'avenue:2']) }
       end
     end
   end
