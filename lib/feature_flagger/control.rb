@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module FeatureFlagger
   class Control
     attr_reader :storage
@@ -10,41 +8,36 @@ module FeatureFlagger
       @storage = storage
     end
 
-    def released?(feature_key, resource_name, resource_id)
-      @storage.has_value?(feature_key, resource_name, RELEASED_FEATURES) ||
-        @storage.has_value?(feature_key, resource_name, resource_id)
+    def released?(feature_key, resource_id)
+      @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
     end
 
-    def release(feature_key, resource_name, resource_id)
-      @storage.add(feature_key, resource_name, resource_id)
+    def release(feature_key, resource_id)
+      @storage.add(feature_key, resource_id)
     end
 
-    def release_to_all(feature_key, resource_name)
-      @storage.add_all(RELEASED_FEATURES, feature_key, resource_name)
+    def release_to_all(feature_key)
+      @storage.add_all(RELEASED_FEATURES, feature_key)
     end
 
-    def all_feature_keys(resource_name, resource_id)
-      @storage.all_feature_keys(RELEASED_FEATURES, resource_name, resource_id)
+    def unrelease(feature_key, resource_id)
+      @storage.remove(feature_key, resource_id)
     end
 
-    def unrelease(feature_key, resource_name, resource_id)
-      @storage.remove(feature_key, resource_name, resource_id)
+    def unrelease_to_all(feature_key)
+      @storage.remove_all(RELEASED_FEATURES, feature_key)
     end
 
-    def unrelease_to_all(feature_key, resource_name)
-      @storage.remove_all(feature_key, resource_name)
+    def resource_ids(feature_key)
+      @storage.all_values(feature_key)
     end
 
-    def resource_ids(feature_key, resource_name)
-      @storage.all_values(feature_key, resource_name)
+    def released_features_to_all
+      @storage.all_values(RELEASED_FEATURES)
     end
 
-    def released_features_to_all(resource_name)
-      @storage.all_feature_keys(RELEASED_FEATURES, resource_name)
-    end
-
-    def released_to_all?(feature_key, resource_name)
-      @storage.has_value?(feature_key, resource_name, RELEASED_FEATURES)
+    def released_to_all?(feature_key)
+      @storage.has_value?(RELEASED_FEATURES, feature_key)
     end
 
     def search_keys(query)

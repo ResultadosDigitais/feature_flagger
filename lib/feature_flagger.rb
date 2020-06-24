@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'yaml'
 
 require 'feature_flagger/version'
@@ -8,11 +6,8 @@ require 'feature_flagger/control'
 require 'feature_flagger/model'
 require 'feature_flagger/model_settings'
 require 'feature_flagger/feature'
-require 'feature_flagger/key_resolver'
-require 'feature_flagger/key_decomposer'
 require 'feature_flagger/configuration'
 require 'feature_flagger/manager'
-require 'feature_flagger/storage/feature_keys_migration'
 require 'feature_flagger/railtie'
 
 module FeatureFlagger

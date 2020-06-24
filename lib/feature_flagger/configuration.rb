@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module FeatureFlagger
   class Configuration
     attr_accessor :storage, :yaml_filepath
@@ -10,9 +8,7 @@ module FeatureFlagger
     end
 
     def info
-      raise 'Missing configuration file.' unless yaml_filepath
-
-      @info ||= YAML.load_file(yaml_filepath)
+      @info ||= YAML.load_file(yaml_filepath) if yaml_filepath
     end
 
     def mapped_feature_keys(resource_name = nil)
@@ -44,7 +40,7 @@ module FeatureFlagger
 
     def join_key(resource_name, key)
       key.unshift resource_name if resource_name
-      key.join(':')
+      key.join(":")
     end
   end
 end
