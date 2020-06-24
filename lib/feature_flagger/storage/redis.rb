@@ -17,6 +17,22 @@ module FeatureFlagger
         new(ns)
       end
 
+      # Public: fetch_releases get all feature_keys related
+      # to a resource and the global release structure.
+      #
+      # resource_key  - The String representing the resource.
+      # global_key    - The String representing the key to global structure.
+      #
+      # Example:
+      #
+      # resource_key = 'account:42'
+      # global_key   = 'released_to_all_key'
+      #
+      # fetch_releases(resource_key, global_key) #=> ['account:email_marketing:whitelabel']
+      def fetch_releases(resource_key, global_key)
+        @redis.sunion(resource_key, global_key)
+      end
+
       def has_value?(key, value)
         @redis.sismember(key, value)
       end

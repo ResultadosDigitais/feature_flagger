@@ -23,6 +23,32 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       end
     end
 
+    describe '#fetch_release' do
+      let(:resource_key) { 'avenue:42' }
+      let(:feature_key) { 'avenue:street:traffic_light' }
+
+      context 'when there is no features under global structure' do
+        before do
+          storage.add(resource_key, feature_key)
+        end
+
+        it 'returns related keys' do
+          expect(storage.fetch_releases(resource_key, global_key)).to match_array(feature_key)
+        end
+      end
+
+      context 'when there is features under global structure' do
+        before do
+          storage.add(resource_key, feature_key)
+          storage.add_all(global_key, feature_key)
+        end
+
+        it 'returns related keys' do
+          expect(storage.fetch_releases(resource_key, global_key)).to match_array(feature_key)
+        end
+      end
+    end
+
     describe '#add' do
       it 'adds the value to redis' do
         storage.add(key, value)
