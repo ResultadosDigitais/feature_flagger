@@ -37,8 +37,11 @@ module FeatureFlagger
         @redis.sismember(key, value)
       end
 
-      def add(key, value)
-        @redis.sadd(key, value)
+      def add(feature_key, resource_name, resource_id)
+        @redis.multi do |redis|
+          redis.sadd(feature_key, resource_id)
+          redis.sadd("#{resource_name}:#{resource_id}", feature_key)
+        end
       end
 
       def remove(key, value)
