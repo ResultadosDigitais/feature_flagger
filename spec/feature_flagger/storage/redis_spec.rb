@@ -1,143 +1,66 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe FeatureFlagger::Storage::Redis do
-  let(:redis)         { FakeRedis::Redis.new }
-  let(:storage)       { FeatureFlagger::Storage::Redis.new(redis) }
-  let(:resource_name) { 'avenue' }
-  let(:resource_id)   { 'bar' }
-  let(:feature_key)   { 'foo' }
+  let(:redis)   { FakeRedis::Redis.new }
+  let(:storage) { described_class.new(redis) }
+  let(:key)   { 'foo' }
+  let(:value) { 'bar' }
+  let(:global_key) { 'released_features' }
 
-  let(:global_feature_key)    { 'released_features' }
+  context do
+    before do
+      redis.flushdb
+    end
 
-  before do
-    redis.flushdb
-  end
+    describe '#has_value?' do
+      context 'value is stored for given key' do
+        before { redis.sadd(key, value) }
+        it { expect(storage).to have_value(key, value) }
+      end
 
-  describe '#has_value?' do
-    context 'when there is a value stored for the given key' do
-      it 'returns true' do
-        storage.add(feature_key, resource_name, resource_id)
-        expect(storage).to have_value(feature_key, resource_name, resource_id)
+      context 'value is not stored for given key' do
+        it { expect(storage).not_to have_value(key, value) }
       end
     end
 
-    context 'when there is not a value stored for the given key' do
-      it 'returns false' do
-        expect(storage).not_to have_value(feature_key, resource_name, resource_id)
-      end
-    end
-  end
-
-  describe '#add' do
-    context 'when resource_id is an array' do
-      it 'adds all the resource ids in the right place' do
-        another_resource_id = 'something_else'
-        storage.add(feature_key, resource_name, [resource_id, another_resource_id])
-
-        expect(storage).to have_value(feature_key, resource_name, resource_id)
-        expect(storage).to have_value(feature_key, resource_name, another_resource_id)
+    describe '#add' do
+      it 'adds the value to redis' do
+        storage.add(key, value)
+        expect(redis.sismember(key, value)).to be_truthy
       end
     end
 
-    it 'adds the resource id to the data structure' do
-      storage.add(feature_key, resource_name, resource_id)
-
-      expect(storage).to have_value(feature_key, resource_name, resource_id)
-    end
-  end
-
-  describe '#add_all' do
-    it 'adds feature to redis global feature key' do
-      storage.add_all(global_feature_key, feature_key, resource_name)
-
-      expect(storage.all_feature_keys(global_feature_key, resource_name, resource_id)).to include(feature_key)
-    end
-
-    it 'removes feature keys from resources' do
-      storage.add(feature_key, resource_name, resource_id)
-
-      storage.add_all(global_feature_key, feature_key, resource_name)
-
-      expect(storage.has_value?(feature_key, resource_name, resource_id)).to be_falsey
-    end
-  end
-
-  describe '#remove' do
-    context 'when resource_id is an array' do
-      it 'adds all the resource ids in the right place' do
-        another_resource_id = 'something_else'
-        storage.add(feature_key, resource_name, [resource_id, another_resource_id])
-
-        storage.remove(feature_key, resource_name, [resource_id, another_resource_id])
-
-        expect(storage).to_not have_value(feature_key, resource_name, resource_id)
-        expect(storage).to_not have_value(feature_key, resource_name, another_resource_id)
+    describe '#add_all' do
+      it 'adds value to redis global key and clear key' do
+        storage.add_all(global_key, key)
+        expect(redis.sismember(global_key, key)).to be_truthy
+        expect(redis.sismember(key, value)).to be_falsey
       end
     end
 
-    it 'removes the value from data structure' do
-      storage.add(feature_key, resource_name, resource_id)
-
-      storage.remove(feature_key, resource_name, resource_id)
-
-      expect(storage).to_not have_value(feature_key, resource_name, resource_id)
-    end
-  end
-
-  describe '#all_feature_keys' do
-    context 'when resource_id is provided' do
-      it 'list all features keys for a resource' do
-        another_feature_key = 'cool_feature_key'
-
-        storage.add(another_feature_key, resource_name, resource_id)
-        storage.add_all(global_feature_key, feature_key, resource_name)
-
-        features = storage.all_feature_keys(global_feature_key, resource_name, resource_id)
-
-        expect(features).to match_array([feature_key, another_feature_key])
+    describe '#remove' do
+      it 'removes the value from redis' do
+        redis.sadd(key, value)
+        storage.remove(key, value)
+        expect(redis.sismember(key, value)).to be_falsey
       end
     end
 
-    it 'list all features globally available' do
-      another_feature_key = 'cool_feature_key'
-
-      storage.add(another_feature_key, resource_name, resource_id)
-      storage.add_all(global_feature_key, feature_key, resource_name)
-
-      features = storage.all_feature_keys(global_feature_key, resource_name)
-
-      expect(features).to match_array([feature_key])
-    end
-  end
-
-  describe '#remove_all' do
-    it 'removes feature from all resources' do
-      storage.add(feature_key, resource_name, resource_id)
-
-      storage.remove_all(feature_key, resource_name)
-
-      expect(storage).to_not have_value(feature_key, resource_name, resource_id)
+    describe '#remove_all' do
+      it 'removes all values from redis' do
+        redis.sadd(key, value)
+        storage.remove_all(global_key, key)
+        expect(redis.sismember(key, value)).to be_falsey
+      end
     end
 
-    it 'removes value from global feature key' do
-      storage.add(feature_key, resource_name, resource_id)
+    describe '#all_values' do
+      let(:values) { %w(value1 value2) }
 
-      storage.remove_all(feature_key, resource_name)
-
-      expect(redis.smembers(global_feature_key)).to_not include(feature_key)
-    end
-  end
-
-  describe '#all_values' do
-    let(:values) { %w[value1 value2] }
-
-    it 'returns all ids for the given feature key' do
-      storage.add(feature_key, resource_name, values)
-      storage.add('another_feature', resource_name, 'another_id')
-
-      expect(storage.all_values(feature_key, resource_name)).to match_array(values)
+      it 'returns all values for the given key' do
+        redis.sadd(key, values)
+        expect(storage.all_values(key).sort).to eq values.sort
+      end
     end
   end
 end

@@ -1,52 +1,34 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 module FeatureFlagger
+
   class DummyClass
     include FeatureFlagger::Model
-    def id
-      14
-    end
+    def id; 14 end
   end
 
   RSpec.describe Model do
     subject             { DummyClass.new }
-    let(:key)           { %i[email_marketing whitelabel] }
-    let(:feature_key)   { 'email_marketing:whitelabel' }
-    let(:resource_name) { 'feature_flagger_dummy_class' }
+    let(:key)           { [:email_marketing, :whitelabel] }
+    let(:resolved_key)  { 'feature_flagger_dummy_class:email_marketing:whitelabel' }
     let(:control)       { FeatureFlagger.control }
 
     before do
-      filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
+      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
       FeatureFlagger.config.yaml_filepath = filepath
-    end
-
-    describe '#released?' do
-      it 'calls Control#released? with appropriated methods' do
-        expect(control).to receive(:released?).with(feature_key, resource_name, subject.id)
-        subject.released?(key)
-      end
     end
 
     describe '#release' do
       it 'calls Control#release with appropriated methods' do
-        expect(control).to receive(:release).with(feature_key, resource_name, subject.id)
+        expect(control).to receive(:release).with(resolved_key, subject.id)
         subject.release(key)
       end
     end
 
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
-        expect(control).to receive(:unrelease).with(feature_key, resource_name, subject.id)
+        expect(control).to receive(:unrelease).with(resolved_key, subject.id)
         subject.unrelease(key)
-      end
-    end
-
-    describe '#releases_keys' do
-      it 'calls Control#all_feature_keys with appropriated methods' do
-        expect(control).to receive(:all_feature_keys).with(resource_name, subject.id)
-        subject.releases
       end
     end
 
@@ -55,7 +37,7 @@ module FeatureFlagger
         let(:resource_id) { 10 }
 
         it 'calls Control#released? with appropriated methods' do
-          expect(control).to receive(:released?).with(feature_key, resource_name, resource_id)
+          expect(control).to receive(:released?).with(resolved_key, resource_id)
           DummyClass.released_id?(resource_id, key)
         end
       end
@@ -66,54 +48,43 @@ module FeatureFlagger
         let(:resource_id) { 10 }
 
         it 'calls Control#release with appropriated methods' do
-          expect(control).to receive(:release).with(feature_key, resource_name, resource_id)
+          expect(control).to receive(:release).with(resolved_key, resource_id)
           DummyClass.release_id(resource_id, key)
-        end
-      end
-    end
-
-    describe '.unrelease_id' do
-      context 'given a specific resource id' do
-        let(:resource_id) { 20 }
-
-        it 'calls Control#release with appropriated methods' do
-          expect(control).to receive(:unrelease).with(feature_key, resource_name, resource_id)
-          DummyClass.unrelease_id(resource_id, key)
         end
       end
     end
 
     describe '.all_released_ids_for' do
       it 'calls Control#resource_ids with appropriated methods' do
-        expect(control).to receive(:resource_ids).with(feature_key, resource_name)
+        expect(control).to receive(:resource_ids).with(resolved_key)
         DummyClass.all_released_ids_for(key)
       end
     end
 
     describe '.release_to_all' do
       it 'calls Control#release_to_all with appropriated methods' do
-        expect(control).to receive(:release_to_all).with(feature_key, resource_name)
+        expect(control).to receive(:release_to_all).with(resolved_key)
         DummyClass.release_to_all(key)
       end
     end
 
     describe '.unrelease_to_all' do
       it 'calls Control#unrelease_to_all with appropriated methods' do
-        expect(control).to receive(:unrelease_to_all).with(feature_key, resource_name)
+        expect(control).to receive(:unrelease_to_all).with(resolved_key)
         DummyClass.unrelease_to_all(key)
       end
     end
 
     describe '.released_features_to_all' do
       it 'calls Control#released_features_to_all with appropriated methods' do
-        expect(control).to receive(:released_features_to_all).with(resource_name)
+        expect(control).to receive(:released_features_to_all)
         DummyClass.released_features_to_all
       end
     end
 
     describe '.released_to_all?' do
       it 'calls Control#released_to_all? with appropriated methods' do
-        expect(control).to receive(:released_to_all?).with(feature_key, resource_name)
+        expect(control).to receive(:released_to_all?).with(resolved_key)
         DummyClass.released_to_all?(key)
       end
     end
@@ -126,47 +97,45 @@ module FeatureFlagger
         FeatureFlagger.configure do |config|
           config.storage = storage
         end
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0)
+        FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0)
 
-        FeatureFlagger.control.release('feature_a', resource_name, 0)
-        FeatureFlagger.control.release('feature_b', resource_name, 1)
-
-        filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
+        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
         FeatureFlagger.config.yaml_filepath = filepath
       end
 
       it 'returns all detached feature keys' do
-        expect(DummyClass.detached_feature_keys).to contain_exactly('feature_a', 'feature_b')
+        expect(DummyClass.detached_feature_keys).to contain_exactly("feature_a","feature_b")
       end
     end
 
     describe '.cleanup_detached' do
-      context 'detached feature key' do
+      context "detached feature key" do
         let(:redis) { FakeRedis::Redis.new }
         let(:storage) { Storage::Redis.new(redis) }
+        let(:feature_key) { 'feature_flagger_dummy_class:feature_a' }
 
         before do
           FeatureFlagger.configure do |config|
             config.storage = storage
           end
+          FeatureFlagger.control.release(feature_key, 0)
 
-          FeatureFlagger.control.release(:feature_a, resource_name, 0)
-
-          filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
+          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
           FeatureFlagger.config.yaml_filepath = filepath
         end
 
         it 'cleanup key' do
-          expect(DummyClass.detached_feature_keys).to include 'feature_a'
           DummyClass.cleanup_detached(:feature_a)
-          expect(DummyClass.detached_feature_keys).not_to include 'feature_a'
+          expect(DummyClass.detached_feature_keys).not_to include "feature_a"
         end
       end
 
-      context 'mapped feature key' do
+      context "mapped feature key" do
         it 'do not cleanup key' do
-          expect do
+          expect {
             DummyClass.cleanup_detached(:email_marketing, :behavior_score)
-          end.to raise_error('key is still mapped')
+          }.to raise_error("key is still mapped")
         end
       end
     end
@@ -193,5 +162,6 @@ module FeatureFlagger
         )
       end
     end
+
   end
 end
