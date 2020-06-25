@@ -7,14 +7,20 @@ RSpec.describe FeatureFlagger::Storage::Redis do
   let(:resource_id)   { '1' }
   let(:resource_name) { 'account' }
   let(:global_key)    { 'released_features' }
-  let(:resource_key)  { "#{resource_name}:#{resource_id}" }
+  let(:resource_key) do
+    FeatureFlagger::Storage::RedisKeys.resource_key(
+      FeatureFlagger::Storage::Redis::RESOURCE_PREFIX,
+      resource_name,
+      resource_id,
+    )
+  end
 
   context do
     before do
       redis.flushdb
     end
 
-    describe '#has_resource_id?' do
+    describe '#has_values?' do
       context 'resource_id is stored for given feature_key' do
         before { redis.sadd(feature_key, resource_id) }
         it { expect(storage).to have_value(feature_key, resource_id) }
@@ -32,7 +38,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
         end
 
         it 'returns related feature_keys' do
-          expect(storage.fetch_releases(resource_key, global_key)).to match_array([feature_key])
+          expect(storage.fetch_releases(resource_name, resource_id, global_key)).to match_array([feature_key])
         end
       end
 
@@ -43,7 +49,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
         end
 
         it 'returns related feature_keys' do
-          expect(storage.fetch_releases(resource_key, global_key)).to match_array(feature_key)
+          expect(storage.fetch_releases(resource_name, resource_id, global_key)).to match_array(feature_key)
         end
       end
     end
@@ -51,7 +57,9 @@ RSpec.describe FeatureFlagger::Storage::Redis do
     describe '#add' do
       it 'adds the resource_id to redis' do
         storage.add(feature_key, resource_name, resource_id)
+
         expect(redis.sismember(feature_key, resource_id)).to be_truthy
+        expect(redis.sismember(resource_key, feature_key)).to be_truthy
       end
     end
 
@@ -59,23 +67,30 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       it 'adds resource_id to redis global feature_key and clear key' do
         storage.add_all(global_key, resource_id)
         expect(redis.sismember(global_key, resource_id)).to be_truthy
+
         expect(redis.sismember(feature_key, resource_id)).to be_falsey
       end
     end
 
     describe '#remove' do
       it 'removes the resource_id from redis' do
-        redis.sadd(feature_key, resource_id)
-        storage.remove(feature_key, resource_id)
+        storage.add(feature_key, resource_name, resource_id)
+
+        storage.remove(feature_key, resource_name, resource_id)
+
         expect(redis.sismember(feature_key, resource_id)).to be_falsey
+        expect(redis.sismember(resource_key, feature_key)).to be_falsey
       end
     end
 
     describe '#remove_all' do
       it 'removes all resource_ids from redis' do
         redis.sadd(feature_key, resource_id)
+
         storage.remove_all(global_key, feature_key)
+
         expect(redis.sismember(feature_key, resource_id)).to be_falsey
+        expect(redis.sismember(resource_key, feature_key)).to be_falsey
       end
     end
 

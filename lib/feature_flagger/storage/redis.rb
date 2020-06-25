@@ -1,11 +1,13 @@
 require 'redis'
 require 'redis-namespace'
+require_relative './redis_keys'
 
 module FeatureFlagger
   module Storage
     class Redis
-
       DEFAULT_NAMESPACE = :feature_flagger
+      RESOURCE_PREFIX = "_r".freeze
+      SCAN_EACH_BATCH_SIZE = 1000.freeze
 
       def initialize(redis)
         @redis = redis
@@ -17,19 +19,8 @@ module FeatureFlagger
         new(ns)
       end
 
-      # Public: fetch_releases get all feature_keys related
-      # to a resource and the global release structure.
-      #
-      # resource_key  - The String representing the resource.
-      # global_key    - The String representing the key to global structure.
-      #
-      # Example:
-      #
-      # resource_key = 'account:42'
-      # global_key   = 'released_to_all_key'
-      #
-      # fetch_releases(resource_key, global_key) #=> ['account:email_marketing:whitelabel']
-      def fetch_releases(resource_key, global_key)
+      def fetch_releases(resource_name, resource_id, global_key)
+        resource_key = resource_key(resource_name, resource_id)
         @redis.sunion(resource_key, global_key)
       end
 
@@ -38,21 +29,30 @@ module FeatureFlagger
       end
 
       def add(feature_key, resource_name, resource_id)
+        resource_key = resource_key(resource_name, resource_id)
+
         @redis.multi do |redis|
           redis.sadd(feature_key, resource_id)
-          redis.sadd("#{resource_name}:#{resource_id}", feature_key)
+          redis.sadd(resource_key, feature_key)
         end
       end
 
-      def remove(key, value)
-        @redis.srem(key, value)
-      end
+      def remove(feature_key, resource_name, resource_id)
+        resource_key = resource_key(resource_name, resource_id)
 
-      def remove_all(global_key, key)
         @redis.multi do |redis|
-          redis.srem(global_key, key)
-          redis.del(key)
+          redis.srem(feature_key, resource_id)
+          redis.srem(resource_key, feature_key)
         end
+      end
+
+      def remove_all(global_key, feature_key)
+        @redis.multi do |redis|
+          redis.srem(global_key, feature_key)
+          redis.del(feature_key)
+        end
+
+        remove_feature_key_from_resources(feature_key)
       end
 
       def add_all(global_key, key)
@@ -68,6 +68,28 @@ module FeatureFlagger
 
       def search_keys(query)
         @redis.scan_each(match: query)
+      end
+
+      private
+
+      def resource_key(resource_name, resource_id)
+        FeatureFlagger::Storage::RedisKeys.resource_key(
+          RESOURCE_PREFIX,
+          resource_name,
+          resource_id,
+        )
+      end
+
+      def remove_feature_key_from_resources(feature_key)
+        while resource_keys = @redis.scan_each(match: "#{RESOURCE_PREFIX}:*", count: SCAN_EACH_BATCH_SIZE).to_a do
+          break if resource_keys.empty?
+
+          @redis.multi do |redis|
+            resource_keys.each do |key|
+              redis.srem(key, feature_key)
+            end
+          end
+        end
       end
     end
   end
