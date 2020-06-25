@@ -22,8 +22,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'redis', '> 3.2'
   spec.add_dependency 'redis-namespace', '> 1.3'
-  spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'fakeredis', '0.7.0'
+  spec.add_development_dependency 'simplecov', '0.17'
+  spec.add_development_dependency 'fakeredis', '0.8.0'
 end

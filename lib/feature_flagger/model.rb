@@ -48,6 +48,11 @@ module FeatureFlagger
         FeatureFlagger.control.release(feature.key, resource_id)
       end
 
+      def unrelease_id(resource_id, *feature_key)
+        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
+        FeatureFlagger.control.unrelease(feature.key, resource_id)
+      end
+
       def all_released_ids_for(*feature_key)
         feature_key.flatten!
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
