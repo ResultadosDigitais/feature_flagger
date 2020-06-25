@@ -26,6 +26,11 @@ module FeatureFlagger
       FeatureFlagger.control.unrelease(feature.key, id)
     end
 
+    def releases
+      resource_name = self.class.feature_flagger_model_settings.entity_name
+      FeatureFlagger.control.releases(resource_name, id)
+    end
+
     private
 
     def feature_flagger_identifier

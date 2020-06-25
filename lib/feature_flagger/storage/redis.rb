@@ -81,14 +81,18 @@ module FeatureFlagger
       end
 
       def remove_feature_key_from_resources(feature_key)
-        while resource_keys = @redis.scan_each(match: "#{RESOURCE_PREFIX}:*", count: SCAN_EACH_BATCH_SIZE).to_a do
-          break if resource_keys.empty?
+        cursor = 0
 
+        loop do
+          cursor, resource_keys = @redis.scan(cursor, match: "#{RESOURCE_PREFIX}:*", count: SCAN_EACH_BATCH_SIZE)
+          
           @redis.multi do |redis|
             resource_keys.each do |key|
               redis.srem(key, feature_key)
             end
           end
+
+          break if cursor == "0"
         end
       end
     end

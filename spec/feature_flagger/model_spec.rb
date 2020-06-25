@@ -24,6 +24,13 @@ module FeatureFlagger
         subject.release(key)
       end
     end
+    
+    describe '#releases' do
+      it 'calls Control#release with appropriated methods' do
+        expect(control).to receive(:releases).with("feature_flagger_dummy_class", subject.id)
+        subject.releases
+      end
+    end
 
     describe '#unrelease' do
       it 'calls Control#unrelease with appropriated methods' do
