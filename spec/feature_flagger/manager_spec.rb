@@ -21,10 +21,10 @@ module FeatureFlagger
       end
 
       it 'returns all detached feature keys' do
-        expect(described_class.detached_feature_keys).to include(
+        expect(described_class.detached_feature_keys).to match_array([
           'other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_3',
           'other_feature_flagger_dummy_class:feature_d'
-        )
+        ])
       end
     end
 

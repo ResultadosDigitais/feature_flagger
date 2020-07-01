@@ -60,6 +60,8 @@ module FeatureFlagger
           redis.sadd(global_key, key)
           redis.del(key)
         end
+
+        remove_feature_key_from_resources(key)
       end
 
       def all_values(key)

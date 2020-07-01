@@ -63,11 +63,22 @@ RSpec.describe FeatureFlagger::Storage::Redis do
     end
 
     describe '#add_all' do
-      it 'adds resource_id to redis global feature_key and clear key' do
-        storage.add_all(global_key, resource_id)
-        
-        expect(storage).to have_value(global_key, resource_id)
-        expect(storage).not_to have_value(feature_key, resource_id)
+      context 'when only add_all is called' do
+        it 'adds resource_id to redis global key and clear key' do
+          storage.add_all(global_key, feature_key)
+          
+          expect(storage).to have_value(global_key, feature_key)
+          expect(storage).not_to have_value(feature_key, resource_id)
+        end
+      end
+
+      context 'when add_all is called right after add' do
+        it 'adds resource_id to redis global key, and clear both resource_id and feature_key' do
+          storage.add(feature_key, resource_name, resource_id)
+          storage.add_all(global_key, feature_key)
+
+          expect(storage).not_to have_value(resource_key, feature_key)
+        end
       end
     end
 
