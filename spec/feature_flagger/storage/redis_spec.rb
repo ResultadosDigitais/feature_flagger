@@ -21,12 +21,12 @@ RSpec.describe FeatureFlagger::Storage::Redis do
     end
 
     describe '#has_values?' do
-      context 'resource_id is stored for given feature_key' do
+      context 'when resource_id is stored for given feature_key' do
         before { storage.add(feature_key, resource_name, resource_id) }
         it { expect(storage).to have_value(feature_key, resource_id) }
       end
 
-      context 'resource_id is not stored for given feature_key' do
+      context 'when resource_id is not stored for given feature_key' do
         it { expect(storage).not_to have_value(feature_key, resource_id) }
       end
     end
