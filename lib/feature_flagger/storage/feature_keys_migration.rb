@@ -3,7 +3,6 @@
 module FeatureFlagger
     module Storage
       class FeatureKeysMigration
-        ONLY_DIGITS = /\A(\d+).*\z/.freeze
 
         def initialize(from_redis, to_control)
           @from_redis = from_redis
