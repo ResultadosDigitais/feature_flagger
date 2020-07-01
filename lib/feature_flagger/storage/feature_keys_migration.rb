@@ -3,11 +3,20 @@
 module FeatureFlagger
     module Storage
       class FeatureKeysMigration
+        ONLY_DIGITS = /\A(\d+).*\z/.freeze
+
         def initialize(from_redis, to_control)
           @from_redis = from_redis
           @to_control = to_control
         end
 
+        # call migrates features key from the old fashioned to the new
+        # format.
+        #
+        # It must replicate feature keys with changes:
+        #
+        # from "avenue:traffic_lights" => 42
+        # to   "avenue:42" => traffic_lights
         def call
           @from_redis.scan_each(match: "*", count: FeatureFlagger::Storage::Redis::SCAN_EACH_BATCH_SIZE) do |redis_key|
             # filter out resource_keys

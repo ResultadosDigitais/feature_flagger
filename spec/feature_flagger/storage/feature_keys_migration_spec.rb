@@ -20,13 +20,6 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
     FeatureFlagger.config.yaml_filepath = filepath
   end
 
-  # This method migrates features key from the old fashioned to the new
-  # format.
-  #
-  # It must convert feature keys with changes:
-  #
-  # from "avenue:traffic_lights" => 42
-  # to   "avenue:42" => traffic_lights
   describe '.call' do
     context 'when there are keys in the old format' do
       before do
