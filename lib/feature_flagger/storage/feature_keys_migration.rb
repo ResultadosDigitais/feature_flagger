@@ -49,8 +49,6 @@ module FeatureFlagger
         end
 
         def migrate_release(key)
-          return false if key =~ /(\d+).*/
-
           resource_ids = @from_redis.smembers(key)
 
           @to_control.release(key, resource_ids)
