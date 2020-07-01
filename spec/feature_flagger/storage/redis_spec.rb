@@ -78,6 +78,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
           storage.add(feature_key, resource_name, resource_id)
           storage.add_all(global_key, feature_key)
 
+          expect(storage).not_to have_value(feature_key, resource_id)
           expect(storage).not_to have_value(resource_key, feature_key)
         end
       end
