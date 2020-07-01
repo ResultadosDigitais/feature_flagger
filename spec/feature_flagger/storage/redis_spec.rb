@@ -22,7 +22,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
     describe '#has_values?' do
       context 'resource_id is stored for given feature_key' do
-        before { redis.sadd(feature_key, resource_id) }
+        before { storage.add(feature_key, resource_name, resource_id) }
         it { expect(storage).to have_value(feature_key, resource_id) }
       end
 
@@ -44,7 +44,6 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
       context 'when there is features under global structure' do
         before do
-          storage.add(feature_key, resource_name, resource_id)
           storage.add_all(global_key, feature_key)
         end
 
@@ -58,17 +57,17 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       it 'adds the resource_id to redis' do
         storage.add(feature_key, resource_name, resource_id)
 
-        expect(redis.sismember(feature_key, resource_id)).to be_truthy
-        expect(redis.sismember(resource_key, feature_key)).to be_truthy
+        expect(storage).to have_value(feature_key, resource_id)
+        expect(storage).to have_value(resource_key, feature_key)
       end
     end
 
     describe '#add_all' do
       it 'adds resource_id to redis global feature_key and clear key' do
         storage.add_all(global_key, resource_id)
-        expect(redis.sismember(global_key, resource_id)).to be_truthy
-
-        expect(redis.sismember(feature_key, resource_id)).to be_falsey
+        
+        expect(storage).to have_value(global_key, resource_id)
+        expect(storage).not_to have_value(feature_key, resource_id)
       end
     end
 
@@ -78,8 +77,8 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
         storage.remove(feature_key, resource_name, resource_id)
 
-        expect(redis.sismember(feature_key, resource_id)).to be_falsey
-        expect(redis.sismember(resource_key, feature_key)).to be_falsey
+        expect(storage).not_to have_value(feature_key, resource_id)
+        expect(storage).not_to have_value(resource_key, feature_key)
       end
     end
 
@@ -89,8 +88,8 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
         storage.remove_all(global_key, feature_key)
 
-        expect(redis.sismember(feature_key, resource_id)).to be_falsey
-        expect(redis.sismember(resource_key, feature_key)).to be_falsey
+        expect(storage).not_to have_value(feature_key, resource_id)
+        expect(storage).not_to have_value(resource_key, feature_key)
       end
     end
 
@@ -99,7 +98,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
 
       it 'returns all resource_ids for the given feature_key' do
         redis.sadd(feature_key, resource_ids)
-        expect(storage.all_values(feature_key).sort).to eq resource_ids.sort
+        expect(storage.all_values(feature_key).sort).to match_array(resource_ids)
       end
     end
   end

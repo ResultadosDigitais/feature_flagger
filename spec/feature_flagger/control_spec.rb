@@ -20,19 +20,19 @@ module FeatureFlagger
         it { expect(result).to be_falsey }
 
         context 'and a feature is release to all' do
-          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, resource_name, key) }
+          before { control.release_to_all(key) }
 
           it { expect(result).to be_truthy }
         end
       end
 
       context 'when resource entity id has access to release_key' do
-        before { storage.add(key, resource_name, resource_id) }
+        before { control.release(key, resource_id) }
 
         it { expect(result).to be_truthy }
 
         context 'and a feature is release to all' do
-          before { storage.add(FeatureFlagger::Control::RELEASED_FEATURES, resource_name, key) }
+          before { control.release_to_all(key) }
 
           it { expect(result).to be_truthy }
         end
@@ -42,7 +42,7 @@ module FeatureFlagger
     describe '#release' do
       it 'adds resource_id to storage' do
         control.release(key, resource_id)
-        expect(storage).to have_value(key, resource_id)
+        expect(control).to be_released(key, resource_id)
       end
     end
 
