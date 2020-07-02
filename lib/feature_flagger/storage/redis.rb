@@ -68,13 +68,12 @@ module FeatureFlagger
         @redis.smembers(key)
       end
 
+      # DEPRECATED: this method will be removed from public api on v2.0 version.
+      # use instead the feature_keys method.
       def search_keys(query)
         @redis.scan_each(match: query)
       end
 
-      
-      # DEPRECATED: this method will be removed from public api on v2.0 version.
-      # use instead the feature_keys method.
       def feature_keys
         feature_keys = []
 
