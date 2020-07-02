@@ -47,8 +47,14 @@ module FeatureFlagger
       @storage.has_value?(RELEASED_FEATURES, feature_key)
     end
 
+    # DEPRECATED: this method will be removed from public api on v2.0 version.
+    # use instead the feature_keys method.
     def search_keys(query)
       @storage.search_keys(query)
+    end
+
+    def feature_keys
+      @storage.feature_keys
     end
 
     private

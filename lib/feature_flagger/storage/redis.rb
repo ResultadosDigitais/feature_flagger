@@ -72,6 +72,23 @@ module FeatureFlagger
         @redis.scan_each(match: query)
       end
 
+      
+      # DEPRECATED: this method will be removed from public api on v2.0 version.
+      # use instead the feature_keys method.
+      def feature_keys
+        feature_keys = []
+
+        @redis.scan_each(match: "*") do |key|
+          # Reject keys related to feature responsible for return
+          # released features for a given account.
+          next if key.start_with?("#{RESOURCE_PREFIX}:")
+
+          feature_keys << key
+        end
+
+        feature_keys
+      end
+
       private
 
       def resource_key(resource_name, resource_id)

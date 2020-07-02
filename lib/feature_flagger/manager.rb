@@ -2,14 +2,7 @@ module FeatureFlagger
   class Manager
 
     def self.detached_feature_keys
-      persisted_features = FeatureFlagger.control.search_keys("*").to_a
-
-      # Reject keys related to feature responsible for return
-      # released features for a given account.
-      persisted_features.reject! do |persisted_feature|
-        persisted_feature.start_with?(FeatureFlagger::Storage::Redis::RESOURCE_PREFIX)
-      end
-
+      persisted_features = FeatureFlagger.control.feature_keys
       mapped_feature_keys = FeatureFlagger.config.mapped_feature_keys
       persisted_features - mapped_feature_keys
     end

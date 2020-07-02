@@ -112,5 +112,20 @@ RSpec.describe FeatureFlagger::Storage::Redis do
         expect(storage.all_values(feature_key).sort).to match_array(resource_ids)
       end
     end
+
+    describe '#feature_keys' do
+      it 'returns only feature_keys' do
+        storage.add(feature_key, resource_name, resource_id)
+        storage.add('user:profile:round_avatar', 'user', resource_id)
+        storage.add('account:lp:new_layout', 'account', resource_id)
+        storage.add('account:lp:new_layout', 'account', resource_id)
+
+        expect(storage.feature_keys).to match_array([
+          'account:email_marketing:whitelabel',
+          'user:profile:round_avatar',
+          'account:lp:new_layout',
+        ])
+      end
+    end
   end
 end
