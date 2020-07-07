@@ -11,7 +11,6 @@ namespace :feature_flagger do
   desc "Synchronizes resource_keys with feature_keys, recommended to apps that installed feature flagger before v.1.2.0"
   task :migrate_to_resource_keys => :environment do
     storage = FeatureFlagger.config.storage
-
     storage.synchronize_feature_and_resource
   end
 
