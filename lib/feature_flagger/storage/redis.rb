@@ -47,20 +47,12 @@ module FeatureFlagger
       end
 
       def remove_all(global_key, feature_key)
-        @redis.multi do |redis|
-          redis.srem(global_key, feature_key)
-          redis.del(feature_key)
-        end
-
+        @redis.srem(global_key, feature_key)
         remove_feature_key_from_resources(feature_key)
       end
 
       def add_all(global_key, key)
-        @redis.multi do |redis|
-          redis.sadd(global_key, key)
-          redis.del(key)
-        end
-
+        @redis.sadd(global_key, key)
         remove_feature_key_from_resources(key)
       end
 
@@ -68,15 +60,24 @@ module FeatureFlagger
         @redis.smembers(key)
       end
 
+      # DEPRECATED: this method will be removed from public api on v2.0 version.
+      # use instead the feature_keys method.
       def search_keys(query)
         @redis.scan_each(match: query)
       end
 
-      def synchronize_feature_and_resource
-        FeatureFlagger::Storage::FeatureKeysMigration.new(
-          @redis,
-          FeatureFlagger.control,
-        ).call
+      def feature_keys
+        feature_keys = []
+
+        @redis.scan_each(match: "*") do |key|
+          # Reject keys related to feature responsible for return
+          # released features for a given account.
+          next if key.start_with?("#{RESOURCE_PREFIX}:")
+
+          feature_keys << key
+        end
+
+        feature_keys
       end
 
       private
@@ -91,13 +92,16 @@ module FeatureFlagger
 
       def remove_feature_key_from_resources(feature_key)
         cursor = 0
+        resource_name = feature_key.split(":").first
 
         loop do
-          cursor, resource_keys = @redis.scan(cursor, match: "#{RESOURCE_PREFIX}:*", count: SCAN_EACH_BATCH_SIZE)
-          
+          cursor, resource_ids = @redis.sscan(feature_key, cursor, count: SCAN_EACH_BATCH_SIZE)
+
           @redis.multi do |redis|
-            resource_keys.each do |key|
+            resource_ids.each do |resource_id|
+              key = resource_key(resource_name, resource_id)
               redis.srem(key, feature_key)
+              redis.srem(feature_key, resource_id)
             end
           end
 
