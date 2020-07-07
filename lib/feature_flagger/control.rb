@@ -3,7 +3,6 @@ module FeatureFlagger
     attr_reader :storage
 
     RELEASED_FEATURES = 'released_features'
-    MINIMUM_VALID_FEATURE_PATH = 2.freeze
 
     def initialize(storage)
       @storage = storage
@@ -14,7 +13,10 @@ module FeatureFlagger
     end
 
     def release(feature_key, resource_id)
-      resource_name = extract_resource_name_from_feature_key(feature_key)
+      resource_name = FeatureFlagger::Storage::RedisKeys.extract_resource_name_from_feature_key(
+        feature_key
+      )
+
       @storage.add(feature_key, resource_name, resource_id)
     end
 
@@ -27,7 +29,10 @@ module FeatureFlagger
     end
 
     def unrelease(feature_key, resource_id)
-      resource_name = extract_resource_name_from_feature_key(feature_key)
+      resource_name = FeatureFlagger::Storage::RedisKeys.extract_resource_name_from_feature_key(
+        feature_key
+      )
+      
       @storage.remove(feature_key, resource_name, resource_id)
     end
 
@@ -56,17 +61,5 @@ module FeatureFlagger
     def feature_keys
       @storage.feature_keys
     end
-
-    private
-
-    def extract_resource_name_from_feature_key(feature_key)
-      feature_paths = feature_key.split(':')
-
-      raise InvalidResourceNameError if feature_paths.size < MINIMUM_VALID_FEATURE_PATH
-
-      feature_paths.first
-    end
-
-    class InvalidResourceNameError < StandardError; end
   end
 end

@@ -47,20 +47,12 @@ module FeatureFlagger
       end
 
       def remove_all(global_key, feature_key)
-        @redis.multi do |redis|
-          redis.srem(global_key, feature_key)
-          redis.del(feature_key)
-        end
-
+        @redis.srem(global_key, feature_key)
         remove_feature_key_from_resources(feature_key)
       end
 
       def add_all(global_key, key)
-        @redis.multi do |redis|
-          redis.sadd(global_key, key)
-          redis.del(key)
-        end
-
+        @redis.sadd(global_key, key)
         remove_feature_key_from_resources(key)
       end
 
@@ -100,13 +92,16 @@ module FeatureFlagger
 
       def remove_feature_key_from_resources(feature_key)
         cursor = 0
+        resource_name = feature_key.split(":").first
 
         loop do
-          cursor, resource_keys = @redis.scan(cursor, match: "#{RESOURCE_PREFIX}:*", count: SCAN_EACH_BATCH_SIZE)
-          
+          cursor, resource_ids = @redis.sscan(feature_key, cursor, count: SCAN_EACH_BATCH_SIZE)
+
           @redis.multi do |redis|
-            resource_keys.each do |key|
+            resource_ids.each do |resource_id|
+              key = resource_key(resource_name, resource_id)
               redis.srem(key, feature_key)
+              redis.srem(feature_key, resource_id)
             end
           end
 
