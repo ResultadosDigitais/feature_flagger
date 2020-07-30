@@ -13,7 +13,7 @@ module FeatureFlagger
     end
 
     def release(feature_key, resource_id)
-      resource_name = FeatureFlagger::Storage::RedisKeys.extract_resource_name_from_feature_key(
+      resource_name = Storage::Keys.extract_resource_name_from_feature_key(
         feature_key
       )
 
@@ -29,10 +29,10 @@ module FeatureFlagger
     end
 
     def unrelease(feature_key, resource_id)
-      resource_name = FeatureFlagger::Storage::RedisKeys.extract_resource_name_from_feature_key(
+      resource_name = Storage::Keys.extract_resource_name_from_feature_key(
         feature_key
       )
-      
+
       @storage.remove(feature_key, resource_name, resource_id)
     end
 

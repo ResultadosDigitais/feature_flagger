@@ -83,7 +83,7 @@ module FeatureFlagger
       private
 
       def resource_key(resource_name, resource_id)
-        FeatureFlagger::Storage::RedisKeys.resource_key(
+        FeatureFlagger::Storage::Keys.resource_key(
           RESOURCE_PREFIX,
           resource_name,
           resource_id,
