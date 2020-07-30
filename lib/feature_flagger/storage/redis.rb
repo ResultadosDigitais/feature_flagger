@@ -1,6 +1,6 @@
 require 'redis'
 require 'redis-namespace'
-require_relative './redis_keys'
+require_relative './keys'
 
 module FeatureFlagger
   module Storage
