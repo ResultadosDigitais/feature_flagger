@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require 'spec_helper'
@@ -59,6 +58,10 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
         expect(control.released?('feature_flagger_dummy_class:email_marketing:whitelabel', 42)).to be_truthy
         expect(control.released?('feature_flagger_dummy_class:email_marketing:whitelabel', 1)).to be_truthy
         expect(control.released?('other_feature_flagger_dummy_class:feature_b', 42)).to be_truthy
+      end
+
+      it 'does not migrate internal keys' do
+        expect(redis.keys.count).to eq(7)
       end
 
       it 'migrates all released feature keys to the new format ' do
