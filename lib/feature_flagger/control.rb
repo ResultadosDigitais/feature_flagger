@@ -13,7 +13,15 @@ module FeatureFlagger
     end
 
     def release(feature_key, resource_id)
-      @storage.add(feature_key, resource_id)
+      resource_name = Storage::Keys.extract_resource_name_from_feature_key(
+        feature_key
+      )
+
+      @storage.add(feature_key, resource_name, resource_id)
+    end
+
+    def releases(resource_name, resource_id)
+      @storage.fetch_releases(resource_name, resource_id, RELEASED_FEATURES)
     end
 
     def release_to_all(feature_key)
@@ -21,7 +29,11 @@ module FeatureFlagger
     end
 
     def unrelease(feature_key, resource_id)
-      @storage.remove(feature_key, resource_id)
+      resource_name = Storage::Keys.extract_resource_name_from_feature_key(
+        feature_key
+      )
+
+      @storage.remove(feature_key, resource_name, resource_id)
     end
 
     def unrelease_to_all(feature_key)
@@ -40,8 +52,14 @@ module FeatureFlagger
       @storage.has_value?(RELEASED_FEATURES, feature_key)
     end
 
+    # DEPRECATED: this method will be removed from public api on v2.0 version.
+    # use instead the feature_keys method.
     def search_keys(query)
       @storage.search_keys(query)
+    end
+
+    def feature_keys
+      @storage.feature_keys
     end
   end
 end

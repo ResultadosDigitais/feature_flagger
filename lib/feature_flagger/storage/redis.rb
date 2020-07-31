@@ -1,11 +1,13 @@
 require 'redis'
 require 'redis-namespace'
+require_relative './keys'
 
 module FeatureFlagger
   module Storage
     class Redis
-
       DEFAULT_NAMESPACE = :feature_flagger
+      RESOURCE_PREFIX = "_r".freeze
+      SCAN_EACH_BATCH_SIZE = 1000.freeze
 
       def initialize(redis)
         @redis = redis
@@ -17,38 +19,94 @@ module FeatureFlagger
         new(ns)
       end
 
+      def fetch_releases(resource_name, resource_id, global_key)
+        resource_key = resource_key(resource_name, resource_id)
+        @redis.sunion(resource_key, global_key)
+      end
+
       def has_value?(key, value)
         @redis.sismember(key, value)
       end
 
-      def add(key, value)
-        @redis.sadd(key, value)
-      end
+      def add(feature_key, resource_name, resource_id)
+        resource_key = resource_key(resource_name, resource_id)
 
-      def remove(key, value)
-        @redis.srem(key, value)
-      end
-
-      def remove_all(global_key, key)
         @redis.multi do |redis|
-          redis.srem(global_key, key)
-          redis.del(key)
+          redis.sadd(feature_key, resource_id)
+          redis.sadd(resource_key, feature_key)
         end
+      end
+
+      def remove(feature_key, resource_name, resource_id)
+        resource_key = resource_key(resource_name, resource_id)
+
+        @redis.multi do |redis|
+          redis.srem(feature_key, resource_id)
+          redis.srem(resource_key, feature_key)
+        end
+      end
+
+      def remove_all(global_key, feature_key)
+        @redis.srem(global_key, feature_key)
+        remove_feature_key_from_resources(feature_key)
       end
 
       def add_all(global_key, key)
-        @redis.multi do |redis|
-          redis.sadd(global_key, key)
-          redis.del(key)
-        end
+        @redis.sadd(global_key, key)
+        remove_feature_key_from_resources(key)
       end
 
       def all_values(key)
         @redis.smembers(key)
       end
 
+      # DEPRECATED: this method will be removed from public api on v2.0 version.
+      # use instead the feature_keys method.
       def search_keys(query)
         @redis.scan_each(match: query)
+      end
+
+      def feature_keys
+        feature_keys = []
+
+        @redis.scan_each(match: "*") do |key|
+          # Reject keys related to feature responsible for return
+          # released features for a given account.
+          next if key.start_with?("#{RESOURCE_PREFIX}:")
+
+          feature_keys << key
+        end
+
+        feature_keys
+      end
+
+      private
+
+      def resource_key(resource_name, resource_id)
+        FeatureFlagger::Storage::Keys.resource_key(
+          RESOURCE_PREFIX,
+          resource_name,
+          resource_id,
+        )
+      end
+
+      def remove_feature_key_from_resources(feature_key)
+        cursor = 0
+        resource_name = feature_key.split(":").first
+
+        loop do
+          cursor, resource_ids = @redis.sscan(feature_key, cursor, count: SCAN_EACH_BATCH_SIZE)
+
+          @redis.multi do |redis|
+            resource_ids.each do |resource_id|
+              key = resource_key(resource_name, resource_id)
+              redis.srem(key, feature_key)
+              redis.srem(feature_key, resource_id)
+            end
+          end
+
+          break if cursor == "0"
+        end
       end
     end
   end
