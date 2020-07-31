@@ -8,7 +8,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
   let(:resource_name) { 'account' }
   let(:global_key)    { 'released_features' }
   let(:resource_key) do
-    FeatureFlagger::Storage::RedisKeys.resource_key(
+    FeatureFlagger::Storage::Keys.resource_key(
       FeatureFlagger::Storage::Redis::RESOURCE_PREFIX,
       resource_name,
       resource_id,
@@ -66,7 +66,7 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       context 'when only add_all is called' do
         it 'turns feature a global' do
           storage.add_all(global_key, feature_key)
-          
+
           expect(storage).to have_value(global_key, feature_key)
         end
       end
