@@ -114,7 +114,7 @@ To clean it up, execute or schedule the rake:
 ## Upgrading
 
 When upgrading from `1.1.x` to `1.2.x` the following command must be executed
-to ensure the data stored in Redis storage is right.
+to ensure the data stored in Redis storage is right. Check #67 and #68 for more info.
 
     $ bundle exec rake feature_flagger:migrate_to_resource_keys
 
