@@ -38,8 +38,6 @@ module FeatureFlagger
 
           features.each do |feature_key|
             @to_control.release_to_all(feature_key)
-          rescue KeyNotFoundError => _e
-            next
           end
         end
 
@@ -51,8 +49,6 @@ module FeatureFlagger
           resource_ids = @from_redis.smembers(key)
 
           @to_control.release(key, resource_ids)
-        rescue KeyNotFoundError => _e
-          return
         end
       end
     end
