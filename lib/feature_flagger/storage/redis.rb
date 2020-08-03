@@ -80,6 +80,13 @@ module FeatureFlagger
         feature_keys
       end
 
+      def synchronize_feature_and_resource
+        FeatureFlagger::Storage::FeatureKeysMigration.new(
+          @redis,
+          FeatureFlagger.control,
+        ).call
+      end
+
       private
 
       def resource_key(resource_name, resource_id)

@@ -8,6 +8,12 @@ namespace :feature_flagger do
     end
   end
 
+  desc "Synchronizes resource_keys with feature_keys, recommended to apps that installed feature flagger before v.1.2.0"
+  task :migrate_to_resource_keys => :environment do
+    storage = FeatureFlagger.config.storage
+    storage.synchronize_feature_and_resource
+  end
+
   desc "Release feature to given identifiers, Usage: `$ bundle exec rake feature_flagger:release\[Account,email_marketing:whitelabel,1,2,3,4\]`"
   task :release, [:entity_name, :feature_key] => :environment do |_, args|
     entity = args.entity_name.constantize
