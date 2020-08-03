@@ -111,6 +111,13 @@ To clean it up, execute or schedule the rake:
 
     $ bundle exec rake feature_flagger:cleanup_removed_rollouts
 
+## Upgrading
+
+When upgrading from `1.1.x` to `1.2.x` the following command must be executed
+to ensure the data stored in Redis storage is right.
+
+    $ bundle exec rake feature_flagger:migrate_to_resource_keys
+
 ## Contributing
 
 Bug reports and pull requests are welcome!
