@@ -3,7 +3,12 @@ require 'fakeredis/rspec'
 
 if ENV['COVERAGE'] == "true"
   require 'simplecov'
-  SimpleCov.start
+
+  SimpleCov.start do
+    load_profile "test_frameworks"
+
+    add_filter "/vendor/"
+  end
 end
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
