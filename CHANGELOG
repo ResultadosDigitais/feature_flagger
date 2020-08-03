@@ -6,14 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.0] - 2020-06-15
+## [1.2.0] - 2020-08-03
 ### Added
-- A new structure of data inside Storage::Redis #60
+- Add the interface to fetch all features already released to a given resource #67
 - This CHANGELOG file to hopefully serve as an evolving example of a
   standardized open-source project CHANGELOG.
 - New `Model#releases` method, which will return all the features accessible by the `Model`
 
 ### Breaking Changes
-- The main API of `FeatureFlagger::Control` and `FeatureFlagger::Storage`
-  got rewritten, we decoupled the `resource_name` from the `feature_key`
-  and that allowed us to change the way we store the data
+- The main API of `FeatureFlagger::Storage` and `FeatureFlagger::Storage::Redis` got rewritten,
+  we decoupled the `resource_name` from the `feature_key` and that allowed us to change the
+  way we store the data to implement new features.
