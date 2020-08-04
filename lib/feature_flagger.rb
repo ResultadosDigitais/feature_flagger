@@ -2,6 +2,7 @@ require 'yaml'
 
 require 'feature_flagger/version'
 require 'feature_flagger/storage/redis'
+require 'feature_flagger/storage/feature_keys_migration'
 require 'feature_flagger/control'
 require 'feature_flagger/model'
 require 'feature_flagger/model_settings'
