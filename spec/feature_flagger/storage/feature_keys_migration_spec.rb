@@ -45,7 +45,7 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
         redis.sadd('feature_flagger_dummy_class:email_marketing:behavior_score', 42)
         redis.sadd('feature_flagger_dummy_class:email_marketing:whitelabel', 42)
         redis.sadd('feature_flagger_dummy_class:email_marketing:whitelabel', 1)
-        redis.sadd(global_key, 'feature_flagger_dummy_class:email_marketing:whitelabel')
+        redis.sadd(global_key, 'feature_flagger_dummy_class:email_marketing:global_whitelabel')
 
         control.release('other_feature_flagger_dummy_class:feature_b', 42)
         control.release_to_all('other_feature_flagger_dummy_class:feature_c:feature_c_1')
@@ -58,14 +58,21 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
         expect(control.released?('feature_flagger_dummy_class:email_marketing:whitelabel', 42)).to be_truthy
         expect(control.released?('feature_flagger_dummy_class:email_marketing:whitelabel', 1)).to be_truthy
         expect(control.released?('other_feature_flagger_dummy_class:feature_b', 42)).to be_truthy
+
+        expect(control.releases('feature_flagger_dummy_class', 1)).to eq(
+          [
+            'feature_flagger_dummy_class:email_marketing:whitelabel',
+            'feature_flagger_dummy_class:email_marketing:global_whitelabel'
+          ]
+        )
       end
 
       it 'does not migrate internal keys' do
-        expect(redis.keys.count).to eq(7)
+        expect(redis.keys.count).to eq(8)
       end
 
       it 'migrates all released feature keys to the new format ' do
-        expect(control.released_to_all?('feature_flagger_dummy_class:email_marketing:whitelabel')).to be_truthy
+        expect(control.released_to_all?('feature_flagger_dummy_class:email_marketing:global_whitelabel')).to be_truthy
         expect(control.released_to_all?('other_feature_flagger_dummy_class:feature_c:feature_c_1')).to be_truthy
       end
     end

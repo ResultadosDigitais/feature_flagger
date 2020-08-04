@@ -50,6 +50,15 @@ module FeatureFlagger
       it 'return all releases to a given resource' do
         control.release(key, resource_id)
         resource_name = 'account'
+
+        expect(control.releases(resource_name, resource_id)).to match_array(['account:email_marketing:whitelabel'])
+      end
+
+      it 'does not return releases from another resource' do
+        control.release(key, resource_id)
+        control.release_to_all('user:another_rollout:global_whitelabel')
+        resource_name = 'account'
+
         expect(control.releases(resource_name, resource_id)).to match_array(['account:email_marketing:whitelabel'])
       end
     end
