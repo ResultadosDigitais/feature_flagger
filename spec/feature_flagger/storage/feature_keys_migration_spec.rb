@@ -68,7 +68,7 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
       end
 
       it 'does not migrate internal keys' do
-        expect(redis.keys.count).to eq(8)
+        expect(redis.keys.count).to eq(7)
       end
 
       it 'migrates all released feature keys to the new format ' do
