@@ -48,7 +48,9 @@ module FeatureFlagger
         def migrate_release(key)
           resource_ids = @from_redis.smembers(key)
 
-          @to_control.release(key, resource_ids)
+          resource_ids.each do |id|
+            @to_control.release(key, id)
+          end
         end
       end
     end
