@@ -21,7 +21,9 @@ module FeatureFlagger
 
       def fetch_releases(resource_name, resource_id, global_key)
         resource_key = resource_key(resource_name, resource_id)
-        @redis.sunion(resource_key, global_key)
+        releases = @redis.sunion(resource_key, global_key)
+
+        releases.select{ |release| release.start_with?(resource_name) }
       end
 
       def has_value?(key, value)

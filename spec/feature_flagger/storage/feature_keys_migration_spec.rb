@@ -59,7 +59,7 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
         expect(control.released?('feature_flagger_dummy_class:email_marketing:whitelabel', 1)).to be_truthy
         expect(control.released?('other_feature_flagger_dummy_class:feature_b', 42)).to be_truthy
 
-        expect(control.releases('feature_flagger_dummy_class', 1)).to eq(
+        expect(control.releases('feature_flagger_dummy_class', 1)).to match_array(
           [
             'feature_flagger_dummy_class:email_marketing:whitelabel',
             'feature_flagger_dummy_class:email_marketing:global_whitelabel'
