@@ -10,14 +10,19 @@ module FeatureFlagger
         FeatureFlagger.configure do |config|
           config.storage = storage
         end
-        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_1', 0)
-        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_2', 0)
-        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_3', 0)
-        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_b', 0)
-        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_d', 0)
 
         filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
         FeatureFlagger.config.yaml_filepath = filepath
+
+        # All good here
+        FeatureFlagger.control.release_to_all('feature_flagger_dummy_class:email_marketing:behavior_score')
+        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_1', 0)
+        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_2', 0)
+        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_b', 0)
+
+        # Detached keys
+        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_a:feature_a_1:feature_a_1_3', 0)
+        FeatureFlagger.control.release('other_feature_flagger_dummy_class:feature_d', 0)
       end
 
       it 'returns all detached feature keys' do
