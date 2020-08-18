@@ -146,5 +146,15 @@ module FeatureFlagger
         it { expect(control.search_keys("*ame*pac*").to_a).to contain_exactly('namespace:1', 'namespace:2') }
       end
     end
+
+    describe '#feature_keys' do
+      it 'returns only feature keys in storage' do
+        another_key = "account:some_other_feature"
+        control.release(key, resource_id)
+        control.release_to_all(another_key)
+
+        expect(control.feature_keys).to match_array([key])
+      end
+    end
   end
 end
