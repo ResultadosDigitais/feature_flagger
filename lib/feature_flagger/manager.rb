@@ -5,7 +5,7 @@ module FeatureFlagger
       persisted_features = FeatureFlagger.control.feature_keys
       mapped_feature_keys = FeatureFlagger.config.mapped_feature_keys
 
-      persisted_features - mapped_feature_keys - [FeatureFlagger::Control::RELEASED_FEATURES]
+      persisted_features - mapped_feature_keys
     end
 
     def self.cleanup_detached(resource_name, *feature_key)
