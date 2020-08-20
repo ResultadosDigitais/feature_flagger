@@ -3,8 +3,7 @@ require 'spec_helper'
 module FeatureFlagger
   RSpec.describe Control do
     let(:redis) { FakeRedis::Redis.new }
-    let(:storage) { Storage::Redis.new(redis) }
-    let(:control) { Control.new(storage) }
+    let(:control) { Control.new(Storage::Redis.new(redis)) }
     let(:key)         { 'account:email_marketing:whitelabel' }
     let(:resource_id) { 'resource_id' }
     let(:resource_name) { 'account' }
@@ -65,33 +64,33 @@ module FeatureFlagger
 
     describe '#release_to_all' do
       it 'adds feature_key to storage' do
-        storage.add(key, resource_name, 1)
+        control.release(key, resource_id)
         control.release_to_all(key)
-        expect(storage).not_to have_value(key, 1)
-        expect(storage).to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+        expect(control.releases(resource_name, 1)).to include(key)
+        expect(control.released_features_to_all).to include(key)
       end
     end
 
     describe '#unrelease' do
       it 'removes resource_id from storage' do
-        storage.add(key, resource_name, resource_id)
+        control.release(key, resource_id)
         control.unrelease(key, resource_id)
-        expect(storage).not_to have_value(key, resource_id)
+        expect(control.released?(key, resource_id)).to be_falsey
       end
     end
 
     describe '#unrelease_to_all' do
       it 'removes feature_key to storage' do
-        storage.add(FeatureFlagger::Control::RELEASED_FEATURES, resource_name, key)
+        control.release_to_all(key)
         control.unrelease_to_all(key)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+        expect(control.released_features_to_all).not_to include(key)
       end
 
       it 'removes added resources' do
-        storage.add(key, resource_name, 1)
+        control.release(key, 1)
         control.unrelease_to_all(key)
-        expect(storage).not_to have_value(key, 1)
-        expect(storage).not_to have_value(FeatureFlagger::Control::RELEASED_FEATURES, key)
+        expect(control.released?(key, 1)).to be_falsey
+        expect(control.released_features_to_all).not_to include(key)
       end
     end
 
@@ -125,7 +124,7 @@ module FeatureFlagger
       end
 
       context 'when feature was released to all' do
-        before { storage.add_all(FeatureFlagger::Control::RELEASED_FEATURES, key) }
+        before { control.release_to_all(key) }
 
         it { expect(result).to be_truthy }
       end
@@ -133,9 +132,9 @@ module FeatureFlagger
 
     describe '#search_keys' do
       before do
-        storage.add('namespace:1', resource_name, 1)
-        storage.add('namespace:2', resource_name, 2)
-        storage.add('exclusive', resource_name, 3)
+        control.release("model:namespace:1", 1)
+        control.release("model:namespace:2", 2)
+        control.release("model:exclusive", 3)
       end
 
       context 'without matching result' do
@@ -143,7 +142,17 @@ module FeatureFlagger
       end
 
       context 'with matching results' do
-        it { expect(control.search_keys("*ame*pac*").to_a).to contain_exactly('namespace:1', 'namespace:2') }
+        it { expect(control.search_keys("*ame*pac*").to_a).to contain_exactly('model:namespace:1', 'model:namespace:2') }
+      end
+    end
+
+    describe '#feature_keys' do
+      it 'returns only feature keys in storage' do
+        another_key = "account:some_other_feature"
+        control.release(key, resource_id)
+        control.release_to_all(another_key)
+
+        expect(control.feature_keys).to match_array([key])
       end
     end
   end

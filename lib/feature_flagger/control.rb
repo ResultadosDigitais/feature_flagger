@@ -59,7 +59,7 @@ module FeatureFlagger
     end
 
     def feature_keys
-      @storage.feature_keys
+      @storage.feature_keys - [FeatureFlagger::Control::RELEASED_FEATURES]
     end
   end
 end
