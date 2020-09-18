@@ -7,7 +7,8 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
   subject(:migrator) { described_class.new(redis, control) }
 
   let(:redis) { FakeRedis::Redis.new }
-  let(:control) { FeatureFlagger::Control.new(FeatureFlagger::Storage::Redis.new(redis)) }
+  let(:notifier) { FeatureFlagger::Notifier.new(lambda {|event|})}
+  let(:control) { FeatureFlagger::Control.new(FeatureFlagger::Storage::Redis.new(redis), notifier) }
   let(:global_key) { FeatureFlagger::Control::RELEASED_FEATURES }
 
   before do

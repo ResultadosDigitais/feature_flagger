@@ -4,8 +4,9 @@ module FeatureFlagger
 
     RELEASED_FEATURES = 'released_features'
 
-    def initialize(storage)
+    def initialize(storage, notifier)
       @storage = storage
+      @notifier = notifier
     end
 
     def released?(feature_key, resource_id)
@@ -17,6 +18,7 @@ module FeatureFlagger
         feature_key
       )
 
+      @notifier.send(FeatureFlagger::Notifier::RELEASE, feature_key, resource_id)
       @storage.add(feature_key, resource_name, resource_id)
     end
 
@@ -25,6 +27,7 @@ module FeatureFlagger
     end
 
     def release_to_all(feature_key)
+      @notifier.send(FeatureFlagger::Notifier::UNRELEASE_TO_ALL, feature_key)
       @storage.add_all(RELEASED_FEATURES, feature_key)
     end
 
@@ -32,11 +35,12 @@ module FeatureFlagger
       resource_name = Storage::Keys.extract_resource_name_from_feature_key(
         feature_key
       )
-
+      @notifier.send(FeatureFlagger::Notifier::UNRELEASE, feature_key, resource_id)
       @storage.remove(feature_key, resource_name, resource_id)
     end
 
     def unrelease_to_all(feature_key)
+      @notifier.send(FeatureFlagger::Notifier::UNRELEASE_TO_ALL, feature_key)
       @storage.remove_all(RELEASED_FEATURES, feature_key)
     end
 

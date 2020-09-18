@@ -3,7 +3,8 @@ require 'spec_helper'
 module FeatureFlagger
   RSpec.describe Control do
     let(:redis) { FakeRedis::Redis.new }
-    let(:control) { Control.new(Storage::Redis.new(redis)) }
+    let(:notifier) { Notifier.new(lambda { |event|  })}
+    let(:control) { Control.new(Storage::Redis.new(redis), notifier) }
     let(:key)         { 'account:email_marketing:whitelabel' }
     let(:resource_id) { 'resource_id' }
     let(:resource_name) { 'account' }
