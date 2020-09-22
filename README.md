@@ -41,6 +41,7 @@ FeatureFlagger.configure do |config|
   redis = Redis.new(host: ENV['REDIS_URL'])
   namespaced = Redis::Namespace.new('feature_flagger', redis: redis)
   config.storage = FeatureFlagger::Storage::Redis.new(namespaced)
+  config.notifier_callback = -> {|event| do something with event }
 end
 ```
 

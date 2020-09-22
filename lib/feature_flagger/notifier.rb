@@ -8,23 +8,31 @@ module FeatureFlagger
     UNRELEASE_TO_ALL = 'unrelease_to_all'.freeze
 
     def initialize(notify)
-      @notify = notify
-    end
-
-    def notify?
-      @notify != nil
+      @notify = check_notify(notify)
     end
 
     def send(operation, feature_key, resource_id = nil)
-      begin
-      resource_name = Storage::Keys.extract_resource_name_from_feature_key(
-        feature_key
+      @notify.call(build_event(operation, extract_resource_from_key(feature_key), feature_key, resource_id)) if notify?
+    end
+
+    private
+
+    def check_notify(notify)
+      return nil if notify.nil?
+      raise ArgumentError, "Notifier callback should be a lambda" unless notify.is_a?(Proc)
+      notify
+    end
+
+    def notify?
+      !@notify.nil?
+    end
+
+    def extract_resource_from_key(key)
+      Storage::Keys.extract_resource_name_from_feature_key(
+        key
       )
       rescue FeatureFlagger::Storage::Keys::InvalidResourceNameError
-        resource_name = "legacy key"
-      end
-
-      notify.call(build_event(operation, resource_name, feature_key, resource_id)) if notify?
+      "legacy key"
     end
 
     def build_event(operation, resource_name, feature_key, resource_id)

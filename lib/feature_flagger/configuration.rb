@@ -5,7 +5,7 @@ module FeatureFlagger
     def initialize
       @storage       ||= Storage::Redis.default_client
       @yaml_filepath ||= default_yaml_filepath
-      @notifier_callback ||= lambda { |event| puts "#{event["type"]}: #{event['model']} : #{event['feature']} : #{event['id']}" }
+      @notifier_callback = nil
     end
 
     def info
