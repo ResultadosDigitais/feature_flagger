@@ -65,6 +65,7 @@ The notifier_callback property in config, enables the dispatch of events when a 
 config.notifier_callback = -> {|event| do something with event }
 ```
 
+
 It accepts a lambda function that will receive a hash with the operation triggered like:
 ```ruby
 {
@@ -80,6 +81,7 @@ The supported operations are:
 * unrelease
 * release_to_all
 * unrelease_to_all 
+
 
 ## Usage
 
