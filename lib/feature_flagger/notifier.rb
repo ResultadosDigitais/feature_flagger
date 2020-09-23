@@ -31,7 +31,7 @@ module FeatureFlagger
       Storage::Keys.extract_resource_name_from_feature_key(
         key
       )
-      rescue FeatureFlagger::Storage::Keys::InvalidResourceNameError
+    rescue FeatureFlagger::Storage::Keys::InvalidResourceNameError
       "legacy key"
     end
 
