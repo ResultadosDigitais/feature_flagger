@@ -41,9 +41,10 @@ FeatureFlagger.configure do |config|
   redis = Redis.new(host: ENV['REDIS_URL'])
   namespaced = Redis::Namespace.new('feature_flagger', redis: redis)
   config.storage = FeatureFlagger::Storage::Redis.new(namespaced)
-  config.notifier_callback = -> {|event| do something with event }
 end
 ```
+
+
 
 1. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
@@ -61,6 +62,29 @@ class Account < ActiveRecord::Base
   # ....
 end
 ```
+#### Notifier
+The notifier_callback property in config, enables the dispatch of events when a release operation happens.
+```ruby
+config.notifier_callback = -> {|event| do something with event }
+```
+
+
+It accepts a lambda function that will receive a hash with the operation triggered like:
+```ruby
+{
+  type: 'release',
+  model: 'account',
+  key: 'somefeature:somerolloutkey'
+  id: 'account_id' #In realease_to_all and unrelease_to_all operations id will be nil 
+}
+```
+
+The supported operations are:
+* release
+* unrelease
+* release_to_all
+* unrelease_to_all 
+
 
 ## Usage
 
