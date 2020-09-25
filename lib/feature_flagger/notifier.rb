@@ -19,7 +19,7 @@ module FeatureFlagger
 
     def check_notify(notify)
       return nil if notify.nil?
-    raise ArgumentError, "Notifier callback should be a lambda" unless notify.is_a?(Proc)
+      raise ArgumentError, "Notifier callback should be a lambda" unless notify.is_a?(Proc)
       notify
     end
 
