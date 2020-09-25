@@ -3,7 +3,7 @@ require 'spec_helper'
 module FeatureFlagger
   RSpec.describe Control do
     let(:redis) { FakeRedis::Redis.new }
-    let(:notifier) { Notifier.new(lambda { |event|  })}
+    let(:notifier) { spy(Notifier.new(lambda { |event|  }))}
     let(:control) { Control.new(Storage::Redis.new(redis), notifier) }
     let(:key)         { 'account:email_marketing:whitelabel' }
     let(:resource_id) { 'resource_id' }
@@ -44,6 +44,11 @@ module FeatureFlagger
         control.release(key, resource_id)
         expect(control).to be_released(key, resource_id)
       end
+
+      it 'triggers notifer' do
+        expect(control.notifier).to receive(:send).with(FeatureFlagger::Notifier::RELEASE, key, resource_id)
+        control.release(key, resource_id)
+      end
     end
 
     describe '#releases' do
@@ -70,6 +75,11 @@ module FeatureFlagger
         expect(control.releases(resource_name, 1)).to include(key)
         expect(control.released_features_to_all).to include(key)
       end
+
+      it 'triggers notifer' do
+        expect(control.notifier).to receive(:send).with(FeatureFlagger::Notifier::RELEASE_TO_ALL, key)
+        control.release_to_all(key)
+      end
     end
 
     describe '#unrelease' do
@@ -77,6 +87,11 @@ module FeatureFlagger
         control.release(key, resource_id)
         control.unrelease(key, resource_id)
         expect(control.released?(key, resource_id)).to be_falsey
+      end
+
+      it 'triggers notifer' do
+        expect(control.notifier).to receive(:send).with(FeatureFlagger::Notifier::UNRELEASE, key, resource_id)
+        control.unrelease(key, resource_id)
       end
     end
 
@@ -92,6 +107,11 @@ module FeatureFlagger
         control.unrelease_to_all(key)
         expect(control.released?(key, 1)).to be_falsey
         expect(control.released_features_to_all).not_to include(key)
+      end
+
+      it 'triggers notifer' do
+        expect(control.notifier).to receive(:send).with(FeatureFlagger::Notifier::UNRELEASE_TO_ALL, key)
+        control.unrelease_to_all(key)
       end
     end
 

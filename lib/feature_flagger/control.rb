@@ -27,7 +27,7 @@ module FeatureFlagger
     end
 
     def release_to_all(feature_key)
-      @notifier.send(FeatureFlagger::Notifier::UNRELEASE_TO_ALL, feature_key)
+      @notifier.send(FeatureFlagger::Notifier::RELEASE_TO_ALL, feature_key)
       @storage.add_all(RELEASED_FEATURES, feature_key)
     end
 
