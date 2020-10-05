@@ -1,4 +1,3 @@
-require 'byebug'
 module FeatureFlagger
   class Notifier
     attr_reader :notify
