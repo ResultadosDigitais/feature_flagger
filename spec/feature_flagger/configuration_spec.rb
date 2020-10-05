@@ -60,7 +60,7 @@ module FeatureFlagger
       let(:configuration) { described_class.new }
 
       context 'no notifier_callback set' do
-        it 'returns a Redis storage by default' do
+        it 'returns nil if no callback is set' do
           expect(configuration.notifier_callback).to be_nil
         end
       end

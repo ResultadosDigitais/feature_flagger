@@ -47,9 +47,9 @@ RSpec.describe FeatureFlagger do
 
     end
 
-    it 'receives a notifier instance with no callback' do
+    it 'receives a notifier instance with a null notifier callback' do
       expect(control.notifier).to be_a(FeatureFlagger::Notifier)
-      expect(control.notifier.notify).to be_nil
+      expect(control.notifier.notify).to be_a(Proc)
     end
   end
 end

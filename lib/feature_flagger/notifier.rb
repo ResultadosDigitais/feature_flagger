@@ -1,3 +1,4 @@
+require 'byebug'
 module FeatureFlagger
   class Notifier
     attr_reader :notify
@@ -8,23 +9,21 @@ module FeatureFlagger
     UNRELEASE_TO_ALL = 'unrelease_to_all'.freeze
 
     def initialize(notify)
-      @notify = check_notify(notify)
+      @notify = valid_notify?(notify) ? notify : nullNotify
     end
 
     def send(operation, feature_key, resource_id = nil)
-      @notify.call(build_event(operation, extract_resource_from_key(feature_key), feature_key, resource_id)) if notify?
+      @notify.call(build_event(operation, extract_resource_from_key(feature_key), feature_key, resource_id))
     end
 
     private
 
-    def check_notify(notify)
-      return nil if notify.nil?
-    raise ArgumentError, "Notifier callback should be a lambda" unless notify.is_a?(Proc)
-      notify
+    def nullNotify
+      lambda {|e| }
     end
 
-    def notify?
-      !@notify.nil?
+    def valid_notify?(notify)
+      !notify.nil? && notify.is_a?(Proc)
     end
 
     def extract_resource_from_key(key)
