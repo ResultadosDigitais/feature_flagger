@@ -1,6 +1,6 @@
 module FeatureFlagger
   class Control
-    attr_reader :storage, :notifier
+    attr_reader :storage
 
     RELEASED_FEATURES = 'released_features'
 
