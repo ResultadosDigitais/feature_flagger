@@ -28,7 +28,6 @@ Or install it yourself as:
 
     $ gem install feature_flagger
 
-
 ## Configuration
 
 By default, feature_flagger uses the REDIS_URL env var to setup it's storage.
@@ -60,6 +59,29 @@ class Account < ActiveRecord::Base
   # ....
 end
 ```
+#### Notifier
+The notifier_callback property in config, enables the dispatch of events when a release operation happens.
+```ruby
+config.notifier_callback = -> {|event| do something with event }
+```
+
+
+It accepts a lambda function that will receive a hash with the operation triggered like:
+```ruby
+{
+  type: 'release',
+  model: 'account',
+  key: 'somefeature:somerolloutkey'
+  id: 'account_id' #In realease_to_all and unrelease_to_all operations id will be nil 
+}
+```
+
+The supported operations are:
+* release
+* unrelease
+* release_to_all
+* unrelease_to_all 
+
 
 ## Usage
 

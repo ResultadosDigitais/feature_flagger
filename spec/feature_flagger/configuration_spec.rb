@@ -55,5 +55,15 @@ module FeatureFlagger
         end
       end
     end
+
+    describe '.notifier_callback' do
+      let(:configuration) { described_class.new }
+
+      context 'no notifier_callback set' do
+        it 'returns nil if no callback is set' do
+          expect(configuration.notifier_callback).to be_nil
+        end
+      end
+    end
   end
 end

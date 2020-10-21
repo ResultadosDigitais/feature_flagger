@@ -3,7 +3,9 @@ require 'spec_helper'
 module FeatureFlagger
   RSpec.describe Control do
     let(:redis) { FakeRedis::Redis.new }
-    let(:control) { Control.new(Storage::Redis.new(redis)) }
+    let(:notify) { spy(lambda { |event|  }, :is_a? => Proc) }
+    let(:notifier) { Notifier.new(notify)}
+    let(:control) { Control.new(Storage::Redis.new(redis), notifier) }
     let(:key)         { 'account:email_marketing:whitelabel' }
     let(:resource_id) { 'resource_id' }
     let(:resource_name) { 'account' }
@@ -43,6 +45,14 @@ module FeatureFlagger
         control.release(key, resource_id)
         expect(control).to be_released(key, resource_id)
       end
+
+      it 'sends to notifer the release event' do
+        expect(notify).to receive(:call).with({ type: FeatureFlagger::Notifier::RELEASE,
+                                                model: 'account',
+                                                feature: key,
+                                                id: resource_id })
+        control.release(key, resource_id)
+      end
     end
 
     describe '#releases' do
@@ -69,6 +79,14 @@ module FeatureFlagger
         expect(control.releases(resource_name, 1)).to include(key)
         expect(control.released_features_to_all).to include(key)
       end
+
+      it 'sends to notifer the release to all event' do
+        expect(notify).to receive(:call).with({ type: FeatureFlagger::Notifier::RELEASE_TO_ALL,
+                                                model: 'account',
+                                                feature: key,
+                                                id: nil })
+        control.release_to_all(key)
+      end
     end
 
     describe '#unrelease' do
@@ -76,6 +94,14 @@ module FeatureFlagger
         control.release(key, resource_id)
         control.unrelease(key, resource_id)
         expect(control.released?(key, resource_id)).to be_falsey
+      end
+
+      it 'sends to notifer the unrelease event' do
+        expect(notify).to receive(:call).with({ type: FeatureFlagger::Notifier::UNRELEASE,
+                                                model: 'account',
+                                                feature: key,
+                                                id: resource_id })
+        control.unrelease(key, resource_id)
       end
     end
 
@@ -91,6 +117,14 @@ module FeatureFlagger
         control.unrelease_to_all(key)
         expect(control.released?(key, 1)).to be_falsey
         expect(control.released_features_to_all).not_to include(key)
+      end
+
+      it 'sends to notifer the unrelease to all event' do
+        expect(notify).to receive(:call).with({ type: FeatureFlagger::Notifier::UNRELEASE_TO_ALL,
+                                                model: 'account',
+                                                feature: key,
+                                                id: nil })
+        control.unrelease_to_all(key)
       end
     end
 

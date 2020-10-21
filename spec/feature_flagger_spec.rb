@@ -4,6 +4,8 @@ RSpec.describe FeatureFlagger do
   describe '.configure' do
     let(:storage) { double('storage') }
     let(:other_storage) { double('other_storage') }
+    let(:notifier_callback) { lambda {|event| } }
+
 
     before do
       FeatureFlagger.configure do |config|
@@ -21,6 +23,14 @@ RSpec.describe FeatureFlagger do
       expect(FeatureFlagger.config.storage).to eq other_storage
       expect(FeatureFlagger.control.storage).to eq other_storage
     end
+
+    it 'Calling configure with a valid notifier callback' do
+      FeatureFlagger.configure do |config|
+        config.notifier_callback = notifier_callback
+      end
+
+      expect(FeatureFlagger.notifier.notify).to eq notifier_callback
+    end
   end
 
   describe '.control' do
@@ -34,6 +44,12 @@ RSpec.describe FeatureFlagger do
     it 'initializes a Control with redis storage' do
       expect(control).to be_a(FeatureFlagger::Control)
       expect(control.storage).to be_a(FeatureFlagger::Storage::Redis)
+
+    end
+
+    it 'receives a notifier instance with a null notifier callback' do
+      expect(control.instance_variable_get(:@notifier)).to be_a(FeatureFlagger::Notifier)
+      expect(control.instance_variable_get(:@notifier).notify).to be_a(Proc)
     end
   end
 end
