@@ -8,7 +8,7 @@ module FeatureFlagger
     let(:resource_name) { 'account' }
 
     describe '#send' do
-      context 'When having a callback configured' do
+      context 'With a callback configured' do
         let(:notifier_callback) { spy(lambda { |event| }, :is_a? => Proc)}
         let(:notifier) { Notifier.new(notifier_callback)}
         let(:generic_event) {
@@ -19,11 +19,6 @@ module FeatureFlagger
             id: resource_id
           }
         }
-        context 'When call the lambda function' do
-          before { notifier.send(FeatureFlagger::Notifier::RELEASE, feature_key, resource_id) }
-
-          it { expect(notifier_callback).to have_received(:call) }
-        end
 
         context 'When trigger the expected event' do
           let(:feature_action) { FeatureFlagger::Notifier::RELEASE }
@@ -61,7 +56,7 @@ module FeatureFlagger
         end
       end
 
-      context 'Wgeb not have a callback configured' do
+      context 'When not have a callback configured' do
         let(:notifier) { Notifier.new(nil)}
         let(:event) {
           {
@@ -72,7 +67,7 @@ module FeatureFlagger
           }
         }
 
-        it 'Must not raise error when no callback is configured' do
+        it 'Must not raise error' do
            expect { notifier.send(FeatureFlagger::Notifier::RELEASE, feature_key, resource_id) }.not_to raise_error
         end
       end
