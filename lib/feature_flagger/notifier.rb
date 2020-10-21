@@ -7,7 +7,7 @@ module FeatureFlagger
     RELEASE_TO_ALL = 'release_to_all'.freeze
     UNRELEASE_TO_ALL = 'unrelease_to_all'.freeze
 
-    def initialize(notify)
+    def initialize(notify = nil)
       @notify = valid_notify?(notify) ? notify : nullNotify
     end
 
