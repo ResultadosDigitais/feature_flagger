@@ -6,6 +6,7 @@ module FeatureFlagger
     let(:legacy_feature_key)   { 'account' }
     let(:resource_id)   { 'resource_id' }
     let(:resource_name) { 'account' }
+    let(:feature_action) { FeatureFlagger::Notifier::RELEASE }
 
     describe '#send' do
       context 'With a callback configured' do
@@ -13,7 +14,7 @@ module FeatureFlagger
         let(:notifier) { Notifier.new(notifier_callback)}
         let(:generic_event) {
           {
-            type: FeatureFlagger::Notifier::RELEASE,
+            type: feature_action,
             model: resource_name,
             feature: feature_key,
             id: resource_id
@@ -21,35 +22,14 @@ module FeatureFlagger
         }
 
         context 'When trigger the expected event' do
-          let(:feature_action) { FeatureFlagger::Notifier::RELEASE }
           let(:event) { generic_event.merge({ type: feature_action})}
           before { notifier.send(feature_action, feature_key, resource_id) }
 
-          context 'When do a release' do
-            it { expect(notifier_callback).to have_received(:call).with(generic_event) }
-          end
-
-          context 'When call unrelease' do
-            let(:feature_action) { FeatureFlagger::Notifier::UNRELEASE }
-
-            it { expect(notifier_callback).to have_received(:call).with(event) }
-          end
-
-          context 'When release to all' do
-            let(:feature_action) { FeatureFlagger::Notifier::RELEASE_TO_ALL }
-
-            it { expect(notifier_callback).to have_received(:call).with(event) }
-          end
-
-          context 'When unrelease to all' do
-            let(:feature_action) { FeatureFlagger::Notifier::UNRELEASE_TO_ALL }
-
-            it { expect(notifier_callback).to have_received(:call).with(event) }
-          end
+          it { expect(notifier_callback).to have_received(:call).with(generic_event) }
 
           context 'When release a legacy key' do
             let(:event) { generic_event.merge({ model: "legacy key", feature: legacy_feature_key})}
-            before { notifier.send(FeatureFlagger::Notifier::RELEASE, legacy_feature_key, resource_id) }
+            before { notifier.send(feature_action, legacy_feature_key, resource_id) }
 
             it { expect(notifier_callback).to have_received(:call).with(event) }
           end
@@ -60,7 +40,7 @@ module FeatureFlagger
         let(:notifier) { Notifier.new(nil)}
         let(:event) {
           {
-            type: FeatureFlagger::Notifier::RELEASE,
+            type: feature_action,
             model: resource_name,
             feature: feature_key,
             id: resource_id
@@ -68,7 +48,7 @@ module FeatureFlagger
         }
 
         it 'Must not raise error' do
-           expect { notifier.send(FeatureFlagger::Notifier::RELEASE, feature_key, resource_id) }.not_to raise_error
+           expect { notifier.send(feature_action, feature_key, resource_id) }.not_to raise_error
         end
       end
     end
