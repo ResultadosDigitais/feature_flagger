@@ -1,11 +1,17 @@
 module FeatureFlagger
   class Configuration
-    attr_accessor :storage, :yaml_filepath, :notifier_callback
+    attr_accessor :storage, :cache_store, :yaml_filepath, :notifier_callback
 
     def initialize
       @storage       ||= Storage::Redis.default_client
       @yaml_filepath ||= default_yaml_filepath
       @notifier_callback = nil
+      @cache_store = nil
+    end
+
+    def cache_store=(cache_store)
+      raise ArgumentError, "Cache is only support when used with ActiveSupport" unless defined?(ActiveSupport)
+      @cache_store = ActiveSupport::Cache.lookup_store(*cache_store)
     end
 
     def info

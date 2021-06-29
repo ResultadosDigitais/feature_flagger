@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'redis', '> 3.2'
   spec.add_dependency 'redis-namespace', '> 1.3'
+  spec.add_development_dependency 'activesupport', '> 6.0'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'

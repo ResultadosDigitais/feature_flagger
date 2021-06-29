@@ -5,7 +5,9 @@ module FeatureFlagger
     let(:redis) { FakeRedis::Redis.new }
     let(:notify) { spy(lambda { |event|  }, :is_a? => Proc) }
     let(:notifier) { Notifier.new(notify)}
-    let(:control) { Control.new(Storage::Redis.new(redis), notifier) }
+    let(:storage) { Storage::Redis.new(redis) }
+    let(:cache_store) { nil }
+    let(:control) { Control.new(storage, notifier, cache_store) }
     let(:key)         { 'account:email_marketing:whitelabel' }
     let(:resource_id) { 'resource_id' }
     let(:resource_name) { 'account' }
@@ -36,6 +38,15 @@ module FeatureFlagger
           before { control.release_to_all(key) }
 
           it { expect(result).to be_truthy }
+        end
+      end
+
+      context 'when cache is configured' do
+        let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
+
+        it 'only hits the storage once' do
+          expect(storage).to receive(:has_value?).twice
+          10.times { control.released?(key, resource_id) }
         end
       end
     end
@@ -69,6 +80,24 @@ module FeatureFlagger
         resource_name = 'account'
 
         expect(control.releases(resource_name, resource_id)).to match_array(['account:email_marketing:whitelabel'])
+      end
+
+      context 'when cache is configured' do
+        let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
+
+        it 'only hits the storage once' do
+          control.release(key, resource_id)
+
+          expect(storage).to receive(:fetch_releases).once
+          2.times { control.releases(resource_name, resource_id) }
+        end
+
+        it 'hits the storage n times when skip_cache is provided' do
+          control.release(key, resource_id)
+
+          expect(storage).to receive(:fetch_releases).twice
+          2.times { control.releases(resource_name, resource_id, skip_cache: true) }
+        end
       end
     end
 
@@ -137,6 +166,26 @@ module FeatureFlagger
         control.release(key, 15)
         expect(subject).to match_array %w[1 2 15]
       end
+
+      it 'hits the storage n times without cache' do
+        expect(storage).to receive(:all_values).twice
+        2.times { control.resource_ids(key) }
+      end
+
+      context 'when caching is configured' do
+        let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
+
+        it 'only hits the storage once' do
+          expect(storage).to receive(:all_values).once
+          2.times { control.resource_ids(key) }
+        end
+
+        it 'hits the storage n times when skip_cache is provided' do
+          expect(storage).to receive(:all_values).twice
+
+          2.times { control.resource_ids(key, skip_cache: true) }
+        end
+      end
     end
 
     describe '#released_features_to_all' do
@@ -147,6 +196,15 @@ module FeatureFlagger
         control.release_to_all('account:feature:name2')
         control.release_to_all('account:feature:name15')
         expect(subject).to match_array %w[account:feature:name1 account:feature:name2 account:feature:name15]
+      end
+
+      context 'when caching is configured' do
+        let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
+
+        it 'only hits the storage once' do
+          expect(storage).to receive(:all_values).once
+          5.times { control.released_features_to_all }
+        end
       end
     end
 
@@ -161,6 +219,15 @@ module FeatureFlagger
         before { control.release_to_all(key) }
 
         it { expect(result).to be_truthy }
+      end
+
+      context 'when caching is configured' do
+        let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
+
+        it 'only hits the storage once' do
+          expect(storage).to receive(:all_values).once
+          5.times { control.released_features_to_all }
+        end
       end
     end
 

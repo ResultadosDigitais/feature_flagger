@@ -30,7 +30,7 @@ module FeatureFlagger
     end
 
     def control
-      @@control ||= Control.new(config.storage, notifier)
+      @@control ||= Control.new(config.storage, notifier, config.cache_store)
     end
   end
 end

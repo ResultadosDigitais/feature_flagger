@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED]
+- Add integration with ActionSupport::Cache's stores. As rollouts don't change often, adding a cache can save thousands of calls to the storage. It's possible to configure the same way Rails allows cache_stores to be configured.
+
+  configuration.cache_store = :memory_store, { expires_in: 100 }
+
+  Additionally, we also added an option to skip the cache entirely by adding a `skip_cache: true` on FF methods. Example:
+
+  Account.released_id?(resource_id, key, skip_local_cache: true)
+
+  By default there is no cache configured.
+
+
 ## [2.0.1] - 2021-01-27
 
 - Reverted 2.0.0 because of some issues with Redis Keys.
