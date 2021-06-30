@@ -12,9 +12,8 @@ module FeatureFlagger
     def cache_store=(cache_store)
       raise ArgumentError, "Cache is only support when used with ActiveSupport" unless defined?(ActiveSupport)
 
-      if cache_store
-        @cache_store = ActiveSupport::Cache.lookup_store(*cache_store)
-      end
+      cache_store = :null_store if cache_store.nil?
+      @cache_store = ActiveSupport::Cache.lookup_store(*cache_store)
     end
 
     def info
