@@ -11,7 +11,7 @@ module FeatureFlagger
     end
 
     def released?(feature_key, resource_id, options = {})
-      cache "released/#{feature_key}", options do
+      cache "released/#{feature_key}/#{resource_id}", options do
         @storage.has_value?(RELEASED_FEATURES, feature_key) || @storage.has_value?(feature_key, resource_id)
       end
     end
@@ -26,7 +26,7 @@ module FeatureFlagger
     end
 
     def releases(resource_name, resource_id, options = {})
-      cache "releases/#{RELEASED_FEATURES}", options do
+      cache "releases/#{resource_name}/#{resource_id}", options do
         @storage.fetch_releases(resource_name, resource_id, RELEASED_FEATURES)
       end
     end
@@ -56,13 +56,13 @@ module FeatureFlagger
     end
 
     def released_features_to_all(options = {})
-      cache "all_values/#{RELEASED_FEATURES}", options do
+      cache "released_features_to_all/#{RELEASED_FEATURES}", options do
         @storage.all_values(RELEASED_FEATURES)
       end
     end
 
     def released_to_all?(feature_key, options = {})
-      cache "has_value/#{RELEASED_FEATURES}", options do
+      cache "has_value/#{RELEASED_FEATURES}/#{feature_key}", options do
         @storage.has_value?(RELEASED_FEATURES, feature_key)
       end
     end
