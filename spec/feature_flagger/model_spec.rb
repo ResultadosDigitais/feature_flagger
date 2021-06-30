@@ -27,7 +27,7 @@ module FeatureFlagger
     
     describe '#releases' do
       it 'calls Control#release with appropriated methods' do
-        expect(control).to receive(:releases).with("feature_flagger_dummy_class", subject.id)
+        expect(control).to receive(:releases).with("feature_flagger_dummy_class", subject.id, {})
         subject.releases
       end
     end
@@ -44,8 +44,13 @@ module FeatureFlagger
         let(:resource_id) { 10 }
 
         it 'calls Control#released? with appropriated methods' do
-          expect(control).to receive(:released?).with(resolved_key, resource_id)
+          expect(control).to receive(:released?).with(resolved_key, resource_id, {})
           DummyClass.released_id?(resource_id, key)
+        end
+
+        it 'passes down cache options to storage' do
+          expect(control).to receive(:released?).with(resolved_key, resource_id, { skip_cache: true })
+          DummyClass.released_id?(resource_id, key, skip_cache: true)
         end
       end
     end
@@ -74,8 +79,13 @@ module FeatureFlagger
 
     describe '.all_released_ids_for' do
       it 'calls Control#resource_ids with appropriated methods' do
-        expect(control).to receive(:resource_ids).with(resolved_key)
+        expect(control).to receive(:resource_ids).with(resolved_key, {})
         DummyClass.all_released_ids_for(key)
+      end
+
+      it 'passes down cache options to storage' do
+        expect(control).to receive(:resource_ids).with(resolved_key, { skip_cache: true})
+        DummyClass.all_released_ids_for(key, skip_cache: true)
       end
     end
 
@@ -102,7 +112,7 @@ module FeatureFlagger
 
     describe '.released_to_all?' do
       it 'calls Control#released_to_all? with appropriated methods' do
-        expect(control).to receive(:released_to_all?).with(resolved_key)
+        expect(control).to receive(:released_to_all?).with(resolved_key, {})
         DummyClass.released_to_all?(key)
       end
     end

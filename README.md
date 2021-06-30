@@ -43,6 +43,15 @@ FeatureFlagger.configure do |config|
 end
 ```
 
+It's also possible to configure an additional cache layer by using ActiveSupport::Cache APIs. You can configure it the same way you would setup cache_store for Rails Apps. Caching is not enabled by default.
+
+
+```ruby
+configuration.cache_store = :memory_store, { expires_in: 100 }
+
+```
+
+
 1. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
 account: # model name
@@ -96,6 +105,10 @@ account.release(:email_marketing, :new_email_flow)
 account.released?(:email_marketing, :new_email_flow)
 #=> true
 
+# In order to bypass the cache if cache_store is configured
+account.released?(:email_marketing, :new_email_flow, skip_cache: true)
+#=> true
+
 # Remove feature for given account
 account.unrelease(:email_marketing, :new_email_flow)
 #=> true
@@ -106,6 +119,10 @@ FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"
 
 # Check feature for a specific account id
 Account.released_id?(42, :email_marketing, :new_email_flow)
+#=> true
+
+# In order to bypass the cache if cache_store is configured
+Account.released_id?(42, :email_marketing, :new_email_flow, skip_cache: true)
 #=> true
 
 # Release a feature for a specific account id
@@ -123,6 +140,10 @@ Account.unrelease_to_all(:email_marketing, :new_email_flow)
 
 # Return an array with all features released for all
 Account.released_features_to_all
+
+# In order to bypass the cache if cache_store is configured
+Account.released_features_to_all(skip_cache: true)
+
 ```
 
 ## Clean up action
