@@ -31,6 +31,13 @@ module FeatureFlagger
         end
       end
 
+      context 'cache_store set to :null_store when explicit set to nil' do
+        it 'returns an ActiveSupport::Cache::NullStore instance' do
+          configuration.cache_store = nil
+          expect(configuration.cache_store).to be_an(ActiveSupport::Cache::NullStore)
+        end
+      end
+
       context 'cache_store set to :memory_store' do
         it 'returns an ActiveSupport::Cache::MemoryStore instance' do
           configuration.cache_store = :memory_store
