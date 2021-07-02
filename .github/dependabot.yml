@@ -1,0 +1,26 @@
+version: 2
+registries:
+  rubygems-server-resultadosdigitais-jfrog-io-resultadosdigitais-a:
+    type: rubygems-server
+    url: https://resultadosdigitais.jfrog.io/resultadosdigitais/api/gems/gems/
+    username: "${{secrets.RUBYGEMS_SERVER_RESULTADOSDIGITAIS_JFROG_IO_RESULTADOSDIGITAIS_A_USERNAME}}"
+    password: "${{secrets.RUBYGEMS_SERVER_RESULTADOSDIGITAIS_JFROG_IO_RESULTADOSDIGITAIS_A_PASSWORD}}"
+  rubygems-server-gems-contribsys-com:
+    type: rubygems-server
+    url: https://gems.contribsys.com
+    username: "${{secrets.RUBYGEMS_SERVER_GEMS_CONTRIBSYS_COM_USERNAME}}"
+    password: "${{secrets.RUBYGEMS_SERVER_GEMS_CONTRIBSYS_COM_PASSWORD}}"
+
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "06:00"
+    timezone: Etc/UCT
+  pull-request-branch-name:
+    separator: "-"
+  open-pull-requests-limit: 10
+  registries:
+  - rubygems-server-resultadosdigitais-jfrog-io-resultadosdigitais-a
+  - rubygems-server-gems-contribsys-com
