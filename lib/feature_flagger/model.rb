@@ -13,7 +13,7 @@ module FeatureFlagger
     end
 
     def released?(*feature_key, **options)
-      self.class.released_id?(feature_flagger_identifier, feature_key, options)
+      self.class.released_id?(feature_flagger_identifier, *feature_key, **options)
     end
 
     def release(*feature_key)
