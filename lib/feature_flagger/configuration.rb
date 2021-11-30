@@ -4,7 +4,7 @@ module FeatureFlagger
 
     def initialize
       @storage         ||= Storage::Redis.default_client
-      @manifest_source ||= FeatureFlagger::ManifestSources::YAML.new
+      @manifest_source ||= FeatureFlagger::ManifestSources::WithYamlFile.new
       @notifier_callback = nil
       @cache_store = nil
     end

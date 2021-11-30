@@ -5,8 +5,8 @@ module FeatureFlagger
     subject { Feature.new(key, :feature_flagger_dummy_class) }
 
     before do
-      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-      FeatureFlagger.config.yaml_filepath = filepath
+      yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      allow(FeatureFlagger::Configuration).to receive(:info).and_return(YAML.load_file(yaml_path))
     end
 
     describe '#initialize' do

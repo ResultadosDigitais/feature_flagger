@@ -15,7 +15,7 @@ module FeatureFlagger
 
     before do
       filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-      FeatureFlagger.config.yaml_filepath = filepath
+      FeatureFlagger.config.manifest_source = filepath
     end
 
     describe '#release' do
@@ -129,7 +129,7 @@ module FeatureFlagger
         FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0)
 
         filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        FeatureFlagger.config.yaml_filepath = filepath
+        FeatureFlagger.config.manifest_source = filepath
       end
 
       it 'returns all detached feature keys' do
@@ -150,7 +150,7 @@ module FeatureFlagger
           FeatureFlagger.control.release(feature_key, 0)
 
           filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-          FeatureFlagger.config.yaml_filepath = filepath
+          FeatureFlagger.config.manifest_source = filepath
         end
 
         it 'cleanup key' do
