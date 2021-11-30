@@ -55,8 +55,8 @@ module FeatureFlagger
       let(:configuration) { described_class.new }
 
       before do
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        configuration.yaml_filepath = filepath
+        yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        allow(configuration).to receive(:info).and_return(YAML.load_file(yaml_path))
       end
 
       context 'without resource name' do

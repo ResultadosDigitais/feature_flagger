@@ -14,8 +14,9 @@ module FeatureFlagger
     let(:control)       { FeatureFlagger.control }
 
     before do
-      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-      FeatureFlagger.config.yaml_filepath = filepath
+      yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+      allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
     end
 
     describe '#release' do
@@ -128,8 +129,9 @@ module FeatureFlagger
         FeatureFlagger.control.release('feature_flagger_dummy_class:feature_a', 0)
         FeatureFlagger.control.release('feature_flagger_dummy_class:feature_b', 0)
 
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        FeatureFlagger.config.yaml_filepath = filepath
+        yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+        allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
       end
 
       it 'returns all detached feature keys' do
@@ -149,8 +151,9 @@ module FeatureFlagger
           end
           FeatureFlagger.control.release(feature_key, 0)
 
-          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-          FeatureFlagger.config.yaml_filepath = filepath
+          yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+          allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
         end
 
         it 'cleanup key' do
@@ -190,6 +193,5 @@ module FeatureFlagger
         )
       end
     end
-
   end
 end

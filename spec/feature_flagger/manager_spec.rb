@@ -11,8 +11,9 @@ module FeatureFlagger
           config.storage = storage
         end
 
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        FeatureFlagger.config.yaml_filepath = filepath
+        yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+        allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
 
         # All good here
         FeatureFlagger.control.release_to_all('feature_flagger_dummy_class:email_marketing:behavior_score')
@@ -45,8 +46,9 @@ module FeatureFlagger
           end
           FeatureFlagger.control.release(feature_key, 0)
 
-          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-          FeatureFlagger.config.yaml_filepath = filepath
+          yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+          allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
         end
 
         it 'cleanup key' do
@@ -59,8 +61,9 @@ module FeatureFlagger
 
       context "mapped feature key" do
         before do
-          filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-          FeatureFlagger.config.yaml_filepath = filepath
+          yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+          allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
+          allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
         end
 
         it 'do not cleanup key' do
