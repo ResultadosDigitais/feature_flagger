@@ -7,7 +7,7 @@ module FeatureFlagger
 
     before do
       yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-  FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
+      FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
     end
 
     describe '#initialize' do
