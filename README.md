@@ -163,7 +163,7 @@ to ensure the data stored in Redis storage is right. Check [#67](https://github.
 
 ## Extra options
 
-There is a few options to storage your file rollout.yml:
+There are a few options to store/retrieve your rollout manifest (a.k.a rollout.yml):
 
 If you have a rollout.yml file and want to use redis to keep a backup, add the folow code to the configuration box:
 
