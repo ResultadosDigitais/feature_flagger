@@ -13,6 +13,6 @@ module FeatureFlagger
           end
         end
       end
-		end
+    end
   end
 end
