@@ -12,8 +12,7 @@ module FeatureFlagger
         end
 
         yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
-        allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
+        FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
 
         # All good here
         FeatureFlagger.control.release_to_all('feature_flagger_dummy_class:email_marketing:behavior_score')
