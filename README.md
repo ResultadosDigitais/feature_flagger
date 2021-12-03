@@ -188,7 +188,7 @@ FeatureFlagger.configure do |config|
 end
 ```
 
-If have the file and don't need a backup, is not necessary to do any different configuration.
+If you have the YAML file and don't need a backup, it is unnecessary to do any different configuration.
 
 ## Contributing
 
