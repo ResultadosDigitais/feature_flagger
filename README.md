@@ -176,7 +176,7 @@ FeatureFlagger.configure do |config|
 end
 ```
 
-If you already have your file on redis and prefer not to keep a copy in your application, add the folow code to the configuration box:
+If you already have your manifest on Redis and prefer not to keep a copy in your application, add the following code to the configuration block:
 
 ```ruby
 require 'feature_flagger/manifest_sources/storage_only'
