@@ -13,7 +13,7 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
 
   before do
     yaml_path = File.expand_path('../fixtures/rollout_example.yml', __dir__)
-    FeatureFlagger.config.manifest_source = yaml_path
+    FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
   end
 
   describe '.call' do
