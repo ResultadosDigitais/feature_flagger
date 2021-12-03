@@ -150,8 +150,7 @@ module FeatureFlagger
           FeatureFlagger.control.release(feature_key, 0)
 
           yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-          allow(FeatureFlagger.config).to receive(:manifest_source).and_return(yaml_path)
-          allow(FeatureFlagger.config).to receive(:info).and_return(YAML.load_file(yaml_path))
+          FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
         end
 
         it 'cleanup key' do
