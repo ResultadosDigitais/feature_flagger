@@ -11,6 +11,7 @@ require 'feature_flagger/configuration'
 require 'feature_flagger/manager'
 require 'feature_flagger/railtie'
 require 'feature_flagger/notifier'
+require 'feature_flagger/manifest_sources/with_yaml_file'
 
 module FeatureFlagger
   class << self

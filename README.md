@@ -161,6 +161,35 @@ to ensure the data stored in Redis storage is right. Check [#67](https://github.
 
     $ bundle exec rake feature_flagger:migrate_to_resource_keys
 
+## Extra options
+
+There are a few options to store/retrieve your rollout manifest (a.k.a rollout.yml):
+
+If you have a rollout.yml file and want to use Redis to keep a backup, add the follow code to the configuration block:
+
+```ruby
+require 'feature_flagger/manifest_sources/yaml_with_backup_to_storage'
+FeatureFlagger.configure do |config|
+  ...
+  config.manifest_source = FeatureFlagger::ManifestSources::YAMLWithBackupToStorage.new(config.storage)
+  ...
+end
+```
+
+If you already have your manifest on Redis and prefer not to keep a copy in your application, add the following code to the configuration block:
+
+```ruby
+require 'feature_flagger/manifest_sources/storage_only'
+
+FeatureFlagger.configure do |config|
+  ...
+  config.manifest_source = FeatureFlagger::ManifestSources::StorageOnly.new(config.storage)
+  ...
+end
+```
+
+If you have the YAML file and don't need a backup, it is unnecessary to do any different configuration.
+
 ## Contributing
 
 Bug reports and pull requests are welcome!

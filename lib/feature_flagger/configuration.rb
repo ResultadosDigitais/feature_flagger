@@ -1,10 +1,10 @@
 module FeatureFlagger
   class Configuration
-    attr_accessor :storage, :cache_store, :yaml_filepath, :notifier_callback
+    attr_accessor :storage, :cache_store, :manifest_source, :notifier_callback
 
     def initialize
       @storage       ||= Storage::Redis.default_client
-      @yaml_filepath ||= default_yaml_filepath
+      @manifest_source ||= FeatureFlagger::ManifestSources::WithYamlFile.new
       @notifier_callback = nil
       @cache_store = nil
     end
@@ -17,7 +17,7 @@ module FeatureFlagger
     end
 
     def info
-      @info ||= YAML.load_file(yaml_filepath) if yaml_filepath
+      @manifest_source.resolved_info
     end
 
     def mapped_feature_keys(resource_name = nil)
@@ -28,10 +28,6 @@ module FeatureFlagger
     end
 
     private
-
-    def default_yaml_filepath
-      "#{Rails.root}/config/rollout.yml" if defined?(Rails)
-    end
 
     def make_keys_recursively(hash, keys = [], composed_key = [])
       unless hash.values[0].is_a?(Hash)

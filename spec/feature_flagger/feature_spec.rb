@@ -1,12 +1,13 @@
 require 'spec_helper'
+require 'feature_flagger/manifest_sources/with_yaml_file'
 
 module FeatureFlagger
   RSpec.describe Feature do
     subject { Feature.new(key, :feature_flagger_dummy_class) }
 
     before do
-      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-      FeatureFlagger.config.yaml_filepath = filepath
+      yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
     end
 
     describe '#initialize' do
