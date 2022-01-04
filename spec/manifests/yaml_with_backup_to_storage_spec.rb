@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'feature_flagger/manifest_sources/yaml_with_backup_to_storage'
 
 module FeatureFlagger
   module ManifestSources
