@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'feature_flagger/manifest_sources/storage_only'
 
 module FeatureFlagger
   module ManifestSources

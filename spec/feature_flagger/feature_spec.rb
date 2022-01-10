@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'feature_flagger/manifest_sources/with_yaml_file'
 
 module FeatureFlagger
   RSpec.describe Feature do
