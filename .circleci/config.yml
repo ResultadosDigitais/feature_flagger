@@ -16,7 +16,7 @@ jobs:
 
   coverage:
     docker:
-      - image: circleci/ruby:2.5.8
+      - image: cimg/ruby:2.5.8
         environment:
           COVERAGE: true
     steps:
