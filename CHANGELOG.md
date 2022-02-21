@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2022-10-01
+
+### Removed
+- Removed the necessity to require the new yaml source in your app #89
+
+
+## [2.2.0] - 2021-16-12
+
+### Added
+- Added Ruby 3.0 compatibility #85
+- Add manifest source option (#88), that enables application to use manifest from different sources
+
+
 ## [2.1.1] - 2021-07-01
 - Fix bug when configuring cache_key to nil would load MemoryStore by default. It returns NullStore now. This bug only affected users configuring cache_store to nil.
 - Configure cache_keys correctly
