@@ -34,6 +34,21 @@ module FeatureFlagger
       it { expect(subject.description).to eq 'Enable behavior score experiment' }
     end
 
+    describe '#created_at' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.created_at).to eq("2019-05-31") }
+    end
+
+    describe '#owner' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.owner).to eq("Team Name") }
+    end
+
+    describe '#full_rollout_until' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.full_rollout_until).to eq("2020-12-31") }
+    end
+
     describe '#key' do
       let(:key)          { [:email_marketing, :behavior_score] }
       let(:resolved_key) { 'feature_flagger_dummy_class:email_marketing:behavior_score' }
