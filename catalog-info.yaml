@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: feature_flagger
+  description: Libere novos recursos para seus clientes de forma segura.
+  annotations:
+    circleci.com/project-slug: github/ResultadosDigitais/feature_flagger
+    github.com/project-slug: ResultadosDigitais/feature_flagger
+spec:
+  type: library
+  owner: devtools
+  lifecycle: production
