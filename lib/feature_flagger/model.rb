@@ -23,12 +23,12 @@ module FeatureFlagger
     def unrelease(*feature_key)
       resource_name = self.class.feature_flagger_model_settings.entity_name
       feature = Feature.new(feature_key, resource_name)
-      FeatureFlagger.control.unrelease(feature.key, id)
+      FeatureFlagger.control.unrelease(feature.key, feature_flagger_identifier)
     end
 
     def releases(options = {})
       resource_name = self.class.feature_flagger_model_settings.entity_name
-      FeatureFlagger.control.releases(resource_name, id, options)
+      FeatureFlagger.control.releases(resource_name, feature_flagger_identifier, options)
     end
 
     private
@@ -109,7 +109,7 @@ module FeatureFlagger
 
       def feature_flagger_model_settings
         @feature_flagger_model_settings ||= FeatureFlagger::ModelSettings.new(
-          identifier_field: :id,
+          identifier_field: FeatureFlagger.config.identifier_field,
           entity_name: rollout_resource_name
         )
       end

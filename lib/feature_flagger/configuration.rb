@@ -1,12 +1,13 @@
 module FeatureFlagger
   class Configuration
-    attr_accessor :storage, :cache_store, :manifest_source, :notifier_callback
+    attr_accessor :storage, :cache_store, :manifest_source, :notifier_callback, :identifier_field
 
     def initialize
       @storage       ||= Storage::Redis.default_client
       @manifest_source ||= FeatureFlagger::ManifestSources::WithYamlFile.new
       @notifier_callback = nil
       @cache_store = nil
+      @identifier_field ||= :id
     end
 
     def cache_store=(cache_store)
