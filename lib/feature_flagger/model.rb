@@ -17,6 +17,7 @@ module FeatureFlagger
     end
 
     def release(*feature_key)
+      raise 'identifier cannot be null' if feature_flagger_identifier.nil?
       self.class.release_id(feature_flagger_identifier, *feature_key)
     end
 
@@ -49,6 +50,7 @@ module FeatureFlagger
       end
 
       def release_id(resource_id, *feature_key)
+        raise 'resource_id cannot be null' if resource_id.nil?
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
         FeatureFlagger.control.release(feature.key, resource_id)
       end

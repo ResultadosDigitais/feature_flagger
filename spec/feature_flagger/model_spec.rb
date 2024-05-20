@@ -4,7 +4,11 @@ module FeatureFlagger
 
   class DummyClass
     include FeatureFlagger::Model
-    def id; 14 end
+    attr :id
+
+    def initialize(id: 14)
+      @id = id
+    end
   end
 
   RSpec.describe Model do
@@ -22,6 +26,16 @@ module FeatureFlagger
       it 'calls Control#release with appropriated methods' do
         expect(control).to receive(:release).with(resolved_key, subject.id)
         subject.release(key)
+      end
+
+      context 'when subject has id nil' do
+        subject { DummyClass.new(id: nil) }
+
+        it 'raise error identifier cannot be null' do
+          expect{
+            subject.release(key)
+          }.to raise_error 'identifier cannot be null'
+        end
       end
     end
     
@@ -64,6 +78,12 @@ module FeatureFlagger
           DummyClass.release_id(resource_id, key)
         end
       end
+
+      it 'raise error identifier cannot be null' do
+        expect{
+          DummyClass.release_id(nil, key)
+        }.to raise_error 'resource_id cannot be null'
+        end
     end
 
     describe '.unrelease_id' do
@@ -165,6 +185,7 @@ module FeatureFlagger
             DummyClass.cleanup_detached(:email_marketing, :behavior_score)
           }.to raise_error("key is still mapped")
         end
+
       end
     end
 
