@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2022-03-02
+### Added
+- Add new methods to get rollout details #94
+
+## [2.2.1] - 2022-10-01
+
+### Removed
+- Removed the necessity to require the new yaml source in your app #89
+
+
+## [2.2.0] - 2021-16-12
+
+### Added
+- Added Ruby 3.0 compatibility #85
+- Add manifest source option (#88), that enables application to use manifest from different sources
+
+
+## [2.1.1] - 2021-07-01
+- Fix bug when configuring cache_key to nil would load MemoryStore by default. It returns NullStore now. This bug only affected users configuring cache_store to nil.
+- Configure cache_keys correctly
+
+## [2.1.0] - 2021-06-30
+- Add integration with ActionSupport::Cache's stores. As rollouts don't change often, adding a cache can save thousands of calls to the storage. It's possible to configure the same way Rails allows cache_stores to be configured.
+
+  configuration.cache_store = :memory_store, { expires_in: 100 }
+
+  Additionally, we also added an option to skip the cache entirely by adding a `skip_cache: true` on FF methods. Example:
+
+  Account.released_id?(resource_id, key, skip_local_cache: true)
+
+  By default there is no cache configured.
+
 ## [2.0.1] - 2021-01-27
 
 - Reverted 2.0.0 because of some issues with Redis Keys.

@@ -12,8 +12,8 @@ RSpec.describe FeatureFlagger::Storage::FeatureKeysMigration do
   let(:global_key) { FeatureFlagger::Control::RELEASED_FEATURES }
 
   before do
-    filepath = File.expand_path('../fixtures/rollout_example.yml', __dir__)
-    FeatureFlagger.config.yaml_filepath = filepath
+    yaml_path = File.expand_path('../fixtures/rollout_example.yml', __dir__)
+    FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
   end
 
   describe '.call' do

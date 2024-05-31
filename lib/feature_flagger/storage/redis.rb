@@ -5,8 +5,10 @@ require_relative './keys'
 module FeatureFlagger
   module Storage
     class Redis
-      DEFAULT_NAMESPACE = :feature_flagger
-      RESOURCE_PREFIX = "_r".freeze
+      DEFAULT_NAMESPACE    = :feature_flagger
+      RESOURCE_PREFIX      = "_r".freeze
+      MANIFEST_PREFIX      = "_m".freeze
+      MANIFEST_KEY         = "manifest_file".freeze
       SCAN_EACH_BATCH_SIZE = 1000.freeze
 
       def initialize(redis)
@@ -75,6 +77,7 @@ module FeatureFlagger
           # Reject keys related to feature responsible for return
           # released features for a given account.
           next if key.start_with?("#{RESOURCE_PREFIX}:")
+          next if key.start_with?("#{MANIFEST_PREFIX}:")
 
           feature_keys << key
         end
@@ -87,6 +90,14 @@ module FeatureFlagger
           @redis,
           FeatureFlagger.control,
         ).call
+      end
+
+      def read_manifest_backup
+        @redis.get("#{MANIFEST_PREFIX}:#{MANIFEST_KEY}")
+      end
+
+      def write_manifest_backup(yaml_as_string)
+        @redis.set("#{MANIFEST_PREFIX}:#{MANIFEST_KEY}", yaml_as_string)
       end
 
       private

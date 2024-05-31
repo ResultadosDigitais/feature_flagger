@@ -43,6 +43,15 @@ FeatureFlagger.configure do |config|
 end
 ```
 
+It's also possible to configure an additional cache layer by using ActiveSupport::Cache APIs. You can configure it the same way you would setup cache_store for Rails Apps. Caching is not enabled by default.
+
+
+```ruby
+configuration.cache_store = :memory_store, { expires_in: 100 }
+
+```
+
+
 1. Create a `rollout.yml` in _config_ path and declare a rollout:
 ```yml
 account: # model name
@@ -96,6 +105,10 @@ account.release(:email_marketing, :new_email_flow)
 account.released?(:email_marketing, :new_email_flow)
 #=> true
 
+# In order to bypass the cache if cache_store is configured
+account.released?(:email_marketing, :new_email_flow, skip_cache: true)
+#=> true
+
 # Remove feature for given account
 account.unrelease(:email_marketing, :new_email_flow)
 #=> true
@@ -106,6 +119,10 @@ FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"
 
 # Check feature for a specific account id
 Account.released_id?(42, :email_marketing, :new_email_flow)
+#=> true
+
+# In order to bypass the cache if cache_store is configured
+Account.released_id?(42, :email_marketing, :new_email_flow, skip_cache: true)
 #=> true
 
 # Release a feature for a specific account id
@@ -123,6 +140,10 @@ Account.unrelease_to_all(:email_marketing, :new_email_flow)
 
 # Return an array with all features released for all
 Account.released_features_to_all
+
+# In order to bypass the cache if cache_store is configured
+Account.released_features_to_all(skip_cache: true)
+
 ```
 
 ## Clean up action
@@ -139,6 +160,32 @@ When upgrading from `1.1.x` to `1.2.x` the following command must be executed
 to ensure the data stored in Redis storage is right. Check [#67](https://github.com/ResultadosDigitais/feature_flagger/pull/67) and [#68](https://github.com/ResultadosDigitais/feature_flagger/pull/68) for more info.
 
     $ bundle exec rake feature_flagger:migrate_to_resource_keys
+
+## Extra options
+
+There are a few options to store/retrieve your rollout manifest (a.k.a rollout.yml):
+
+If you have a rollout.yml file and want to use Redis to keep a backup, add the follow code to the configuration block:
+
+```ruby
+FeatureFlagger.configure do |config|
+  ...
+  config.manifest_source = FeatureFlagger::ManifestSources::YAMLWithBackupToStorage.new(config.storage)
+  ...
+end
+```
+
+If you already have your manifest on Redis and prefer not to keep a copy in your application, add the following code to the configuration block:
+
+```ruby
+FeatureFlagger.configure do |config|
+  ...
+  config.manifest_source = FeatureFlagger::ManifestSources::StorageOnly.new(config.storage)
+  ...
+end
+```
+
+If you have the YAML file and don't need a backup, it is unnecessary to do any different configuration.
 
 ## Contributing
 

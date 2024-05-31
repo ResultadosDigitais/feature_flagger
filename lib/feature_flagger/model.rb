@@ -12,8 +12,8 @@ module FeatureFlagger
       base.extend ClassMethods
     end
 
-    def released?(*feature_key)
-      self.class.released_id?(feature_flagger_identifier, feature_key)
+    def released?(*feature_key, **options)
+      self.class.released_id?(feature_flagger_identifier, *feature_key, **options)
     end
 
     def release(*feature_key)
@@ -26,9 +26,9 @@ module FeatureFlagger
       FeatureFlagger.control.unrelease(feature.key, id)
     end
 
-    def releases
+    def releases(options = {})
       resource_name = self.class.feature_flagger_model_settings.entity_name
-      FeatureFlagger.control.releases(resource_name, id)
+      FeatureFlagger.control.releases(resource_name, id, options)
     end
 
     private
@@ -43,9 +43,9 @@ module FeatureFlagger
         yield feature_flagger_model_settings
       end
 
-      def released_id?(resource_id, *feature_key)
+      def released_id?(resource_id, *feature_key, **options)
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.released?(feature.key, resource_id)
+        FeatureFlagger.control.released?(feature.key, resource_id, options)
       end
 
       def release_id(resource_id, *feature_key)
@@ -58,10 +58,10 @@ module FeatureFlagger
         FeatureFlagger.control.unrelease(feature.key, resource_id)
       end
 
-      def all_released_ids_for(*feature_key)
+      def all_released_ids_for(*feature_key, **options)
         feature_key.flatten!
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.resource_ids(feature.key)
+        FeatureFlagger.control.resource_ids(feature.key, options)
       end
 
       def release_to_all(*feature_key)
@@ -74,13 +74,13 @@ module FeatureFlagger
         FeatureFlagger.control.unrelease_to_all(feature.key)
       end
 
-      def released_features_to_all
-        FeatureFlagger.control.released_features_to_all
+      def released_features_to_all(options = {})
+        FeatureFlagger.control.released_features_to_all(options)
       end
 
-      def released_to_all?(*feature_key)
+      def released_to_all?(*feature_key, **options)
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
-        FeatureFlagger.control.released_to_all?(feature.key)
+        FeatureFlagger.control.released_to_all?(feature.key, options)
       end
 
       def detached_feature_keys

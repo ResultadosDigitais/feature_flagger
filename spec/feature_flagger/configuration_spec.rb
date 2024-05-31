@@ -22,12 +22,41 @@ module FeatureFlagger
       end
     end
 
+    describe '.cache_store' do
+      let(:configuration) { described_class.new }
+
+      context 'no cache_store set' do
+        it 'returns nil by default' do
+          expect(configuration.cache_store).to be_nil
+        end
+      end
+
+      context 'cache_store set to :null_store when explicit set to nil' do
+        it 'returns an ActiveSupport::Cache::NullStore instance' do
+          configuration.cache_store = nil
+          expect(configuration.cache_store).to be_an(ActiveSupport::Cache::NullStore)
+        end
+      end
+
+      context 'cache_store set to :memory_store' do
+        it 'returns an ActiveSupport::Cache::MemoryStore instance' do
+          configuration.cache_store = :memory_store
+          expect(configuration.cache_store).to be_an(ActiveSupport::Cache::MemoryStore)
+        end
+
+        it 'allows custom params' do
+          configuration.cache_store = :memory_store, { expires_in: 100 }
+          expect(configuration.cache_store.options[:expires_in]).to eq(100)
+        end
+      end
+    end
+
     describe 'mapped_feature_keys' do
       let(:configuration) { described_class.new }
 
       before do
-        filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-        configuration.yaml_filepath = filepath
+        yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+        allow(configuration).to receive(:info).and_return(YAML.load_file(yaml_path))
       end
 
       context 'without resource name' do

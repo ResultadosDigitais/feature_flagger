@@ -5,8 +5,8 @@ module FeatureFlagger
     subject { Feature.new(key, :feature_flagger_dummy_class) }
 
     before do
-      filepath = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
-      FeatureFlagger.config.yaml_filepath = filepath
+      yaml_path = File.expand_path('../../fixtures/rollout_example.yml', __FILE__)
+      FeatureFlagger.config.manifest_source = FeatureFlagger::ManifestSources::WithYamlFile.new(yaml_path)
     end
 
     describe '#initialize' do
@@ -32,6 +32,21 @@ module FeatureFlagger
     describe '#description' do
       let(:key) { [:email_marketing, :behavior_score] }
       it { expect(subject.description).to eq 'Enable behavior score experiment' }
+    end
+
+    describe '#created_at' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.created_at).to eq("2019-05-31") }
+    end
+
+    describe '#owner' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.owner).to eq("Team Name") }
+    end
+
+    describe '#full_rollout_until' do
+      let(:key) { [:email_marketing, :behavior_score] }
+      it { expect(subject.full_rollout_until).to eq("2020-12-31") }
     end
 
     describe '#key' do

@@ -10,6 +10,18 @@ module FeatureFlagger
       @data['description']
     end
 
+    def created_at
+      @data['created_at']
+    end
+
+    def owner
+      @data['owner']
+    end
+
+    def full_rollout_until
+      @data['full_rollout_until']
+    end
+
     def key
       @feature_key.join(':')
     end
