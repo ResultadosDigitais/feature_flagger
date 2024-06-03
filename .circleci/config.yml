@@ -16,7 +16,7 @@ jobs:
 
   coverage:
     docker:
-      - image: cimg/ruby:2.5.8
+      - image: cimg/ruby:3.3
         environment:
           COVERAGE: true
     steps:
@@ -39,5 +39,5 @@ workflows:
       - build:
           matrix:
             parameters:
-              ruby-version: ["circleci/ruby:2.5.8", "circleci/ruby:2.6.6", "circleci/ruby:2.7.4", "circleci/ruby:3.0.2"]
+              ruby-version: ["cimg/ruby:3.1", "cimg/ruby:3.2", "cimg/ruby:3.3"]
       - coverage

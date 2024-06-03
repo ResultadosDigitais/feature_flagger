@@ -188,6 +188,9 @@ module FeatureFlagger
         expect(CustomizedDummyClass.all_released_ids_for(:email_marketing, :behavior_score)).to include(
           'f11bc560-8ef9-40cf-909e-ebb1c6f41163'
         )
+
+        CustomizedDummyClass.new.unrelease(:email_marketing, :behavior_score)
+        expect(CustomizedDummyClass.all_released_ids_for(:email_marketing, :behavior_score)).to be_empty
       end
     end
   end
