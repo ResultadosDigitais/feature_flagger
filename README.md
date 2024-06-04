@@ -1,4 +1,7 @@
-[![Build Status](https://travis-ci.org/ResultadosDigitais/feature_flagger.svg?branch=master)](https://travis-ci.org/ResultadosDigitais/feature_flagger) [![Code Climate](https://codeclimate.com/github/ResultadosDigitais/feature_flagger/badges/gpa.svg)](https://codeclimate.com/github/ResultadosDigitais/feature_flagger) [![Issue Count](https://codeclimate.com/github/ResultadosDigitais/feature_flagger/badges/issue_count.svg)](https://codeclimate.com/github/ResultadosDigitais/feature_flagger)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ResultadosDigitais/feature_flagger/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ResultadosDigitais/feature_flagger/tree/main)
+[![Code Climate](https://codeclimate.com/github/ResultadosDigitais/feature_flagger/badges/gpa.svg)](https://codeclimate.com/github/ResultadosDigitais/feature_flagger) 
+[![Issue Count](https://codeclimate.com/github/ResultadosDigitais/feature_flagger/badges/issue_count.svg)](https://codeclimate.com/github/ResultadosDigitais/feature_flagger)
+
 
 # FeatureFlagger
 
