@@ -31,6 +31,10 @@ module FeatureFlagger
       FeatureFlagger.control.releases(resource_name, feature_flagger_identifier, options)
     end
 
+    def released_count(*feature_key)
+      self.class.release_count(*feature_key)
+    end
+
     private
 
     def feature_flagger_identifier
@@ -51,6 +55,11 @@ module FeatureFlagger
       def release_id(resource_id, *feature_key)
         feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
         FeatureFlagger.control.release(feature.key, resource_id)
+      end
+
+      def release_count(*feature_key)
+        feature = Feature.new(feature_key, feature_flagger_model_settings.entity_name)
+        FeatureFlagger.control.release_count(feature.key)
       end
 
       def unrelease_id(resource_id, *feature_key)

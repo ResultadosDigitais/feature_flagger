@@ -113,6 +113,15 @@ RSpec.describe FeatureFlagger::Storage::Redis do
       end
     end
 
+    describe '#count' do
+      let(:resource_ids) { %w(value1 value2) }
+
+      it 'returns the number of resource_ids for the given feature_key' do
+        storage.add(feature_key, resource_name, resource_ids)
+        expect(storage.count(feature_key)).to eq(2)
+      end
+    end
+
     describe '#feature_keys' do
       it 'returns only feature_keys' do
         storage.add(feature_key, resource_name, resource_id)

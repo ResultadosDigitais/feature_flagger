@@ -67,6 +67,10 @@ module FeatureFlagger
       end
     end
 
+    def release_count(feature_key)
+      @storage.count(feature_key)
+    end
+
     # DEPRECATED: this method will be removed from public api on v2.0 version.
     # use instead the feature_keys method.
     def search_keys(query)
