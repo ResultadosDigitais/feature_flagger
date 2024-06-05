@@ -118,7 +118,7 @@ account.unrelease(:email_marketing, :new_email_flow)
 
 # If you try to check an inexistent rollout key it will raise an error.
 account.released?(:email_marketing, :new_email_flow)
-FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
+#=> FeatureFlagger::KeyNotFoundError: ["account", "email_marketing", "new_email_flo"]
 
 # Check feature for a specific account id
 Account.released_id?(42, :email_marketing, :new_email_flow)
@@ -144,9 +144,11 @@ Account.unrelease_to_all(:email_marketing, :new_email_flow)
 # Return an array with all features released for all
 Account.released_features_to_all
 
+# Get the count of resource ids released
+Account.release_count(:email_marketing, :new_email_flow)
+
 # In order to bypass the cache if cache_store is configured
 Account.released_features_to_all(skip_cache: true)
-
 ```
 
 ## Clean up action

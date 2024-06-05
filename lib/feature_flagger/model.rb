@@ -31,10 +31,6 @@ module FeatureFlagger
       FeatureFlagger.control.releases(resource_name, feature_flagger_identifier, options)
     end
 
-    def released_count(*feature_key)
-      self.class.release_count(*feature_key)
-    end
-
     private
 
     def feature_flagger_identifier

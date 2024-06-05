@@ -39,13 +39,6 @@ module FeatureFlagger
       end
     end
 
-    describe '#released_count' do
-      it 'calls Control#release_count with appropriated methods' do
-        expect(control).to receive(:release_count).with(resolved_key)
-        subject.released_count(key)
-      end
-    end
-
     describe '.released_id?' do
       context 'given a specific resource id' do
         let(:resource_id) { 10 }
