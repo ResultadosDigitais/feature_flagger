@@ -146,6 +146,7 @@ Account.released_features_to_all
 
 # Get the count of resource ids released
 Account.release_count(:email_marketing, :new_email_flow)
+#=> 30
 
 # In order to bypass the cache if cache_store is configured
 Account.released_features_to_all(skip_cache: true)
