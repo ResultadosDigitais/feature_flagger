@@ -24,7 +24,7 @@ module FeatureFlagger
         subject.release(key)
       end
     end
-    
+
     describe '#releases' do
       it 'calls Control#release with appropriated methods' do
         expect(control).to receive(:releases).with("feature_flagger_dummy_class", subject.id, {})
@@ -114,6 +114,13 @@ module FeatureFlagger
       it 'calls Control#released_to_all? with appropriated methods' do
         expect(control).to receive(:released_to_all?).with(resolved_key, {})
         DummyClass.released_to_all?(key)
+      end
+    end
+
+    describe '.release_count' do
+      it 'calls Control#release_count with appropriated methods' do
+        expect(control).to receive(:release_count).with(resolved_key)
+        DummyClass.release_count(key)
       end
     end
 

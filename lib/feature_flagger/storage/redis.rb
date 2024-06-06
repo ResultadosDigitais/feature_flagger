@@ -32,6 +32,10 @@ module FeatureFlagger
         @redis.sismember(key, value)
       end
 
+      def count(key)
+        @redis.scard(key)
+      end
+
       def add(feature_key, resource_name, resource_id)
         resource_key = resource_key(resource_name, resource_id)
 

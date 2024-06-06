@@ -231,6 +231,17 @@ module FeatureFlagger
       end
     end
 
+    describe '#release_count' do
+      subject { control.release_count(key) }
+
+      it 'returns the number of resource_ids for the given feature_key' do
+        control.release(key, 1)
+        control.release(key, 2)
+        control.release(key, 15)
+        expect(subject).to eq(3)
+      end
+    end
+
     describe '#search_keys' do
       before do
         control.release("model:namespace:1", 1)
