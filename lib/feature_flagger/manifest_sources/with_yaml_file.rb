@@ -7,7 +7,7 @@ module FeatureFlagger
       end
 
       def resolved_info
-        @resolved_info ||= ::YAML.load_file(@yaml_path) if @yaml_path
+        @resolved_info ||= ::YAML.unsafe_load_file(@yaml_path) if @yaml_path
       end
     end
   end
