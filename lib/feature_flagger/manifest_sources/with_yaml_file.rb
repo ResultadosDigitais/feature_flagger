@@ -1,3 +1,5 @@
+require 'date'
+
 module FeatureFlagger
   module ManifestSources
     class WithYamlFile
