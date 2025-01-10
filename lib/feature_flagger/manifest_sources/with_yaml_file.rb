@@ -1,3 +1,5 @@
+require 'date'
+
 module FeatureFlagger
   module ManifestSources
     class WithYamlFile
@@ -7,7 +9,7 @@ module FeatureFlagger
       end
 
       def resolved_info
-        @resolved_info ||= ::YAML.load_file(@yaml_path) if @yaml_path
+        @resolved_info ||= ::YAML.load_file(@yaml_path, permitted_classes: [Date]) if @yaml_path
       end
     end
   end
